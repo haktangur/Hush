@@ -1,0 +1,16 @@
+node_modules/
+dist/
+src-tauri/target/
+.DS_Store
+*.app
+*.dmg
+*.hushbackup
+*.sqlite3*
+*.db*
+*.log
+.env*
+*.p12
+*.p8
+*.key
+artifacts/
+.tools/

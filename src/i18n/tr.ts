@@ -1,0 +1,1 @@
+export const tr = {name:'Hush',welcome:'Şehir dışarıda. Burası senin.',loading:'Odan hazırlanıyor…',ready:'Yerel masaüstü bağlantısı hazır.',error:'Oda açılamadı. Verilerin değiştirilmedi.',retry:'Yeniden dene',subtitle:'Oyunların, müziğin, kitapların ve sana kalan anlar.',phase:'Odanın temelleri atılıyor',phaseDetail:'İlk masaüstü derlemesi · P0'} as const;

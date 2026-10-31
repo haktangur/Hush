@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "scene": { "width": 1600, "height": 1000, "fit": "contain" },
+  "hotspots": [
+    { "id": "bookshelf", "label": "Kitaplar", "x": 110, "y": 280, "width": 250, "height": 500, "action": "open_books" },
+    { "id": "game_terminal", "label": "Oyunlar", "x": 610, "y": 500, "width": 320, "height": 230, "action": "open_games" },
+    { "id": "record_station", "label": "Albümler", "x": 1170, "y": 540, "width": 300, "height": 230, "action": "open_albums" },
+    { "id": "diary", "label": "Günlük", "x": 410, "y": 730, "width": 180, "height": 100, "action": "open_journal" },
+    { "id": "lamp", "label": "Masa lambasını aç veya kapat", "x": 410, "y": 460, "width": 130, "height": 220, "action": "toggle_lamp" },
+    { "id": "calendar", "label": "Etkinlik takvimi", "x": 390, "y": 250, "width": 120, "height": 150, "action": "open_calendar" },
+    { "id": "poster_left", "label": "Sol poster", "x": 1180, "y": 130, "width": 150, "height": 210, "action": "open_poster_left" },
+    { "id": "poster_right", "label": "Sağ poster", "x": 1360, "y": 190, "width": 150, "height": 210, "action": "open_poster_right" }
+  ],
+  "decor": [
+    { "id": "window", "x": 520, "y": 90, "width": 620, "height": 390 },
+    { "id": "hush_sign", "x": 130, "y": 110, "width": 260, "height": 90 }
+  ]
+}

@@ -1,0 +1,39 @@
+/* Initial Hush tokens; verify contrast in rendered screens. */
+:root {
+  color-scheme: dark;
+  --color-bg: #0b1020;
+  --color-panel: #141a2b;
+  --color-panel-raised: #20283b;
+  --color-text: #f0eef7;
+  --color-text-muted: #b6b8ca;
+  --color-accent: #a78bfa;
+  --color-accent-secondary: #52d8d1;
+  --color-amber: #f2b66d;
+  --color-danger: #ff9caa;
+  --color-success: #83d6b1;
+  --color-border: #39445d;
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-control: 10px;
+  --radius-card: 14px;
+  --radius-panel: 20px;
+  --motion-fast: 150ms;
+  --motion-panel: 200ms;
+}
+[data-preset='violet_rain'] {
+  --color-bg: #100d20;
+  --color-accent: #c084fc;
+  --color-accent-secondary: #f08dc7;
+  --color-amber: #dca46a;
+}
+[data-preset='quiet_dawn'] {
+  --color-bg: #182131;
+  --color-accent: #8bb8cb;
+  --color-accent-secondary: #b5a5d9;
+  --color-amber: #e8bc8b;
+}

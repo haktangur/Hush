@@ -1,1 +1,20 @@
-{"identifier":"main","description":"Only the local Hush window may access the application commands.","windows":["main"],"permissions":["core:default","allow-app-bootstrap"]}
+{
+  "identifier": "main",
+  "description": "Only the local Hush window may access the application commands.",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "allow-app-bootstrap",
+    "allow-library-save",
+    "allow-library-get",
+    "allow-library-list",
+    "allow-library-trash",
+    "allow-library-restore",
+    "allow-asset-choose-import",
+    "allow-asset-resolve",
+    "allow-settings-save",
+    "allow-room-slot-set"
+  ]
+}

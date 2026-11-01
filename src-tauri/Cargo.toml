@@ -12,3 +12,20 @@ tauri = { version = "2", features = ["protocol-asset"] }
 tauri-plugin-single-instance = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+rusqlite = { version = "0.41.1", features = ["bundled", "backup"] }
+uuid = { version = "1.29.0", features = ["v4"] }
+chrono = "0.4.45"
+unicode-normalization = "0.1.26"
+url = "2.5.8"
+image = { version = "0.25.10", default-features = false, features = ["png", "jpeg", "webp"] }
+sha2 = "0.11.1"
+tauri-plugin-dialog = "2.8.4"
+tauri-plugin-wdio = { version = "1.5.1", optional = true }
+tauri-plugin-wdio-webdriver = { version = "1.5.1", optional = true }
+
+[dev-dependencies]
+tempfile = "3.27.0"
+
+[features]
+default = []
+e2e = ["dep:tauri-plugin-wdio", "dep:tauri-plugin-wdio-webdriver"]

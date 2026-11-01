@@ -1,0 +1,1 @@
+{"identifier":"app.hush.desktop.e2e","productName":"Hush E2E","build":{"beforeBuildCommand":"npm run build:web:e2e","frontendDist":"../dist-e2e"},"app":{"withGlobalTauri":true,"security":{"capabilities":["main",{"identifier":"e2e-only","windows":["main"],"permissions":["wdio:default","wdio-webdriver:default"]}]}},"bundle":{"active":false}}

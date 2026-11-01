@@ -1,0 +1,38 @@
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import * as Dialog from '@radix-ui/react-dialog';
+import type { ItemDraft, LibraryItem, ItemKind, Status, AlbumStatus } from '../../domain/types';
+import type { LibraryClient } from '../../infra/tauri/client';
+import { DesktopError, assets } from '../../infra/tauri/client';
+import { tr } from '../../i18n/tr';
+import styles from './Library.module.css';
+interface Fields {title:string;creator:string;year:string;rating:string;favorite:boolean;notes:string;tags:string;status:Status;started:string;completed:string;totalPages:string;currentPage:string;isbn:string;publisher:string;language:string;platform:string;developer:string;progress:string;returnNote:string;spotify:string;appleMusic:string;firstListened:string}
+const commonSchema=z.object({title:z.string().trim().min(1).max(300),creator:z.string().max(500),notes:z.string().max(20000)});
+const nullableNumber=(s:string)=>s.trim()===''?null:Number(s);
+function initial(item?:LibraryItem):Fields{const details=item?.details;return {title:item?.title??'',creator:item?.creator??'',year:String(item?.releaseYear??''),rating:String(item?.rating??''),favorite:item?.favorite??false,notes:item?.notes??'',tags:item?.tagNames.join(', ')??'',status:item?.status??'planned',started:item?.startedOn??'',completed:item?.completedOn??'',totalPages:details&&'totalPages'in details?String(details.totalPages??''):'',currentPage:details&&'currentPage'in details?String(details.currentPage):'0',isbn:details&&'isbn'in details?details.isbn??'':'',publisher:details&&'publisher'in details?details.publisher:'',language:details&&'language'in details?details.language:'',platform:details&&'platform'in details?details.platform:'',developer:details&&'developer'in details?details.developer:'',progress:details&&'progressPercent'in details?String(details.progressPercent??''):'',returnNote:details&&'returnNote'in details?details.returnNote:'',spotify:details&&'spotifyUrl'in details?details.spotifyUrl??'':'',appleMusic:details&&'appleMusicUrl'in details?details.appleMusicUrl??'':'',firstListened:details&&'firstListenedOn'in details?details.firstListenedOn??'':''}}
+export function errorText(e:unknown){if(e instanceof DesktopError&&e.detail.code in tr.errors)return tr.errors[e.detail.code as keyof typeof tr.errors];return tr.unknownError}
+export function ItemForm({kind,item,client,onSaved,onClose}:{kind:ItemKind;item?:LibraryItem;client:LibraryClient;onSaved:(item:LibraryItem)=>void;onClose:()=>void}){
+ const [cover,setCover]=useState(item?.coverAssetId??null);const [importing,setImporting]=useState(false);
+ const [id]=useState(()=>item?.id??crypto.randomUUID());const [error,setError]=useState('');const [confirm,setConfirm]=useState(false);
+ const {register,handleSubmit,formState:{isDirty,isSubmitting}}=useForm<Fields>({defaultValues:initial(item)});
+ const close=()=>{if(isSubmitting||importing)return;if(isDirty||cover!==(item?.coverAssetId??null))setConfirm(true);else onClose()};
+ const submit=handleSubmit(async values=>{setError('');try{commonSchema.parse(values);const base={id,title:values.title,creator:values.creator,releaseYear:nullableNumber(values.year),rating:nullableNumber(values.rating),favorite:values.favorite,notes:values.notes,tagNames:values.tags.split(',').map(x=>x.trim()).filter(Boolean),startedOn:values.started||null,completedOn:values.completed||null,coverAssetId:cover,provenance:item?.provenance??null};let draft:ItemDraft;
+ if(kind==='book'){const total=nullableNumber(values.totalPages),current=Number(values.currentPage);if(current<0||!Number.isInteger(current)||(total!==null&&(!Number.isInteger(total)||total<1||current>total)))throw new Error('validation');draft={...base,kind,status:values.status,details:{totalPages:total,currentPage:current,isbn:values.isbn||null,publisher:values.publisher,language:values.language}}}
+ else if(kind==='game')draft={...base,kind,status:values.status,details:{platform:values.platform,developer:values.developer,progressPercent:nullableNumber(values.progress),returnNote:values.returnNote}};
+ else draft={...base,kind,status:values.status as AlbumStatus,details:{firstListenedOn:values.firstListened||null,spotifyUrl:values.spotify||null,appleMusicUrl:values.appleMusic||null}};
+ const saved=await client.save({item:draft,expectedRevision:item?.revision??null});onSaved(saved);
+ }catch(e){setError(e instanceof DesktopError?errorText(e):tr.validation)}});
+ const field=(key:keyof Fields,label:string,type='text',min?:number,max?:number)=><label className={styles.field}>{label}<input {...register(key)} type={type} min={min} max={max}/></label>;
+ return <Dialog.Root open onOpenChange={open=>{if(!open)close()}}><Dialog.Portal><Dialog.Overlay className={styles.overlay}/><Dialog.Content className={styles.formDialog} onPointerDownOutside={e=>e.preventDefault()} onEscapeKeyDown={e=>{e.preventDefault();close()}} onKeyDown={e=>{if(e.metaKey&&e.key==='s'){e.preventDefault();void submit()}}}><Dialog.Title>{item?tr.edit:tr.manual}</Dialog.Title><Dialog.Description>{kind==='book'?tr.books:kind==='game'?tr.games:tr.albums}</Dialog.Description>
+ {confirm?<div><p>{tr.dirty}</p><p>{tr.dirtyDetail}</p><button onClick={()=>setConfirm(false)}>{tr.back}</button><button onClick={onClose}>{tr.discard}</button></div>:<form onSubmit={submit}><div className={styles.actions}><button type="button" disabled={importing} onClick={async()=>{setImporting(true);try{const asset=await assets.choose();if(asset)setCover(asset.id)}catch(e){setError(errorText(e))}finally{setImporting(false)}}}>{tr.chooseCover}</button>{cover&&<button type="button" onClick={()=>setCover(null)}>{tr.removeCover}</button>}</div><div className={styles.formGrid}>
+ {field('title',tr.title)}{field('creator',tr.creator)}{field('year',tr.year,'number',1,9999)}{field('rating',tr.rating,'number',0,10)}
+ <label className={styles.field}>{tr.status}<select {...register('status')}>{Object.entries(tr.statuses[kind]).map(([key,label])=><option key={key} value={key}>{label}</option>)}</select></label><label className={styles.check}><input type="checkbox" {...register('favorite')}/>{tr.favorite}</label>
+ {kind==='book'&&<>{field('totalPages',tr.totalPages,'number',1)}{field('currentPage',tr.currentPage,'number',0)}{field('isbn',tr.isbn)}{field('publisher',tr.publisher)}{field('language',tr.language)}</>}
+ {kind==='game'&&<>{field('platform',tr.platform)}{field('developer',tr.developer)}{field('progress',tr.progress,'number',0,100)}{field('returnNote',tr.returnNote)}</>}
+ {kind==='album'&&<>{field('spotify',tr.spotify,'url')}{field('appleMusic',tr.appleMusic,'url')}{field('firstListened',tr.firstListened,'date')}</>}
+ {field('started',tr.started,'date')}{field('completed',tr.completed,'date')}{field('tags',tr.tags)}
+ <label className={`${styles.field} ${styles.wide}`}>{tr.notes}<textarea {...register('notes')} rows={5}/></label></div>
+ {error&&<p role="alert" className={styles.error}>{error}</p>}<footer className={styles.actions}><button type="button" disabled={isSubmitting||importing} onClick={close}>{tr.cancel}</button><button className={styles.primary} type="submit" disabled={isSubmitting||importing}>{isSubmitting?tr.saving:tr.save}</button></footer></form>}
+ </Dialog.Content></Dialog.Portal></Dialog.Root>
+}

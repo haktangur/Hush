@@ -14,3 +14,5 @@ src-tauri/target/
 *.key
 artifacts/
 .tools/
+src-tauri/gen/
+dist-e2e/

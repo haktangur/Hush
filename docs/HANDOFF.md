@@ -4,7 +4,7 @@ Tarih: 2026-11-02. Çalışma dizini: `/Users/haktan/Desktop/Hush`.
 
 ## Kullanıcının son kararı
 
-Geliştirme faz bazında sürdürülecek. Bu oturum yalnız P2 oda/gezinme kabulünü tamamladı. **P0, P1 ve P2 tamamlandı; sonraki sohbet yalnız P3’ü ele almalı.** P3–P7 hazırlıklarını silme veya tamamlandı varsayma. Faz bitiminde belgeleri ve sonraki sohbet promptunu güncelleyip yerel commit oluştur, sonra dur.
+Geliştirme faz bazında sürdürülecek. Bu oturum yalnız P3 yerel koleksiyon kabulünü tamamladı. **P0–P3 tamamlandı; sonraki sohbet yalnız P4’ü ele almalı.** P4–P7 hazırlıklarını silme veya tamamlandı varsayma. Faz bitiminde belgeleri ve sonraki sohbet promptunu güncelleyip yerel commit oluştur, sonra dur.
 
 Finder/System Events otomasyon izni kullanıcı tarafından reddedildi. AppleScript denemesi kaldırıldı; izin tekrar istenmedi. Native kapak seçimini kullanıcı yaptı; kalan kabul adımları gerçek IPC ile otomatik tamamlandı. Aynı otomasyon iznini veya GitHub CLI indirmesini yeniden isteme.
 
@@ -15,7 +15,7 @@ Planın kaynağı `docs/06-UYGULAMA-PLANI.md` (P0–P7).
 - **P0 tamamlandı:** Tauri 2/React/TypeScript/Rust iskeleti, SQLite temeli, gerçek IPC, araç zinciri ve kilit dosyaları, yerel Git, CI başlangıcı. Apple Silicon ad-hoc `.app` üretildi ve açıldı. P0 kabulü remote yerine belgelenmiş bağlantı engeline izin veriyor; GitHub tamamlanmış değildir.
 - **P1 tamamlandı:** temel kitap/veri testlerine ek olarak gerçek native seçici → kapak import → kaynak dosyayı taşı → yeni süreçte aç → kitap/kapak görünürlüğü ve hash eşitliği 2026-11-02 04:44–04:45 TRT’de geçti. Seçim kullanıcı tarafından, kayıt/taşıma/restart/assertion WDIO ile; mock IPC yok.
 - **P2 tamamlandı:** 2026-11-02 04:57 TRT gerçek Tauri/WebKit ile sekiz hotspot iki boyutta, menü/kısayol, focus/Escape, azaltılmış hareket, minimize, boş/dolu oda ve ışık/poster/plak restart kabulü geçti. VoiceOver ve OS hareket tercihini değiştirme testi yapılmadı; P7 kapsamı açık.
-- **P3 hazırlığı var:** tüm türler, seans/alıntı/parça/screenshot, etiket ve koleksiyonlar. Her tür için iki kayıtla tam native CRUD ve silme matrisi eksik.
+- **P3 tamamlandı:** 2026-11-02 14:19 TRT, gerçek Tauri/WebKit ile ikişer oyun/albüm/kitap UI CRUD/trash/restore; alt kayıtlar, tür/revision kontrolleri, koleksiyon silme, filtre/sıralama/sayfalama, duplicate ve üç türde purge/cascade doğrulandı. İlk süreç 5, bağımsız restart 1 test geçti. Görsel fixture ve picker kapsamı TEST-REPORT’ta açıkça ayrıldı.
 - **P4 hazırlığı var:** günlük, autosave taslağı, takvim, yerel arama. Native taslak yeniden açılış testi mevcut. Tam kabul matrisi eksik.
 - **P5 hazırlığı var:** OL/MB/IGDB Rust adaptörleri, önizleme, ilk parçalarla atomik albüm kaydı, Keychain ayarı. Canlı/provider hata testleri ve metadata refresh diff tamam değil.
 - **P6 hazırlığı var:** `.hushbackup` export/inspect/restore, snapshot, boyut/hash/şema/görsel kontrolleri, storage gate, süreli token, pointer değişimi, ayar ekranı. Üç temel Rust testi var. Tam round-trip, arşiv saldırı matrisi ve commit kesinti testleri eksik. Üretim güvenilirliği onaylanmış sayılmamalı.
@@ -25,13 +25,17 @@ Planın kaynağı `docs/06-UYGULAMA-PLANI.md` (P0–P7).
 
 AGENTS.md, CODEX_BASLANGIC.md, README.md, docs/01–08, docs/PROGRESS.md, docs/TEST-REPORT.md ve bu dosya. Ardından `git status --short`, `git log -3 --oneline` ve mevcut kodu incele. Migration 0001 sözleşmeyle aynı; değiştirme.
 
-## Sonraki sohbetin somut işi — yalnız P3
+## Sonraki sohbetin somut işi — yalnız P4
 
-1. `docs/06-UYGULAMA-PLANI.md` P3 kabulünü mevcut Library/Activity/Collections, Rust servis ve repository koduyla karşılaştır. P0–P2'yi yeniden başlatma.
-2. Her türden en az iki sentetik kaydı ayrı test dizininde gerçek macOS UI/IPC ile oluştur, düzenle, sil, geri al; restart kalıcılığını doğrula. Mock IPC kullanma.
-3. Oyun ilerlemesi/seans/screenshot, albüm parça/favori/not/dış bağlantı, kitap ilerleme/alıntı, etiket/koleksiyon/filtre/sıralama/sayfalama/duplicate UX eksiklerini tamamla. Görünür düğmeler gerçek işlem yapsın.
-4. Alt kayıt tür/revision denetimleri, koleksiyon silmenin eserleri koruması, eser trash/restore/purge ile poster fallback ve kapak önbelleğinin yenilenmesini test et. P2 SlotImage item cache'in trash/restore sonrası invalidation ihtiyacını özellikle denetle.
-5. P3 tamamlanınca PROGRESS/TEST-REPORT/HANDOFF ve NEXT_CHAT_PROMPT dosyalarını güncelle, yerel commit oluştur, P4 başlangıç promptuyla dur. P4'e geçme.
+1. `docs/06-UYGULAMA-PLANI.md` P4 kabulünü mevcut Journal/Calendar/Search ve Rust servisleriyle karşılaştır. P0–P3'ü yeniden başlatma.
+2. Gerçek macOS UI/IPC ile aynı güne çoklu günlük CRUD/trash/restore; mood ve eser ilişkileri; autosave/restart/kurtarma ve hata durumunda metnin korunmasını doğrula.
+3. Günlük gününün saat diliminden bağımsız kalması, seansların seçili timezone'da doğru gün/ay gruplaması ve oyun/kitap/albüm toplamlarını doğrula. Ay/gün sınırları için sentetik veri kullan.
+4. Cmd+K ve yerel arama: I/İ/ı/i, `%_` literal, not/etiket/günlük içeriği, boş sonuç, sonuçtan doğru detaya gitme; ağ isteği oluşmadığını kanıtla. Mock IPC kullanma.
+5. Ayar/çöp kutusu P4 kapsamını tamamla. P5 katalog veya P6 yedek kabulüne geçme. P4 sonunda PROGRESS/TEST-REPORT/HANDOFF/NEXT_CHAT_PROMPT, yerel commit ve P5 promptuyla dur.
+
+P3 tekrar: `npm run test:native -- --collections` veya `npm run test:native:p3`. Son veri: `/var/folders/zy/nlg3tsjx7b9dnf72st1bbyf00000gn/T/hush-native-keOHNx`; `collections-evidence.json` altı tam eser/alt kayıt snapshot'ı, slotlar, üç koleksiyon, toplam ve purge ID'lerini tutar. İlk süreç 5, ikinci süreç 1 test (4 skipped). Yerel görseller `artifacts/p3-*.png`.
+
+P3 düzeltmeleri: Library mutation'ları `item` cache'ini de invalidate eder; Room SlotImage hata durumunda eski kapağı göstermez. Liste sıralaması offset'i sıfırlar, çoklu etiket virgülle ayrılır, grid/kompakt liste seçilebilir. Elle aynı başlıkta uyarı ve ayrı kayda devam akışı vardır. Screenshot uygulama içi modalda açılır. Albüm HTTPS düğmeleri tipli istemci → `external_open` → Rust doğrulaması → sistem açıcı yolunu kullanır. Test image fixture'ı dışında DB'ye doğrudan kayıt eklenmez; screenshot bağlama ve kapak atama gerçek IPC'dir. Picker tekrar edilmedi; P1 kanıtı korunur.
 
 P2 tekrar: `npm run test:native:p2` (`npm run test:native -- --room` aynı işi yapar). Gerçek IPC; fixture asset dosyaları/manifesti yalnız yeni test dizinine kuruluyor. İlk süreç 3 test, ikinci süreç 1 test; iki ilk-açılış testi ikinci süreçte bilinçli skipped. Yeni P2 ekranları `artifacts/p2-*.png`. P2 kabul verisi: `/var/folders/zy/nlg3tsjx7b9dnf72st1bbyf00000gn/T/hush-native-9RDHcK`.
 
@@ -54,7 +58,7 @@ Tekrarlanabilir P1 testi: `npm run test:native:p1`; runner’ın yazdırdığı 
 - `services/settings.rs` ve catalog annotate içinde kalan SQL, repository katmanına taşınmalı; bunu P1 testini gereksiz büyütmeden sonraki fazlarda ele al.
 - Katalog Retry-After/timeout/negatif kapak cache ve metadata refresh eksikleri var. Keychain durumundaki “kayıtlı” ifadesi canlı token doğrulaması demek değil. Kullanıcıdan sohbet içinde anahtar isteme.
 - Backup doğrulaması genişletilmeli: tüm veri türleri ve asset eşdeğerliği, kötü arşiv fixture'ları, pointer commit öncesi/sonrası fault injection, kurtarma ekranı. Mevcut üç test tam P6 kabulü değildir.
-- Dirty native pencere kapatma/Cmd+Q, normal native menüler, onboarding, grid/list, manual duplicate UX, albüm linkleri, screenshot büyütme ve performans kabul işleri açık.
+- Dirty native pencere kapatma/Cmd+Q, normal native menüler, onboarding ve performans kabul işleri açık. Grid/list, manual duplicate UX, albüm linkleri ve screenshot büyütme P3’te tamamlandı; canlı katalog duplicate/refresh kabulü P5’te kalır.
 
 ## GitHub ve çıktılar
 

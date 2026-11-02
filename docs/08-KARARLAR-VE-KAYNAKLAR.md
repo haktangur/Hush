@@ -73,3 +73,9 @@ Kullanıcının son talimatı bu sohbeti yalnız P1 kabulü, belgeler ve yerel c
 Son kullanıcı talimatı bu oturumu yalnız P2 oda/gezinme kabulü, belgeler, yerel commit ve P3 başlangıç promptuyla sınırlar. D15'in faz bitince durma ve reddedilen izinleri yeniden istememe kuralı devam eder. GitHub CLI/Finder/System Events denenmedi. P3–P6 mevcut kodu korundu fakat yeni kabul verilmedi.
 
 Poster ve plak için ayarlar menüsü girişleri ile Cmd+7/8/9, lamba için Cmd+L eklendi; mevcut Cmd+1–6/K/, yolları korundu. Uygulama içi menü P2'de doğrulandı; macOS native menü işi planlandığı gibi P7'de kalır. Yeni paket veya migration yok.
+
+## D17 — P3 ile sınırlı kabul ve test verisi (2026-11-02)
+
+Son kullanıcı talimatı bu oturumu yalnız P3 yerel koleksiyon kabulü, belgeler, yerel commit ve P4 başlangıç promptuyla sınırlar. Başlangıçtaki tüm fazları bitirme/GitHub push talimatı bu oturumda uygulanmaz; P4'e geçilmez. Reddedilen GitHub CLI indirmesi ve Finder/System Events otomasyonu yeniden istenmez.
+
+P3 testleri mevcut e2e-only Tauri/WebKit sürücüsünü kullanır. Görsel fixture yalnız yeni geçici assets/DB'ye kurulur; screenshot ilişki ekleme ve kapak atama gerçek IPC üzerinden yapılır. Screenshot görüntüleme/düzenleme/silme gerçek UI'dır. Bu, native picker'ın yeniden test edildiği anlamına gelmez; P1 kullanıcı destekli import kanıtı korunur. Üretim test yetkisi/override'ı eklenmez. HTTPS dış bağlantı için yeni dar `external_open` komutu URL'yi Rust'ta doğrular ve shell yorumlaması olmadan macOS `/usr/bin/open` çalıştırır; bağımlılık eklenmez.

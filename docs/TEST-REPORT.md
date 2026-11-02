@@ -1,4 +1,4 @@
-# Hush test raporu — P2 kabulü ve faz devri
+# Hush test raporu — P3 kabulü ve faz devri
 
 2026-11-02 · macOS 26.6.2 · Apple Silicon arm64 · Node 24.18.0 · Rust 1.97.1.
 Ürün geliştirme aşamasında; tam kabul veya final teslim raporu değildir.
@@ -8,11 +8,13 @@
 | Kontrol | Sonuç ve kapsam |
 |---|---|
 | `npm run check` | Geçti: TypeScript strict, ESLint, 4 React testi, Vite production build |
-| `cargo test --locked --manifest-path src-tauri/Cargo.toml` | 19 test geçti; lib/main/doc test koşuları hatasız |
+| `cargo test --locked --manifest-path src-tauri/Cargo.toml` | 20 test geçti; lib/main/doc test koşuları hatasız |
 | `cargo clippy --locked --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings` | Geçti |
 | `cargo fmt --manifest-path src-tauri/Cargo.toml --check` | Geçti |
 | `git diff --check` | Geçti |
-| `npm run test:native` (sandbox dışında) | Gerçek Tauri/WebKit ile iki bağımsız süreçte 2 + 2 test geçti |
+| `npm run test:native` (sandbox dışında) | 14:21 TRT: iki bağımsız süreçte 2 + 2 temel regresyon geçti |
+| `npm run test:native -- --collections` | 14:19 TRT: P3 ilk süreç 5, restart 1 geçti (4 skipped) |
+| `npm run test:native -- --room` | 14:19 TRT: P2 regresyon 3 + 1 geçti (2 skipped) |
 
 ## Otomatik test kapsamı
 
@@ -43,9 +45,9 @@ Sandbox içindeki ilk deneme WebDriver port 4445 hazır olma timeout'u verdi. Sa
 
 ## Açık kabul koşulları
 
-P0–P2 kapıları tamamlandı. Sıradaki kabul P3 yerel koleksiyonlar; aşağıdaki genel matris açık kalır. P2 oda/klavye/hareket alt kapsamı aşağıda ayrıntılıdır; A19 VoiceOver ve tam A01–A22 matrisini kapatmaz.
+P0–P3 kapıları tamamlandı. Sıradaki kabul P4 günlük/takvim/yerel arama; aşağıdaki genel matris açık kalır. P2 oda/klavye/hareket alt kapsamı aşağıda ayrıntılıdır; A19 VoiceOver ve tam A01–A22 matrisini kapatmaz.
 
-A01–A22 tam matris henüz tamam değil. Özellikle tüm türlerin native CRUD'ı, katalog canlı/hata/refresh akışları, tam backup restore/kesinti, VoiceOver/klavye, 5.000 eser/10.000 seans performansı, DMG'den açılış ve production binary'de test bileşeni yokluğu doğrulanmadı.
+A01–A22 tam matris henüz tamam değil. Özellikle katalog canlı/hata/refresh akışları, tam backup restore/kesinti, VoiceOver/klavye, 5.000 eser/10.000 seans performansı, DMG'den açılış ve production binary'de test bileşeni yokluğu doğrulanmadı.
 
 GitHub remote/CI sonucu/draft release yok. GitHub CLI indirme izni kullanıcı tarafından reddedildi. Final `.dmg` yok; notarization yapılmadı. npm geliştirme bağımlılıklarına ait önceki audit bulgularının çözüm incelemesi açık; bu oturumda temiz audit iddiası yok.
 
@@ -123,3 +125,44 @@ Yerel/Git dışı screenshot'lar:
 - Ortak Dialog değişikliği sonrası `npm run test:native`: **2 + 2** mevcut kitap/günlük restart testi geçti (04:57 TRT; ayrı `hush-native-sYObfE` dizini). P1 kullanıcı destekli kapak picker testi yeniden çalıştırılmadı; önceki geçerli kanıt korundu.
 - Bağımlılıklar, lockfile'lar ve migration'lar değiştirilmedi. Yeni production test komutu/override eklenmedi; test fixture'ları frontend kaynaklarına alınmadı.
 - Yeni final `.app/.dmg` üretilmedi. Önceki P0 `.app` güncel final sürüm değildir. GitHub URL/remote/CI/draft release yok; notarization yapılmadı. P3–P7 ve tam A01–A22 kabulü açık.
+
+## P3 yerel koleksiyon kabulü — 2026-11-02 14:19 TRT
+
+**Geçti.** `npm run test:native -- --collections` (eşdeğeri `npm run test:native:p3`), gerçek macOS Tauri debug uygulaması, WebKit 605.1.15 ve gerçek Rust/SQLite komutlarını kullandı. Native IPC mock edilmedi. İlk süreç **5 test geçti**; sonlandırılıp aynı veriyle açılan bağımsız ikinci süreçte **1 restart testi geçti**, ilk sürece özgü **4 test bilinçli skipped**.
+
+| Kontrol | Sonuç ve kanıt |
+|---|---|
+| Altı ana eser | UI’dan ikişer oyun/albüm/kitap oluşturuldu; puan, favori, kişisel not, etiket ve durum düzenlendi. Her biri UI’dan trash ve restore işleminden geçti. Tam DTO’lar restart öncesi/sonrası eşit. |
+| Tür alanları | Kitap 37/200 → Okudum ile 200/200; oyun %42 → Bitirdim ile %100 ve tamamlanma tarihi; dönüş notu korundu. Albüm iki HTTPS bağlantısını sakladı. |
+| Seans | Her ana eserde UI ekle 25 dk → düzenle 45 dk → sil 0 dk → tekrar ekle 35 dk; kendi revision’ı ve ebeveyn değiştirilemezliği gerçek IPC ile kontrol edildi. |
+| Alıntı/parça | Her kitap/albümde UI ekle/düzenle/sil/tekrar ekle; alıntı sayfası/yorum ve parça süresi/favorisi/yorumu kalıcı. |
+| Screenshot | Her oyun için sentetik yerel asset gerçek children-replace IPC ile bağlandı; UI’dan açıklama düzenlendi, modalda gerçek asset decode edildi, kaldırıldı; tekrar gerçek IPC ile bağlandı ve restart eşitliği doğrulandı. |
+| Tür/revision | Her türde yanlış alt kayıt türü VALIDATION, eski ebeveyn revision’ı CONFLICT; eski seans revision’ıyla update/delete ve farklı ebeveyne taşıma CONFLICT. Reddedilen işlemlerden sonra alt kayıtlar değişmedi. Trash ebeveyninde alt kayıt/seans ekleme NOT_FOUND. |
+| Duplicate | Aynı elle girilen başlık kaydetmeden uyarıyor. Kaydı aç doğru detayı açtı. Ayrı kayda devam → Kaydet ikinci ID’yi oluşturdu; test bu baskıyı sonra farklı başlıkla düzenledi. Canlı katalog duplicate kabulü P5’tir. |
+| Koleksiyon | UI oluştur, ad/açıklama düzenle, farklı türlerden üye ekle/çıkar, sil. Silinen koleksiyonun altı ana eseri korunuyor. Purge sonrası üç ayrı koleksiyonda yaşayan eser üyeliği korundu. |
+| Filtre/liste | Durum + favori + koleksiyon + Türkçe çoklu etiket `istanbul, ışık`; başlık araması, boş sonuç, kompakt liste; puan/başlık/eklenme sıralaması. 61 ek sentetik kitapla 60+1 sayfalama ve Önceki/Sonraki; sıralama değişince ilk sayfaya dönüş. |
+| Poster/cache | Altı eserin her biri kapaklı olarak sol postere UI’dan atandı. Aynı süreçte trash → 0 dinamik kapak/varsayılan poster; restore → decode edilmiş kapak. Yeniden açılış beklenmeden güncellendi. |
+| Purge | Ek oyun, albüm ve kitap için UI onayını iptal etme, sonra onaylama. Aktif eser purge reddi; trash sonrası purge başarılı. Slot default, session/track/quote/screenshot/collection FK bağlantıları yok; yaşayan üye korunuyor. SQLite salt-okunur sorgularıyla cascade doğrulandı. |
+| Dış bağlantı | Spotify ve Apple Music düğmeleri gerçek UI’dan aktive edildi, arayüzde hata oluşmadı; Rust doğrulaması `file:` açmayı reddetti. Dış sitelerin içerik/oturum/oynatma durumu kabul kapsamı değildir. |
+| Restart | Altı eserin tüm DTO’ları ve extras listeleri, üç kalan koleksiyon, slotlar birebir eşit. 68 aktif sentetik eser; üç purge ID’si NOT_FOUND. Altı detay UI’dan açılıp not/kapak görüntülendi. |
+
+### Ayrım, kanıt ve düzeltmeler
+
+- Son P3 veri dizini: `/var/folders/zy/nlg3tsjx7b9dnf72st1bbyf00000gn/T/hush-native-keOHNx`. `collections-evidence.json` snapshot’ları aynı dizindedir. Gerçek Application Support verisi kullanılmadı.
+- Görsel fixture `tests/fixtures/room-album.webp` (önceki özgün/sentetik fixture) yalnız test DB’sine asset manifesti ve dosyalarıyla kuruldu. Ana eser/alt kayıt/slot/koleksiyon mutasyonları gerçek IPC’ye gider. Kapak atamaları ve screenshot ilk/tekrar bağlamaları doğrudan gerçek IPC; altı ana eserin oluştur/düzenle/trash/restore işlemleri UI’dır.
+- **Native picker/import P3’te tekrar edilmedi.** P1’deki gerçek seçici/import/kopya/restart kanıtı korunur; bu fixture kurulumu yeni picker veya screenshot kaynak-boyut dönüşümü testi diye sunulmaz. Finder/System Events otomasyonu denenmedi veya yeniden istenmedi.
+- Select seçimleri önceki P2 yaklaşımıyla WebView DOM change olayı kullanır. Kaydetme, doğrulama, depolama ve restart gerçektir; fiziksel OS klavye veya VoiceOver kabulü değildir.
+- Git dışı görseller: `artifacts/p3-screenshot.png`, `p3-pagination.png`, `p3-trash-fallback.png`, `p3-restored-poster.png`, `p3-saved.png`, `p3-verified.png`, `p3-reopened.png`. Screenshot modalı, liste ve trash/restore poster çifti görsel olarak incelendi; kırpılmış modal veya kaybolmuş poster hedefi yok.
+- Düzeltmeler: `item` cache invalidation; hatalı item sorgusunda stale kapak gizleme; sıralamada offset sıfırlama; virgüllü etiket filtresi; manual duplicate uyarısı; grid/list; uygulama içi screenshot görüntüleyici; albüm dış bağlantıları ve dar `external_open` komutu.
+- İlk sandbox denemesi embedded WebDriver port 4445 timeout’u verdi; mevcut izinli sandbox dışı native koşu çalıştı. Ara koşularda testin aria-label/metin, menü konumu ve sayfa dışında kalan kitabı aramadan seçme varsayımları düzeltildi. Bu başarısız koşular geçmiş sayılmadı. Son koşu tüm P3 senaryolarını sıfırdan temiz geçici dizinde tamamladı.
+
+### Son kontroller ve gerçek sınırlar
+
+- `npm run check`: TypeScript strict, ESLint, **4 React testi**, production frontend build geçti (14:18 TRT).
+- `cargo test --locked --manifest-path src-tauri/Cargo.toml`: **20 Rust testi** geçti; yeni test dış URL doğrulamasını kapsar.
+- `cargo clippy --locked --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings`, `cargo fmt --manifest-path src-tauri/Cargo.toml --check`, `git diff --check` geçti.
+- P2 regresyonu `npm run test:native -- --room`: **3 + 1** geçti (restart’ta **2 skipped**), 14:19 TRT; ayrı `hush-native-VrPGVa` veri dizini. SlotImage değişikliği sonrası iki poster/plak ve mevcut gezinme/hareket kabulü korunuyor.
+- Temel `npm run test:native` regresyonu: **2 + 2** kitap/günlük taslak testi geçti, 14:21 TRT; ayrı `hush-native-N6jUHv` dizini. Bu mevcut smoke testi P4 kabulü olarak işaretlenmedi.
+- Test binary: `src-tauri/target/native/debug/hush`. Yeni final `.app/.dmg` üretilmedi. Önceki P0 `.app` güncel teslim değildir. Production frontend build başarılı; final release binary’de test bileşeni yokluğu P7’de doğrulanacak.
+- Bağımlılık/lockfile/migration değişmedi; test verisi veya ekran görüntüsü Git’e eklenmedi. Native test komutları/override mevcut e2e feature/config ile sınırlı.
+- GitHub remote/URL/CI/draft release yok; reddedilen CLI indirmesi yeniden istenmedi. Notarization yok. P4–P7 kabulü açık; bu oturum P4 çalışmasına geçmez.

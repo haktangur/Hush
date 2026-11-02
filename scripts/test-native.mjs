@@ -8,6 +8,7 @@ const env = {
   ...process.env,
   CARGO_TARGET_DIR: join(process.cwd(), 'src-tauri/target/native'),
   HUSH_TEST_DATA_DIR: mkdtempSync(join(tmpdir(), 'hush-native-')),
+  HUSH_NATIVE_COLLECTIONS: process.argv.includes('--collections') ? '1' : '',
   HUSH_NATIVE_ROOM: process.argv.includes('--room') ? '1' : '',
   HUSH_NATIVE_COVER: process.argv.includes('--cover') ? '1' : '',
 };

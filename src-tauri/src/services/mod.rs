@@ -378,3 +378,5 @@ mod relationship_tests {
 }
 pub mod catalog;
 pub mod journal;
+
+pub mod external;

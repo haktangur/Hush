@@ -19,6 +19,7 @@
     "build:web:e2e": "vite build --mode e2e --outDir dist-e2e",
     "build:native:test": "tauri build --debug --no-bundle --features e2e --config tests/native/tauri.e2e.conf.json",
     "test:native": "node scripts/test-native.mjs",
+    "test:native:p3": "node scripts/test-native.mjs --collections",
     "test:native:p2": "node scripts/test-native.mjs --room",
     "test:native:p1": "node scripts/test-native.mjs --cover"
   },

@@ -560,3 +560,16 @@ pub async fn backup_restore(
     .unwrap_or_else(|_| Err(AppError::new("INTERNAL")))
     .into()
 }
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ExternalRequest {
+    pub url: String,
+}
+#[tauri::command]
+pub async fn external_open(request: ExternalRequest) -> ApiResult<()> {
+    tauri::async_runtime::spawn_blocking(move || crate::services::external::open(&request.url))
+        .await
+        .unwrap_or_else(|_| Err(AppError::new("INTERNAL")))
+        .into()
+}

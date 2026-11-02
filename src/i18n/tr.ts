@@ -1,4 +1,6 @@
 export const tr = {
+ view:'Görünüm',gridView:'Kapaklar',listView:'Kompakt liste',
+ duplicateTitle:'Bu başlıkta bir eser zaten var. Ayrı bir baskı olarak kaydedebilirsin.',openExisting:'Kaydı aç',keepSeparate:'Ayrı kayıt olarak devam et',enlargeScreenshot:'Ekran görüntüsünü büyüt',openSpotify:'Spotify’da aç',openAppleMusic:'Apple Music’te aç',
  openAssigned:'Atanan eseri aç',
  backup:'Yedekleme ve geri yükleme',backupPrivacy:'Yedek, günlüklerin ve notların dahil kişisel içeriğini taşır; şifreli değildir. API bağlantı anahtarları yedeğe dahil edilmez.',backupDirty:'Yedekleme işlemlerinden önce ayar değişikliklerini kaydet.',exportBackup:'Yedek dışa aktar',inspectBackup:'Yedek seç ve incele',backupSaved:'Yedek dosyası kaydedildi.',backupBusy:'Yedek işlemi sürüyor…',backupSummary:'Yedek özeti',itemsCount:'Eser',assetsCount:'Görsel',restoreWarning:'Bu işlem mevcut verilerini seçtiğin yedeğin içeriğiyle değiştirecek. Önce mevcut verilerinin yedeğini alabilirsin.',confirmRestore:'Bu yedeği geri yükle',
  credentialsStored:'Bağlantı bilgileri Keychain’de kayıtlı',catalogContactHint:'MusicBrainz isteklerinde bu herkese açık iletişim adresi kullanılır. Değişikliği Kaydet ile uygula.',coverUnavailable:'Kapak alınamadı. Eseri kaydedebilir veya yerel bir kapak seçebilirsin.',

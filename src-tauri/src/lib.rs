@@ -24,6 +24,7 @@ pub fn run() {
             }
         }))
         .invoke_handler(tauri::generate_handler![
+            commands::external_open,
             commands::app_bootstrap,
             commands::library_save,
             commands::library_get,

@@ -1,9 +1,9 @@
 # Hush ilerleme
 
 ## Şu an
-- Kullanıcının son yönlendirmesi: yalnız P2 kabulünü tamamla, belge/yerel commit ve P3 başlangıç promptu sonrası dur.
-- P0, P1 ve P2 tamamlandı. Sonraki sohbetin hedefi yalnız P3 yerel koleksiyon kabulü.
-- P3–P6 kod hazırlıkları korunuyor; kabul kapıları tamamlanmış sayılmıyor.
+- Kullanıcının son yönlendirmesi: yalnız P3 kabulünü tamamla, belge/yerel commit ve P4 başlangıç promptu sonrası dur.
+- P0, P1, P2 ve P3 tamamlandı. Sonraki sohbetin hedefi yalnız P4 günlük/takvim/yerel arama kabulü.
+- P4–P6 kod hazırlıkları korunuyor; bu fazların kabul kapıları tamamlanmış sayılmıyor.
 - Ayrıntılı devir: [HANDOFF.md](HANDOFF.md). Test kanıtları: [TEST-REPORT.md](TEST-REPORT.md).
 - Dal: `feat/local-library`; güncel checkpoint için `git log -1`.
 
@@ -11,7 +11,7 @@
 - [x] P0 — masaüstü iskeleti (GitHub bağlantı engeli belgeli)
 - [x] P1 — kalıcı veri
 - [x] P2 — oda
-- [ ] P3 — koleksiyonlar
+- [x] P3 — koleksiyonlar
 - [ ] P4 — günlük/takvim/arama
 - [ ] P5 — kataloglar
 - [ ] P6 — yedek/kurtarma
@@ -85,3 +85,14 @@
 - `npm run check` (4 UI), 19 Rust testi, clippy/fmt ve diff kontrolü geçti. Ortak Dialog değişikliği sonrası mevcut native kitap/günlük restart regresyonu 2 + 2 geçti.
 - Yeniden çalıştırma: `npm run test:native:p2` veya mevcut izinli `npm run test:native -- --room`. Veri ve kanıt yolu TEST-REPORT.md'de.
 - VoiceOver, işletim sistemi hareket tercihini değiştirerek manuel kontrol ve final paket/CI kapsamı P7'de açık; bu P2 sonucu onları geçmiş saymaz. GitHub CLI/Finder/System Events izni yeniden istenmedi.
+
+### 2026-11-02 — P3 kabulü kapatıldı
+- Başlangıç ağacı temizdi (`5af7e13`); kullanıcı değişikliği yoktu. Mevcut P4–P6 hazırlıkları, bağımlılıklar ve migration'lar korundu. P4'e geçilmedi.
+- Elle aynı başlık uyarısı, mevcut kaydı aç / ayrı kayda devam et; kompakt liste; albüm HTTPS bağlantı düğmeleri ve Rust sistem açıcı; screenshot uygulama içi büyütme tamamlandı.
+- Eser mutation'larında item/room/list/collection/calendar cache yenileniyor. Silinmiş eser sorgusu eski kapak verisini taşımıyor; restore kapağı geri getiriyor. Sıralama ilk sayfaya dönüyor, virgülle çoklu etiket filtresi çalışıyor.
+- 14:19 TRT: `npm run test:native -- --collections` gerçek macOS Tauri/WebKit/SQLite ile ilk süreçte 5 test; ikinci bağımsız süreçte 1 restart testi geçti (4 ilk-süreç testi skipped).
+- İkişer oyun/albüm/kitap UI CRUD + trash/restore, seans CRUD, alıntı/parça düzenleme ve silme, screenshot ilişki/görüntüleme/düzenleme/silme, tür/revision hataları, koleksiyon üyeliği/silme, duplicate UX, filtre/sıralama/60+1 sayfalama doğrulandı. Üç türde ek purge kayıtlarıyla alt kayıt ve slot/üyelik FK temizliği doğrulandı.
+- Restart sonrası altı tam eser DTO'su, tüm alt kayıt listeleri, üç kalan koleksiyon ve poster slotları birebir eşit; kapaklar decode oluyor. Toplam 68 aktif sentetik eser; üç purge kaydı yok.
+- Native veri: `/var/folders/zy/nlg3tsjx7b9dnf72st1bbyf00000gn/T/hush-native-keOHNx`; evidence ve screenshot'lar Git dışında. Screenshot/kapak görsel fixture'ı yalnız ayrı DB'ye kuruldu; eser ve alt kayıt işlemleri gerçek IPC, mock yok. Native picker P1'deki önceki kabul kapsamıyla sınırlı, P3'te tekrar edilmedi.
+- `npm run check` (4 UI), 20 Rust testi, clippy, fmt ve diff kontrolü geçti. P2 regresyonu 3 + 1 geçti (2 skipped); temel native smoke 2 + 2 geçti (14:21 TRT); ayrıntı TEST-REPORT'ta.
+- GitHub CLI/Finder/System Events izni yeniden istenmedi. Yeni final `.app/.dmg`, GitHub URL/CI/draft release yok. P4 başlangıç metni `docs/NEXT_CHAT_PROMPT.md` içinde.

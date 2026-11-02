@@ -8,6 +8,7 @@ const env = {
   ...process.env,
   CARGO_TARGET_DIR: join(process.cwd(), 'src-tauri/target/native'),
   HUSH_TEST_DATA_DIR: mkdtempSync(join(tmpdir(), 'hush-native-')),
+  HUSH_NATIVE_JOURNAL: process.argv.includes('--journal') ? '1' : '',
   HUSH_NATIVE_COLLECTIONS: process.argv.includes('--collections') ? '1' : '',
   HUSH_NATIVE_ROOM: process.argv.includes('--room') ? '1' : '',
   HUSH_NATIVE_COVER: process.argv.includes('--cover') ? '1' : '',
@@ -18,6 +19,7 @@ if (env.HUSH_NATIVE_COVER) {
   writeFileSync('artifacts/native-cover-source.txt', env.HUSH_TEST_COVER_SOURCE);
   console.log(`Select this synthetic PNG in the native chooser: ${env.HUSH_TEST_COVER_SOURCE}`);
 }
+writeFileSync(join(env.HUSH_TEST_DATA_DIR, 'http-attempts.txt'), '');
 console.log(`Native evidence data: ${env.HUSH_TEST_DATA_DIR}`);
 for (const [command, args] of [
   ['npm', ['run', 'build:native:test']],

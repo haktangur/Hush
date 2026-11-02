@@ -93,6 +93,7 @@ mod tests {
         assert!(s.draft_get().unwrap().is_none());
         let found = s
             .list(JournalFilter {
+                id: None,
                 query: Some("ışık %_".into()),
                 start: None,
                 end: None,
@@ -117,6 +118,7 @@ mod tests {
         s.trash(&saved.draft.id, 2, true).unwrap();
         assert_eq!(
             s.list(JournalFilter {
+                id: None,
                 query: None,
                 start: None,
                 end: None,
@@ -181,6 +183,7 @@ impl JournalService {
         let journals = journal::list(
             &c,
             JournalFilter {
+                id: None,
                 query: Some(r.query),
                 start: None,
                 end: None,

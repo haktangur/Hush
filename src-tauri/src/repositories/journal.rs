@@ -79,6 +79,9 @@ pub fn list(c: &Connection, f: JournalFilter) -> Result<Page<JournalEntry>> {
     if !(1..=100).contains(&f.limit) || f.offset < 0 {
         return Err(AppError::new("VALIDATION"));
     }
+    if let Some(id) = &f.id {
+        valid_id(id)?;
+    }
     for d in [&f.start, &f.end].into_iter().flatten() {
         valid_day(d)?;
     }
@@ -89,13 +92,13 @@ pub fn list(c: &Connection, f: JournalFilter) -> Result<Page<JournalEntry>> {
             .replace('%', "\\%")
             .replace('_', "\\_")
     );
-    let clause = r"WHERE (deleted_at IS NOT NULL)=?1 AND search_text LIKE ?2 ESCAPE '\' AND (?3 IS NULL OR entry_date>=?3) AND (?4 IS NULL OR entry_date<=?4)";
+    let clause = r"WHERE (deleted_at IS NOT NULL)=?1 AND search_text LIKE ?2 ESCAPE '\' AND (?3 IS NULL OR entry_date>=?3) AND (?4 IS NULL OR entry_date<=?4) AND (?5 IS NULL OR id=?5)";
     let total = c.query_row(
         &format!("SELECT count(*) FROM journal_entries {clause}"),
-        params![f.trashed.unwrap_or(false), q, f.start, f.end],
+        params![f.trashed.unwrap_or(false), q, f.start, f.end, f.id],
         |r| r.get(0),
     )?;
-    let ids=c.prepare(&format!("SELECT id FROM journal_entries {clause} ORDER BY entry_date DESC,created_at DESC LIMIT ?5 OFFSET ?6"))?.query_map(params![f.trashed.unwrap_or(false),q,f.start,f.end,f.limit,f.offset],|r|r.get::<_,String>(0))?.collect::<std::result::Result<Vec<_>,_>>()?;
+    let ids=c.prepare(&format!("SELECT id FROM journal_entries {clause} ORDER BY entry_date DESC,created_at DESC LIMIT ?6 OFFSET ?7"))?.query_map(params![f.trashed.unwrap_or(false),q,f.start,f.end,f.id,f.limit,f.offset],|r|r.get::<_,String>(0))?.collect::<std::result::Result<Vec<_>,_>>()?;
     Ok(Page {
         items: ids
             .iter()

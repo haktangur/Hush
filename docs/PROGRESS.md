@@ -1,9 +1,9 @@
 # Hush ilerleme
 
 ## Şu an
-- Kullanıcının son yönlendirmesi: yalnız P3 kabulünü tamamla, belge/yerel commit ve P4 başlangıç promptu sonrası dur.
-- P0, P1, P2 ve P3 tamamlandı. Sonraki sohbetin hedefi yalnız P4 günlük/takvim/yerel arama kabulü.
-- P4–P6 kod hazırlıkları korunuyor; bu fazların kabul kapıları tamamlanmış sayılmıyor.
+- Kullanıcının son yönlendirmesi: yalnız P4 kabulünü tamamla, belge/yerel commit ve P5 başlangıç promptu sonrası dur.
+- P0–P4 tamamlandı. Sonraki sohbetin hedefi yalnız P5 otomatik katalog kabulü.
+- P5–P6 kod hazırlıkları korunuyor; bu fazların kabul kapıları tamamlanmış sayılmıyor.
 - Ayrıntılı devir: [HANDOFF.md](HANDOFF.md). Test kanıtları: [TEST-REPORT.md](TEST-REPORT.md).
 - Dal: `feat/local-library`; güncel checkpoint için `git log -1`.
 
@@ -12,7 +12,7 @@
 - [x] P1 — kalıcı veri
 - [x] P2 — oda
 - [x] P3 — koleksiyonlar
-- [ ] P4 — günlük/takvim/arama
+- [x] P4 — günlük/takvim/arama
 - [ ] P5 — kataloglar
 - [ ] P6 — yedek/kurtarma
 - [ ] P7 — test/GitHub/teslim
@@ -96,3 +96,15 @@
 - Native veri: `/var/folders/zy/nlg3tsjx7b9dnf72st1bbyf00000gn/T/hush-native-keOHNx`; evidence ve screenshot'lar Git dışında. Screenshot/kapak görsel fixture'ı yalnız ayrı DB'ye kuruldu; eser ve alt kayıt işlemleri gerçek IPC, mock yok. Native picker P1'deki önceki kabul kapsamıyla sınırlı, P3'te tekrar edilmedi.
 - `npm run check` (4 UI), 20 Rust testi, clippy, fmt ve diff kontrolü geçti. P2 regresyonu 3 + 1 geçti (2 skipped); temel native smoke 2 + 2 geçti (14:21 TRT); ayrıntı TEST-REPORT'ta.
 - GitHub CLI/Finder/System Events izni yeniden istenmedi. Yeni final `.app/.dmg`, GitHub URL/CI/draft release yok. P4 başlangıç metni `docs/NEXT_CHAT_PROMPT.md` içinde.
+
+### 2026-11-03 — P4 kabulü kapatıldı
+- Başlangıç ağacı temizdi (`f1d2b73`). P0–P3 ve mevcut P5–P6 hazırlıkları korundu; P5 çalışmasına geçilmedi.
+- Takvim saat dilimi seçimi ve timezone içeren query key; günlük/arama/gün boş durumları ve filtre temizleme tamamlandı. Genel arama günlük sonucunu UUID filtresiyle açar; aynı başlıkta yanlış kayıt göstermez. Günlük paneli kapanınca arama seçimi temizlenir.
+- Gerçek macOS Tauri/WebKit/SQLite: ilk süreç 4 test, ayrı restart süreci 1 test geçti. Sürece özgü 1 + 4 test bilinçli skipped. İki günlük UI oluştur/düzenle/trash/restore; altı mood ve boş değer; eser bağları; gerçek conflict'te metin koruma; autosave/restart/kurtarma doğrulandı.
+- İstanbul/Los Angeles/UTC için Ekim–Kasım–Aralık 2026 gün/ay sınırları, DST tekrar saati, günlük gününün sabitliği, üç türün süreleri, eklenen eser ve günlüklü gün sayıları; seans silme ve trash ebeveyninin toplamdan çıkması geçti.
+- Cmd+K, I/ı ve İ/i çiftlerinin ayrımı, `%_` literal, üretici/not/etiket/günlük gövdesi, boş sonuç ve doğru detaya geçiş doğrulandı. Rust HTTP gönderim sayacı ve WebView HTTP resource listesi sıfır; kaynak incelemesi tek reqwest gönderim noktasını doğruladı. Ağ denetimi yalnız e2e feature'da, içerik/sır kaydetmez; mock yok.
+- P4 tekrar: `npm run test:native -- --journal` / `npm run test:native:p4`. Ayrıntılı veri yolları, koşu ve sınırlamalar TEST-REPORT'ta.
+- `npm run check` (4 UI), 20 Rust testi, clippy, fmt ve diff kontrolü geçti. Migration/bağımlılık/lockfile değişmedi. Test verisi ve screenshot'lar Git dışında.
+- GitHub CLI/Finder/System Events izni yeniden istenmedi. Yeni final `.app/.dmg` veya GitHub/CI sonucu yok; test binary `src-tauri/target/native/debug/hush`. P5 promptu NEXT_CHAT_PROMPT.md'de.
+
+- P4 sonrası temel native regresyonu 2026-11-03 01:25 TRT’de 2 + 2 geçti; ayrı `hush-native-2L3LZH` dizini. P4 son kabul verisi `hush-native-O7nPqz` (01:23–01:24 TRT).

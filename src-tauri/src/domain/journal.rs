@@ -38,6 +38,7 @@ pub struct SaveJournal {
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct JournalFilter {
+    pub id: Option<String>,
     pub query: Option<String>,
     pub start: Option<String>,
     pub end: Option<String>,

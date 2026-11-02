@@ -1,6 +1,6 @@
-# Hush test raporu — P3 kabulü ve faz devri
+# Hush test raporu — P4 kabulü ve faz devri
 
-2026-11-02 · macOS 26.6.2 · Apple Silicon arm64 · Node 24.18.0 · Rust 1.97.1.
+2026-11-03 · macOS 26.6.2 · Apple Silicon arm64 · Node 24.18.0 · Rust 1.97.1.
 Ürün geliştirme aşamasında; tam kabul veya final teslim raporu değildir.
 
 ## Son geçen kontroller
@@ -12,7 +12,8 @@
 | `cargo clippy --locked --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings` | Geçti |
 | `cargo fmt --manifest-path src-tauri/Cargo.toml --check` | Geçti |
 | `git diff --check` | Geçti |
-| `npm run test:native` (sandbox dışında) | 14:21 TRT: iki bağımsız süreçte 2 + 2 temel regresyon geçti |
+| `npm run test:native` (sandbox dışında) | 2026-11-03 01:25 TRT: iki bağımsız süreçte 2 + 2 temel regresyon geçti |
+| `npm run test:native -- --journal` | 2026-11-03 01:23–01:24 TRT: 4 + 1 geçti (1 + 4 skipped) |
 | `npm run test:native -- --collections` | 14:19 TRT: P3 ilk süreç 5, restart 1 geçti (4 skipped) |
 | `npm run test:native -- --room` | 14:19 TRT: P2 regresyon 3 + 1 geçti (2 skipped) |
 
@@ -45,7 +46,7 @@ Sandbox içindeki ilk deneme WebDriver port 4445 hazır olma timeout'u verdi. Sa
 
 ## Açık kabul koşulları
 
-P0–P3 kapıları tamamlandı. Sıradaki kabul P4 günlük/takvim/yerel arama; aşağıdaki genel matris açık kalır. P2 oda/klavye/hareket alt kapsamı aşağıda ayrıntılıdır; A19 VoiceOver ve tam A01–A22 matrisini kapatmaz.
+P0–P4 kapıları tamamlandı. Sıradaki kabul P5 otomatik katalog; aşağıdaki genel matris açık kalır. P2 oda/klavye/hareket alt kapsamı aşağıda ayrıntılıdır; A19 VoiceOver ve tam A01–A22 matrisini kapatmaz.
 
 A01–A22 tam matris henüz tamam değil. Özellikle katalog canlı/hata/refresh akışları, tam backup restore/kesinti, VoiceOver/klavye, 5.000 eser/10.000 seans performansı, DMG'den açılış ve production binary'de test bileşeni yokluğu doğrulanmadı.
 
@@ -166,3 +167,43 @@ Yerel/Git dışı screenshot'lar:
 - Test binary: `src-tauri/target/native/debug/hush`. Yeni final `.app/.dmg` üretilmedi. Önceki P0 `.app` güncel teslim değildir. Production frontend build başarılı; final release binary’de test bileşeni yokluğu P7’de doğrulanacak.
 - Bağımlılık/lockfile/migration değişmedi; test verisi veya ekran görüntüsü Git’e eklenmedi. Native test komutları/override mevcut e2e feature/config ile sınırlı.
 - GitHub remote/URL/CI/draft release yok; reddedilen CLI indirmesi yeniden istenmedi. Notarization yok. P4–P7 kabulü açık; bu oturum P4 çalışmasına geçmez.
+
+## P4 günlük/takvim/yerel arama kabulü — 2026-11-03 01:23–01:24 TRT
+
+**Geçti.** `npm run test:native -- --journal` (eşdeğeri `npm run test:native:p4`) gerçek macOS Tauri debug uygulamasını, WebKit 605.1.15 ve Rust/SQLite'ı kullandı. İlk süreç **4 passed + 1 skipped**, uygulama süreci sonlandırıldıktan sonra aynı izole veriyle ikinci süreç **1 passed + 4 skipped**. Skipped testler diğer sürece özgüdür; yapılmamış adımlar başarılı sayılmadı. P5'e geçilmedi.
+
+| Kontrol | Sonuç |
+|---|---|
+| Aynı gün çoklu kayıt | 2026-11-01 gününe iki günlük UI'dan eklendi; metin ve eser bağları düzenlendi. İkisi de UI trash → Ayarlar / Silinen günlükler → geri al yolundan geçti. |
+| Ruh hâli/ilişkiler | Altı mood ve boş mood UI ile kaydedilip gerçek IPC'den doğrulandı. Her iki günlükte iki eser ID'si ve salt gün korundu; restart snapshot eşitliği geçti. |
+| Hata/metin koruma | Açık editör sırasında gerçek IPC ile revision ilerletildi. UI Kaydet conflict verdi, form metni aynen kaldı; Vazgeç / Değişiklikleri at gerçek draft temizliğini yaptı. |
+| Autosave/restart | Başlık, gün, melancholy mood, son metin ve albüm ilişkisi 750 ms autosave sonrası draft_get ile eşleşti. Kaydetmeden süreç sonlandırıldı; yeni süreç Taslağı sürdür ile tüm alanları kurtardı. Kaydet sonrası draft null ve üçüncü kalıcı günlük oluştu. |
+| Gün/ay/saat dilimi | İstanbul, Los Angeles ve UTC; Ekim, Kasım, Aralık 2026. Günlük daima 2026-11-01. 31 Ekim 22:00Z, 1 Kasım 07:30Z ve 1 Aralık 01:00Z seansları üç tür için doğru gün/aya ayrıldı. |
+| DST ve toplamlar | Los Angeles tekrar saatindeki 1 Kasım 08:30Z ve 09:30Z oyun seansları ayrı ayrı sayıldı. Kasım oyun/kitap/albüm dakikaları İstanbul **40/30/30**, Los Angeles **60/50/50**, UTC **30/20/20**. Günlüklü gün **1**; eklenen eser **3**. Önceki/sonraki ay toplamları ve restart snapshot'ları eşit. |
+| Takvim UI | Üç timezone seçimi gerçek calendar_month komutuna gider. Ay gezinmesi, gün olayları, 30 Kasım Los Angeles'ta üç adet 30 dk seans ve boş gün mesajı doğrulandı. Geçersiz IANA zone VALIDATION verdi. |
+| Toplamdan çıkarma | Oyun trash iken seansları aylık toplamdan çıktı; restore geri getirdi. Ek 7 dk seans toplamı 30→37 yaptı, gerçek session_delete sonrası 30'a döndü. |
+| Arama | Cmd+K gerçek uygulama handler'ını açtı. I/ı ve İ/i çiftleri dört izole tek-harf eserle ayrı eşleşti. Üretici, kişisel not, etiket, günlük başlığı/gövdesi ve `%_` literal sonuçları doğrulandı; trash günlükler sonuçlardan çıktı. |
+| Sonuç/boş durum | Genel aramadan doğru eser detayı; aynı başlıklı iki farklı günlüğün seçilen UUID'si açıldı. Günlük filtresinde boş sonuç ve Filtreyi temizle; yerel aramada boş sonuç mesajı geçti. |
+| Ağ | Yerel arama boyunca Rust HTTP gönderim sayısı **0**, WebView HTTP(S) resource listesi **[]**. IPC mock, sahte yanıt veya ağ bloklama kullanılmadı. |
+
+### Kanıt, yöntem ve sınırlar
+
+- Son P4 veri dizini: `/var/folders/zy/nlg3tsjx7b9dnf72st1bbyf00000gn/T/hush-native-O7nPqz`. `journal-evidence.json` günlük DTO'ları, eserler, dokuz timezone/ay snapshot'ı ve son taslağı tutar. `search-network-evidence.json` ve boş `http-attempts.txt` ağ kanıtıdır. Gerçek Application Support verisine dokunulmadı.
+- Üç fixture eser, sınır seansları, gerçek revision çakışması ve ek arama fixture'ları doğrudan **gerçek IPC** ile kuruldu. Ana günlük CRUD/trash/restore, mood/link düzenlemeleri, taslak ve arama/takvim kullanıcı akışları UI'dır. DB'ye doğrudan fixture SQL yazılmadı.
+- WDIO runner ilk uygulama sürecini SIGTERM ile kapatıp yeni süreç başlatır; yalnız sayfa reload değildir. Bu koşu SIGKILL/power-loss testi olarak raporlanmaz. Son autosave tamamlanmadan kapanan son 750 ms'nin kurtarıldığı iddia edilmez.
+- Select değişiklikleri mevcut WDIO yaklaşımıyla DOM change olayı kullanır. Cmd+K WebView klavye sentezidir; fiziksel OS klavye/VoiceOver testi değildir.
+- Kaynak incelemesinde tek Rust `reqwest` gönderim noktası `Catalog::body` bulundu. Bu noktada yalnız e2e feature'da, geçici veri dizinine içeriksiz `send` işareti yazılır; URL/arama metni/token kaydedilmez. WebView tarafı Resource Timing ile gözlendi. Bu, uygulama katmanındaki ağ kanıtıdır; tüm makine için packet capture iddiası değildir. Release derlemesinde sayaç dalı yok; final binary/DMG denetimi P7'de kalır.
+- Yerel/Git dışı görseller: `artifacts/p4-journals.png`, `p4-calendar.png`, `p4-search.png`, `p4-draft.png`, `p4-reopened.png`. Takvim, literal arama ve kurtarılmış günlük ekranları görsel olarak incelendi; uzun takvim/günlük içeriği panel içinde scroll edilir.
+- İlk 2026-11-02 koşusunda test, IŞIK etiketi taşıyan albümün IŞIK aramasına gelmemesini yanlış bekledi. Fixture beklentisi düzeltildi; ürünün doğru etiket eşleşmesi korunuyor. Sonraki 2026-11-02 14:29 koşusu ve 2026-11-03 son koşusu geçti. İlk hata başarılı test olarak sayılmadı.
+- Ürün düzeltmeleri: timezone seçimi/cache anahtarı, açık boş/yükleme durumları, günlük filtresini temizleme, arama sonucunu UUID ile daraltma ve kapanışta seçimi temizleme. Opsiyonel ID filtre SQL'i parametrelidir; yeni migration veya IPC yetkisi yok.
+
+### Kontroller ve teslim sınırı
+
+- `npm run check`: strict TypeScript, ESLint, **4 React testi**, production frontend build geçti (2026-11-03 01:22 TRT).
+- `cargo test --locked --manifest-path src-tauri/Cargo.toml`: **20 Rust testi**, main/doc test koşuları geçti.
+- `cargo clippy --locked --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings`, fmt ve `git diff --check` geçti.
+- Bağımlılık, lockfile ve migration değişmedi. Test verisi/screenshot'lar Git dışında. Yeni test komutu yalnız geliştirme runner'ındadır; production frontend'e test import'u eklenmedi.
+- Çıktı: `src-tauri/target/native/debug/hush` test binary'si. Yeni final `.app/.dmg` üretilmedi; eski P0 `.app` güncel teslim değildir. GitHub URL/remote/CI/draft release yok, notarization yapılmadı. Reddedilen CLI/Finder/System Events izinleri yeniden istenmedi.
+- P5–P7 ve tam A01–A22 matrisi açık. Bu P4 sonucu canlı katalog, backup kesintisi, final release, performans veya VoiceOver kabulünü kapatmaz.
+
+P4 sonrası temel native regresyonu: `npm run test:native`, **2 + 2 passed**, 2026-11-03 01:25 TRT. Ayrı veri dizini `/var/folders/zy/nlg3tsjx7b9dnf72st1bbyf00000gn/T/hush-native-2L3LZH`. Kitap/not/37 sayfa kalıcılığı ve mevcut taslak kurtarma korundu; kapak seçici tekrar çalıştırılmadı.

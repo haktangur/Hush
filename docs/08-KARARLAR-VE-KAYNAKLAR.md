@@ -79,3 +79,11 @@ Poster ve plak için ayarlar menüsü girişleri ile Cmd+7/8/9, lamba için Cmd+
 Son kullanıcı talimatı bu oturumu yalnız P3 yerel koleksiyon kabulü, belgeler, yerel commit ve P4 başlangıç promptuyla sınırlar. Başlangıçtaki tüm fazları bitirme/GitHub push talimatı bu oturumda uygulanmaz; P4'e geçilmez. Reddedilen GitHub CLI indirmesi ve Finder/System Events otomasyonu yeniden istenmez.
 
 P3 testleri mevcut e2e-only Tauri/WebKit sürücüsünü kullanır. Görsel fixture yalnız yeni geçici assets/DB'ye kurulur; screenshot ilişki ekleme ve kapak atama gerçek IPC üzerinden yapılır. Screenshot görüntüleme/düzenleme/silme gerçek UI'dır. Bu, native picker'ın yeniden test edildiği anlamına gelmez; P1 kullanıcı destekli import kanıtı korunur. Üretim test yetkisi/override'ı eklenmez. HTTPS dış bağlantı için yeni dar `external_open` komutu URL'yi Rust'ta doğrular ve shell yorumlaması olmadan macOS `/usr/bin/open` çalıştırır; bağımlılık eklenmez.
+
+## D18 — P4 ile sınırlı kabul (2026-11-03)
+
+Son kullanıcı talimatı yalnız P4 günlük/takvim/yerel arama kabulü, belgeler, yerel commit ve P5 başlangıç promptunu yetkilendirir. Başlangıçtaki tüm fazları bitirme/GitHub push talimatının önündedir; P5'e geçilmez. GitHub CLI ve Finder/System Events izinleri yeniden istenmez.
+
+Takvim seçimi sistem saat dilimiyle başlar; panelde IANA saat dilimi seçilebilir ve sorgu anahtarına katılır. Bu seçim günlüklerin salt tarihini değiştirmez ve işletim sistemi saat dilimini değiştirmez. Yerel arama günlük sonucunda başlık yerine UUID ile daraltılır; journal_list'e opsiyonel, doğrulanan ID filtresi eklendi. Migration veya yeni IPC yetkisi gerekmedi.
+
+Yerel aramanın ağ üretmediğini gözlemek için mevcut tek Rust HTTP send noktasına yalnız `cfg(feature="e2e")` kapsamında içeriksiz sayaç dosyası eklendi. Dosya mevcut izole HUSH_TEST_DATA_DIR altındadır; yalnız `send` işareti taşır. İstek/yanıt değiştirme ve IPC mock yok. Üretimde bu dal derlenmez; tam release binary denetimi P7'nin ayrı kabulüdür.

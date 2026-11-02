@@ -210,6 +210,18 @@ impl Catalog {
         max: usize,
     ) -> Result<Vec<u8>> {
         self.throttle(kind).await?;
+        // Observe attempted HTTP sends only in the isolated native acceptance build.
+        // No URL, query, credential or response is recorded; requests are unchanged.
+        #[cfg(feature = "e2e")]
+        if let Some(root) = std::env::var_os("HUSH_TEST_DATA_DIR") {
+            use std::io::Write;
+            let path = std::path::PathBuf::from(root).join("http-attempts.txt");
+            std::fs::OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(path)?
+                .write_all(b"send\n")?;
+        }
         let mut response = request.send().await.map_err(|_| AppError::new("OFFLINE"))?;
         let status = response.status();
         if status.as_u16() == 429 {

@@ -1,6 +1,6 @@
 import {useState,useEffect,useRef} from 'react';
 import {useQuery,useQueryClient} from '@tanstack/react-query';
-import * as Dialog from '@radix-ui/react-dialog';
+import * as Dialog from '../../components/Dialog';
 import {journal,library} from '../../infra/tauri/client';
 import type {JournalEditorDraft,Mood} from '../../domain/types';
 import {tr} from '../../i18n/tr';

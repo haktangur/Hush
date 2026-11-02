@@ -1,16 +1,16 @@
 # Hush ilerleme
 
 ## Şu an
-- Kullanıcının son yönlendirmesi: yalnız P1 kabulünü tamamla, belge/yerel commit sonrası dur; P2 yeni sohbette.
-- P0 ve P1 tamamlandı. Sonraki sohbetin hedefi yalnız P2 oda/gezinme kabulü.
-- P2–P6 kod hazırlıkları korunuyor; kabul kapıları tamamlanmış sayılmıyor.
+- Kullanıcının son yönlendirmesi: yalnız P2 kabulünü tamamla, belge/yerel commit ve P3 başlangıç promptu sonrası dur.
+- P0, P1 ve P2 tamamlandı. Sonraki sohbetin hedefi yalnız P3 yerel koleksiyon kabulü.
+- P3–P6 kod hazırlıkları korunuyor; kabul kapıları tamamlanmış sayılmıyor.
 - Ayrıntılı devir: [HANDOFF.md](HANDOFF.md). Test kanıtları: [TEST-REPORT.md](TEST-REPORT.md).
 - Dal: `feat/local-library`; güncel checkpoint için `git log -1`.
 
 ## Aşamalar
 - [x] P0 — masaüstü iskeleti (GitHub bağlantı engeli belgeli)
 - [x] P1 — kalıcı veri
-- [ ] P2 — oda
+- [x] P2 — oda
 - [ ] P3 — koleksiyonlar
 - [ ] P4 — günlük/takvim/arama
 - [ ] P5 — kataloglar
@@ -73,3 +73,15 @@
 - Tekrar: `npm run test:native:p1` (native seçici adımı kullanıcı tarafından, diğer adımlar otomatik). `npm run test:native` etkileşimsiz temel smoke olarak korundu.
 - Kanıt: `artifacts/native-p1-reopened.png`; ayrıntılı geçici veri yolu ve hashler TEST-REPORT içinde. Uygulama çıktısı test-only `src-tauri/target/native/debug/hush`; final release değildir.
 - GitHub/CLI indirme denenmedi. Finder/System Events izni reddedilince AppleScript otomasyonu kaldırıldı; yeniden izin istenmedi.
+
+### 2026-11-02 — P2 kabulü kapatıldı
+- Başlangıç ağacı temizdi (`84e989c`). Mevcut P3–P6 hazırlıkları ve migration'lar korundu; yeni faz geliştirmesine geçilmedi.
+- Posterler ayarlar menüsüne eklendi; atanmış eser panelden açılabiliyor. Cmd+7/8 posterler, Cmd+9 plak ataması, Cmd+L lamba; mevcut Cmd+2–6 panel yollarıyla aynı state kullanılıyor.
+- Ortak Dialog bileşeni tetikleyen düğmeye odağı geri veriyor; panelden başka panele geçişte oda düğmesi yedek hedef olarak korunuyor.
+- Dekoratif plak dönüşü, panel/minimize/blur durumunda duraklama ve azaltılmış harekette sabit görünüm tamamlandı. Ölçekli hotspot etiketleri minimum 12 CSS px.
+- 04:57 TRT: gerçek macOS Tauri/WebKit P2 testi ilk süreçte 3, yeniden açılışta 1 test geçti (ilk sürece özgü 2 test ikinci süreçte skipped). Sekiz hotspot 1440×900 ve 1100×720, menü/kısayol, odak/Escape, hata formu, üç palet, azaltılmış hareket ve minimize doğrulandı.
+- İki farklı poster ve plak kapağı ile Quiet Dawn/lamba kapalı/yağmur kapalı/neon 27/azaltılmış hareket/etiketler kapalı restart sonrası aynı. Görseller yerel asset protokolünde decode edildi. Sentetik fixture asset'leri ayrı geçici DB'ye kuruldu; eser/ayar/slot işlemleri gerçek IPC. Mock yok.
+- Boş/dolu oda, iki boyut, üç palet, hata formu ve kitap paneli screenshot'ları görsel olarak incelendi; `artifacts/p2-*.png` Git dışında.
+- `npm run check` (4 UI), 19 Rust testi, clippy/fmt ve diff kontrolü geçti. Ortak Dialog değişikliği sonrası mevcut native kitap/günlük restart regresyonu 2 + 2 geçti.
+- Yeniden çalıştırma: `npm run test:native:p2` veya mevcut izinli `npm run test:native -- --room`. Veri ve kanıt yolu TEST-REPORT.md'de.
+- VoiceOver, işletim sistemi hareket tercihini değiştirerek manuel kontrol ve final paket/CI kapsamı P7'de açık; bu P2 sonucu onları geçmiş saymaz. GitHub CLI/Finder/System Events izni yeniden istenmedi.

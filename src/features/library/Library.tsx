@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import * as Dialog from '@radix-ui/react-dialog';
+import * as Dialog from '../../components/Dialog';
 import type { ItemKind, LibraryItem } from '../../domain/types';
 import { assets, collections, trash as trashClient, library, type LibraryClient } from '../../infra/tauri/client';
 import { tr } from '../../i18n/tr';

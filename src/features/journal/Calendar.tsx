@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {useQuery} from '@tanstack/react-query';
-import * as Dialog from '@radix-ui/react-dialog';
+import * as Dialog from '../../components/Dialog';
 import {journal} from '../../infra/tauri/client';
 import {tr} from '../../i18n/tr';
 import {errorText} from '../library/ItemForm';

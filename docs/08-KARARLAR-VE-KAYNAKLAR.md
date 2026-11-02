@@ -67,3 +67,9 @@ Bu paket uygulama kodunu, gerçek macOS binary'sini, GitHub deposunu, canlı IGD
 ## D15 — Faz sınırı ve yerel test izni (2026-11-02)
 
 Kullanıcının son talimatı bu sohbeti yalnız P1 kabulü, belgeler ve yerel commit ile sınırlar; P2 yeni sohbette başlayacak. Bu, başlangıçtaki tüm fazlar bitene kadar devam et ve GitHub bağlantısını tamamla talimatının bu oturumdaki önüne geçer. Önceden reddedilen GitHub CLI indirmesi yeniden denenmez. Finder/System Events otomasyon izni de reddedildiği için picker otomasyonu kaldırıldı; gerçek native seçim kullanıcı tarafından, taşıma/restart/kalıcılık doğrulaması WDIO ile yapıldı. Üretim yetkileri genişletilmedi; test geçici görsel kapsamı yalnız e2e derlemesindedir.
+
+## D16 — P2 ile sınırlı yerel kabul (2026-11-02)
+
+Son kullanıcı talimatı bu oturumu yalnız P2 oda/gezinme kabulü, belgeler, yerel commit ve P3 başlangıç promptuyla sınırlar. D15'in faz bitince durma ve reddedilen izinleri yeniden istememe kuralı devam eder. GitHub CLI/Finder/System Events denenmedi. P3–P6 mevcut kodu korundu fakat yeni kabul verilmedi.
+
+Poster ve plak için ayarlar menüsü girişleri ile Cmd+7/8/9, lamba için Cmd+L eklendi; mevcut Cmd+1–6/K/, yolları korundu. Uygulama içi menü P2'de doğrulandı; macOS native menü işi planlandığı gibi P7'de kalır. Yeni paket veya migration yok.

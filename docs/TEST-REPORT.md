@@ -1,4 +1,4 @@
-# Hush test raporu — P1 kabulü ve faz devri
+# Hush test raporu — P2 kabulü ve faz devri
 
 2026-11-02 · macOS 26.6.2 · Apple Silicon arm64 · Node 24.18.0 · Rust 1.97.1.
 Ürün geliştirme aşamasında; tam kabul veya final teslim raporu değildir.
@@ -43,7 +43,7 @@ Sandbox içindeki ilk deneme WebDriver port 4445 hazır olma timeout'u verdi. Sa
 
 ## Açık kabul koşulları
 
-P1 kapısı tamamlandı. Sıradaki kabul P2 oda/gezinme; aşağıdaki genel matris açık kalır.
+P0–P2 kapıları tamamlandı. Sıradaki kabul P3 yerel koleksiyonlar; aşağıdaki genel matris açık kalır. P2 oda/klavye/hareket alt kapsamı aşağıda ayrıntılıdır; A19 VoiceOver ve tam A01–A22 matrisini kapatmaz.
 
 A01–A22 tam matris henüz tamam değil. Özellikle tüm türlerin native CRUD'ı, katalog canlı/hata/refresh akışları, tam backup restore/kesinti, VoiceOver/klavye, 5.000 eser/10.000 seans performansı, DMG'den açılış ve production binary'de test bileşeni yokluğu doğrulanmadı.
 
@@ -77,3 +77,49 @@ Koşu sırasında komut `npm run test:native` idi; aynı kapak dalı sonrasında
 Bu oturumda `npm run check` (4 React testi), 19 Rust testi, clippy ve fmt geçti; native picker düzeltmesinden sonra Rust kontrolleri yeniden geçti. Yeni final `.app/.dmg` üretilmedi; test binary’si `src-tauri/target/native/debug/hush`. Notarization/GitHub/CI/draft release sınırları değişmedi.
 
 Test ayrımından sonra `npm run test:native` 04:45 TRT’de yeniden çalıştırıldı: kullanıcı etkileşimi olmadan iki bağımsız süreçte 2 + 2 test geçti.
+
+## P2 oda/gezinme kabulü — 2026-11-02 04:57 TRT
+
+**Geçti.** `npm run test:native -- --room` (eşdeğeri `npm run test:native:p2`) gerçek macOS Tauri debug uygulamasını, embedded WebKit sürücüsünü ve SQLite'ı kullandı. IPC mock yok. Native test binary: `src-tauri/target/native/debug/hush`; tarayıcı demosu veya final release değildir.
+
+İlk süreç: **3 test geçti**. Ayrı ikinci süreç: **1 restart testi geçti**, ilk açılışa özgü **2 test bilinçli atlandı**. Yeniden açılışta yalnız gerçekleştirilen kontrol başarılı sayılır.
+
+| P2 kontrolü | Gerçek sonuç |
+|---|---|
+| Boş oda | Gerçek `library_list.total=0`; demo eser eklenmedi; özgün mobilya/şehir/varsayılan posterler tamam |
+| İki boyut | 1440×900 ve 1100×720; sahne contain, sekiz hedef görünür, hedef alanları ≥44 CSS px |
+| Hotspot/menü/kısayol | Kitap, oyun, albüm, günlük, takvim ve iki poster aynı panel başlıklarına ulaşıyor; lamba click ve Cmd+L gerçek ayarı değiştiriyor |
+| Odak/Escape | Hotspot paneli kapanınca aynı düğmeye dönüş; Shift+Tab modal içinde kalıyor; kirli form Escape ile onay açıyor, Geri metni koruyor, At yalnız formu kapatıyor |
+| Poster/plak menüsü | Ayarlar → Sol/Sağ poster/Plak standı; posterden atanan kitabın gerçek detayı açılıyor |
+| Işık | Cozy Night, Violet Rain ve Quiet Dawn UI kaydı ve görsel kontrolü geçti |
+| Hareket | Tam modda loop'lar çalışıyor; panel açılınca duraklıyor, kapanınca sürüyor; gerçek minimize komutu sonrası duraklıyor; Azalt modunda sahne animation listesi boş |
+| Hata/okunabilirlik | Minimum boyutta geçersiz 37/20 sayfa kaydı reddediliyor, not korunuyor; hata formu ve uzun Türkçe başlıklı kitap paneli görsel olarak incelendi |
+| Restart | Tüm settings snapshot/revision ve üç slot kaynağı birebir eşit; Quiet Dawn, neon 27, lamba/yağmur/etiketler kapalı, hareket reduced; iki farklı poster ve plak kapağı decode edilip görünüyor; kitaplık gerçek kitabı açıyor |
+
+Görsel inceleme: 1440 ve 1100 boş/dolu sahnelerde duvar/pencere/mobilya/poster hizası, temas gölgeleri ve ışık yönü tutarlı; hedefler kırpılmıyor. Minimum boyutta etiket fontu en az 12 CSS px olacak şekilde düzeltildi. Hata formu scroll ediliyor; kitap panelindeki uzun başlık okunuyor. Kapaksız atamanın varsayılan poster görünümü önceki başarılı P2 koşusunda ayrıca görüldü; final koşu iki farklı gerçek kapakla yapıldı.
+
+### Test ayrımı ve yerel kanıt
+
+Veri: `/var/folders/zy/nlg3tsjx7b9dnf72st1bbyf00000gn/T/hush-native-9RDHcK`. Aynı dizinde `room-evidence.json`, `active.json`, ayrı generation DB ve sentetik assets var. Gerçek Application Support verisine dokunulmadı.
+
+İki sentetik WebP fixture ve asset manifest satırı test runner tarafından yalnız yeni geçici DB'ye kurulur. Eser oluşturma gerçek `library_save`; poster/plak ataması UI → gerçek `room_slot_set`; ayar kaydı UI → gerçek `settings_save`. Fixture kurulumu yeni bir picker/import kabulü olarak sunulmaz. Fixture kaynak/lisansı `tests/fixtures/ROOM-FIXTURES.md` içindedir.
+
+WDIO embedded 1.5.1, klavye olaylarını WebView'de sentezler. Select kontrolleri driver'ın option click sınırlaması nedeniyle DOM `change` olayıyla seçilir; gerçek kaydetme/SQLite/restart yolu değiştirilmez. Driver Space/Enter varsayılan button aktivasyonunu sağlamadığı için bu yol geçmiş sayılmadı; kaynak kodu incelendi, semantik HTML button korundu ve Cmd+L yolu doğrulandı. Manuel VoiceOver, fiziksel klavye ile tüm OS kontrolleri ve sistem hareket tercihini değiştirme testi yapılmadı. Sistem reduced-motion CSS kuralı mevcut; bu oturumdaki otomatik hareket kanıtı uygulamadaki Azalt seçeneğidir.
+
+Yerel/Git dışı screenshot'lar:
+- `artifacts/p2-empty-1440.png`, `p2-empty-1100.png`
+- `artifacts/p2-filled-saved-1440.png`, `p2-filled-saved-1100.png`
+- `artifacts/p2-filled-reopened-1440.png`, `p2-filled-reopened-1100.png`
+- `artifacts/p2-cozy_night.png`, `p2-violet_rain.png`, `p2-quiet_dawn.png`
+- `artifacts/p2-form-error-1100.png`, `p2-book-panel.png`
+
+İlk sandbox koşusu WebDriver port 4445 timeout'u verdi; mevcut native test izniyle sandbox dışındaki koşu çalıştı. Ara koşulardaki test selector/asset placeholder sayısı/resize bekleme/select ve Space aktivasyon varsayımları düzeltildi; başarısız koşular başarı olarak raporlanmadı. Finder/System Events veya GitHub CLI izni yeniden istenmedi.
+
+### Son regresyon ve sınırlar
+
+- `npm run check`: strict TypeScript, lint, **4 UI testi**, production frontend build geçti (04:57 TRT).
+- `cargo test --locked --manifest-path src-tauri/Cargo.toml`: **19 test** geçti.
+- clippy `--all-targets -- -D warnings`, fmt ve `git diff --check` geçti.
+- Ortak Dialog değişikliği sonrası `npm run test:native`: **2 + 2** mevcut kitap/günlük restart testi geçti (04:57 TRT; ayrı `hush-native-sYObfE` dizini). P1 kullanıcı destekli kapak picker testi yeniden çalıştırılmadı; önceki geçerli kanıt korundu.
+- Bağımlılıklar, lockfile'lar ve migration'lar değiştirilmedi. Yeni production test komutu/override eklenmedi; test fixture'ları frontend kaynaklarına alınmadı.
+- Yeni final `.app/.dmg` üretilmedi. Önceki P0 `.app` güncel final sürüm değildir. GitHub URL/remote/CI/draft release yok; notarization yapılmadı. P3–P7 ve tam A01–A22 kabulü açık.

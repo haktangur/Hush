@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import * as Dialog from '@radix-ui/react-dialog';
+import * as Dialog from '../../components/Dialog';
 import type { ItemDraft, LibraryItem, ItemKind, Status, AlbumStatus } from '../../domain/types';
 import type { LibraryClient } from '../../infra/tauri/client';
 import { DesktopError, assets } from '../../infra/tauri/client';

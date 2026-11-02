@@ -1,4 +1,5 @@
 pub mod assets;
+pub mod backup;
 use crate::domain::{AppError, Result};
 use rusqlite::Connection;
 use serde::{Deserialize, Serialize};
@@ -88,6 +89,22 @@ pub fn migrate(c: &mut Connection) -> Result<()> {
     }
     Ok(())
 }
+pub fn write_pointer(root: &Path, generation_id: &str) -> Result<()> {
+    crate::domain::valid_id(generation_id)?;
+    let pointer = Pointer {
+        format_version: 1,
+        generation_id: generation_id.into(),
+    };
+    use std::io::Write;
+    let mut file = tempfile::NamedTempFile::new_in(root)?;
+    file.write_all(&serde_json::to_vec(&pointer).map_err(|_| AppError::new("INTERNAL"))?)?;
+    file.as_file().sync_all()?;
+    file.persist(root.join("active.json"))
+        .map_err(|_| AppError::new("IO"))?;
+    std::fs::File::open(root)?.sync_all()?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

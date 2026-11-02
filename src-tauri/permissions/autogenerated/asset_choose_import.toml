@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-asset-choose-import"
+description = "Enables the asset_choose_import command without any pre-configured scope."
+commands.allow = ["asset_choose_import"]
+
+[[permission]]
+identifier = "deny-asset-choose-import"
+description = "Denies the asset_choose_import command without any pre-configured scope."
+commands.deny = ["asset_choose_import"]

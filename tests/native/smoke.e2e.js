@@ -17,4 +17,22 @@ describe('Hush native persistence',()=>{
   const result=await browser.tauri.execute(({core})=>core.invoke('library_list',{request:{kind:'book',sort:'updated_desc',offset:0,limit:60}}));
   expect(result.ok).toBe(true);expect(result.value.items).toHaveLength(1);expect(result.value.items[0].details.currentPage).toBe(37);expect(result.value.items[0].notes).toBe('Yeniden açılışta korunmalı.');
  });
+ it('persists an autosaved journal draft across process restart',async()=>{
+  if(!process.env.HUSH_REOPEN){
+   await browser.$('button=Kapat').click();
+   await browser.$('nav').$('button=Günlük').click();
+   await browser.$('[role="dialog"]').$('button=Ekle').click();
+   await browser.$('[role="dialog"] form input[maxlength="200"]').setValue('Native günlük taslağı');
+   await browser.$('[role="dialog"] form textarea').setValue('Taslak yeniden açılışta korunmalı.');
+   await expect(browser.$('p=Taslak bu Mac’e kaydedildi.')).toBeDisplayed();
+  }else{
+   const result=await browser.tauri.execute(({core})=>core.invoke('draft_get',{request:{}}));
+   expect(result.ok).toBe(true);expect(result.value.entry.body).toBe('Taslak yeniden açılışta korunmalı.');
+   await browser.$('nav').$('button=Günlük').click();
+   await browser.$('button=Taslağı sürdür').click();
+   await browser.$('button=Kaydet').click();
+   await expect(browser.$('h2=Native günlük taslağı')).toBeDisplayed();
+   const draft=await browser.tauri.execute(({core})=>core.invoke('draft_get',{request:{}}));expect(draft.value).toBe(null);
+  }
+ });
 });

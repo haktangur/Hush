@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-room-slot-set"
+description = "Enables the room_slot_set command without any pre-configured scope."
+commands.allow = ["room_slot_set"]
+
+[[permission]]
+identifier = "deny-room-slot-set"
+description = "Denies the room_slot_set command without any pre-configured scope."
+commands.deny = ["room_slot_set"]

@@ -14,3 +14,5 @@ Tüm doğrudan npm sürümleri exact; geçişli sürümler package-lock.json ve 
 CI başlangıç etiketi macos-15; bulut runner/CI doğrulaması henüz yapılmadı. Actions checkout v5, setup-node v5, upload-artifact v4 SHA'ları resmi Git depolarının tag ref'lerinden doğrulandı.
 
 Resmi başvuru: https://v2.tauri.app/start/prerequisites/ ve https://v2.tauri.app/security/capabilities/ (2026-11-01).
+
+2026-11-02 ekleri: ZIP 9.2.1 `cargo search`/`cargo info` ile crates.io üzerinde doğrulandı; yalnız deflate-flate2-zlib-rs açık. Disk alanı için mevcut kilitli rustix 1.1.6 kullanılıyor. reqwest 0.13.5 (rustls/json/form/query), keyring 3.6.3 (apple-native), chrono-tz 0.10.4; sürümler Cargo.lock içinde. Native WDIO 9 + Tauri servis/plugin 1.5.1, ayrı target/native hedefi kullanıyor.

@@ -12,6 +12,8 @@ pub struct LibraryFilter {
     pub offset: i64,
     pub limit: i64,
     pub trashed: Option<bool>,
+    pub collection_id: Option<String>,
+    pub tags: Option<Vec<String>>,
 }
 #[derive(Serialize)]
 pub struct Page<T> {
@@ -41,7 +43,36 @@ pub fn get(c: &Connection, id: &str, include_trash: bool) -> Result<LibraryItem>
         deleted_at,
     })
 }
-pub fn save(c: &mut Connection, item: &ItemDraft, revision: Option<i64>) -> Result<LibraryItem> {
+pub fn save(
+    c: &mut Connection,
+    item: &ItemDraft,
+    revision: Option<i64>,
+    tracks: Option<&[crate::domain::activity::Track]>,
+) -> Result<LibraryItem> {
+    if tracks.is_some() && (revision.is_some() || item.kind() != "album") {
+        return Err(AppError::new("VALIDATION"));
+    }
+    if let Some(tracks) = tracks {
+        if tracks.len() > 1000 {
+            return Err(AppError::new("VALIDATION"));
+        }
+        let mut ids = std::collections::HashSet::new();
+        let mut positions = std::collections::HashSet::new();
+        for t in tracks {
+            valid_id(&t.id)?;
+            if !ids.insert(&t.id)
+                || !positions.insert((t.disc_number, t.track_number))
+                || t.disc_number < 1
+                || t.track_number < 1
+                || t.title.trim().is_empty()
+                || t.title.chars().count() > 300
+                || t.notes.chars().count() > 2000
+                || t.duration_seconds.is_some_and(|n| n < 1)
+            {
+                return Err(AppError::new("VALIDATION"));
+            }
+        }
+    }
     let tx = c.transaction()?;
     let previous = match get(&tx, &item.id, true) {
         Ok(v) => Some(v),
@@ -51,6 +82,11 @@ pub fn save(c: &mut Connection, item: &ItemDraft, revision: Option<i64>) -> Resu
     if let Some(p) = &previous {
         if revision.is_none() {
             if p.item == *item && p.deleted_at.is_none() {
+                if let Some(tracks) = tracks {
+                    if super::activity::extras(&tx, &item.id)?.tracks != tracks {
+                        return Err(AppError::new("CONFLICT"));
+                    }
+                }
                 return Ok(p.clone());
             }
             return Err(AppError::new("CONFLICT"));
@@ -101,6 +137,11 @@ pub fn save(c: &mut Connection, item: &ItemDraft, revision: Option<i64>) -> Resu
     if let Some(p) = &item.provenance {
         tx.execute("INSERT INTO catalog_refs(item_id,provider,entity_type,external_id,edition_id,source_url,fetched_at,attribution) VALUES (?,?,?,?,?,?,?,?)",params![item.id,p.provider,p.entity_type,p.external_id,p.edition_id,p.source_url,p.fetched_at,p.attribution])?;
     }
+    if let Some(tracks) = tracks {
+        for t in tracks {
+            tx.execute("INSERT INTO album_tracks(id,album_id,disc_number,track_number,title,duration_seconds,favorite,notes) VALUES (?,?,?,?,?,?,?,?)",params![t.id,item.id,t.disc_number,t.track_number,t.title,t.duration_seconds,t.favorite,t.notes])?;
+        }
+    }
     let result = get(&tx, &item.id, false)?;
     tx.commit()?;
     Ok(result)
@@ -128,13 +169,24 @@ pub fn list(c: &Connection, f: &LibraryFilter) -> Result<Page<LibraryItem>> {
             .replace('%', "\\%")
             .replace('_', "\\_")
     );
-    let clause = r"WHERE (deleted_at IS NOT NULL)=?1 AND (?2 IS NULL OR kind=?2) AND search_text LIKE ?3 ESCAPE '\' AND (?4 IS NULL OR status=?4) AND (?5 IS NULL OR favorite=?5)";
+    let tags = serde_json::to_string(
+        &f.tags
+            .clone()
+            .unwrap_or_default()
+            .iter()
+            .map(|v| fold(v))
+            .collect::<Vec<_>>(),
+    )
+    .map_err(|_| AppError::new("INTERNAL"))?;
+    let clause = r"WHERE (deleted_at IS NOT NULL)=?1 AND (?2 IS NULL OR kind=?2) AND search_text LIKE ?3 ESCAPE '\' AND (?4 IS NULL OR status=?4) AND (?5 IS NULL OR favorite=?5) AND (?6 IS NULL OR id IN (SELECT item_id FROM collection_items WHERE collection_id=?6)) AND NOT EXISTS (SELECT 1 FROM json_each(?7) wanted WHERE NOT EXISTS (SELECT 1 FROM item_tags it JOIN tags t ON t.id=it.tag_id WHERE it.item_id=library_items.id AND t.normalized_name=wanted.value))";
     let args = params![
         f.trashed.unwrap_or(false),
         f.kind,
         query,
         f.status,
-        f.favorite
+        f.favorite,
+        f.collection_id,
+        tags
     ];
     let total = c.query_row(
         &format!("SELECT COUNT(*) FROM library_items {clause}"),
@@ -143,7 +195,7 @@ pub fn list(c: &Connection, f: &LibraryFilter) -> Result<Page<LibraryItem>> {
     )?;
     let ids: Vec<String> = c
         .prepare(&format!(
-            "SELECT id FROM library_items {clause} ORDER BY {order},id LIMIT ?6 OFFSET ?7"
+            "SELECT id FROM library_items {clause} ORDER BY {order},id LIMIT ?8 OFFSET ?9"
         ))?
         .query_map(
             params![
@@ -152,6 +204,8 @@ pub fn list(c: &Connection, f: &LibraryFilter) -> Result<Page<LibraryItem>> {
                 query,
                 f.status,
                 f.favorite,
+                f.collection_id,
+                tags,
                 f.limit,
                 f.offset
             ],

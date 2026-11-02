@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-collection-save"
+description = "Enables the collection_save command without any pre-configured scope."
+commands.allow = ["collection_save"]
+
+[[permission]]
+identifier = "deny-collection-save"
+description = "Denies the collection_save command without any pre-configured scope."
+commands.deny = ["collection_save"]

@@ -107,7 +107,7 @@ pub fn save(c: &Connection, r: SaveSettings) -> Result<Snapshot> {
             .catalog
             .contact
             .as_ref()
-            .is_some_and(|v| v.len() > 300)
+            .is_some_and(|v| !valid_contact(v))
     {
         return Err(AppError::new("VALIDATION"));
     }
@@ -189,4 +189,31 @@ pub fn set_slot(c: &Connection, r: SetSlot) -> Result<Slots> {
         params![r.item_id, r.asset_id, r.slot_id],
     )?;
     slots(c)
+}
+
+fn valid_contact(value: &str) -> bool {
+    value.len() <= 300
+        && url::Url::parse(value).is_ok_and(|u| {
+            u.scheme() == "https"
+                && u.host_str().is_some()
+                && u.username().is_empty()
+                && u.password().is_none()
+                && u.port().is_none()
+        })
+}
+#[cfg(test)]
+mod contact_tests {
+    use super::*;
+    #[test]
+    fn contact_requires_public_https_address_without_credentials() {
+        assert!(valid_contact("https://example.org/contact"));
+        for value in [
+            "hello",
+            "http://example.org",
+            "https://secret@example.org",
+            "https://example.org:8443",
+        ] {
+            assert!(!valid_contact(value));
+        }
+    }
 }

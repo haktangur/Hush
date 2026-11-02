@@ -1,0 +1,25 @@
+{
+  "id": "f89111d7-79d7-4ce6-bb57-751d4e00b76d",
+  "title": "Sentetik kitap",
+  "creator": "İpek Işık",
+  "releaseYear": 2024,
+  "coverAssetId": null,
+  "rating": 0,
+  "favorite": false,
+  "notes": "Yalnız test içeriği",
+  "tagNames": [
+    "İstanbul"
+  ],
+  "startedOn": null,
+  "completedOn": null,
+  "provenance": null,
+  "kind": "book",
+  "status": "active",
+  "details": {
+    "isbn": null,
+    "publisher": "",
+    "language": "tr",
+    "totalPages": 200,
+    "currentPage": 37
+  }
+}

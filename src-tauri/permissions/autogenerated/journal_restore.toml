@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-journal-restore"
+description = "Enables the journal_restore command without any pre-configured scope."
+commands.allow = ["journal_restore"]
+
+[[permission]]
+identifier = "deny-journal-restore"
+description = "Denies the journal_restore command without any pre-configured scope."
+commands.deny = ["journal_restore"]

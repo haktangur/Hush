@@ -99,6 +99,7 @@ pub struct LibraryItem {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SaveItemRequest {
+    pub initial_tracks: Option<Vec<activity::Track>>,
     pub item: ItemDraft,
     pub expected_revision: Option<i64>,
 }
@@ -305,3 +306,6 @@ impl ItemDraft {
         Ok(())
     }
 }
+pub mod activity;
+pub mod collection;
+pub mod journal;

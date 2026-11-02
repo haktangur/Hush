@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-journal-trash"
+description = "Enables the journal_trash command without any pre-configured scope."
+commands.allow = ["journal_trash"]
+
+[[permission]]
+identifier = "deny-journal-trash"
+description = "Denies the journal_trash command without any pre-configured scope."
+commands.deny = ["journal_trash"]

@@ -60,6 +60,12 @@ fn storage(app: &tauri::AppHandle) -> Result<Arc<Storage>> {
         .map(std::path::PathBuf::from)
         .unwrap_or(path);
     let s = Arc::new(Storage::open(&path)?);
+    // Test data lives outside APPDATA. Only this generation's images are exposed;
+    // release builds keep the static APPDATA asset scope unchanged.
+    #[cfg(feature = "e2e")]
+    app.asset_protocol_scope()
+        .allow_directory(s.generation.join("assets"), true)
+        .map_err(|_| AppError::new("IO"))?;
     *guard = Some(s.clone());
     Ok(s)
 }
@@ -140,9 +146,17 @@ pub async fn asset_choose_import(
 ) -> ApiResult<Option<crate::storage::assets::Asset>> {
     work(app.clone(), move |s| {
         use tauri_plugin_dialog::DialogExt;
+        let window = app
+            .get_webview_window("main")
+            .ok_or_else(|| AppError::new("UNAVAILABLE"))?;
+        window.show().map_err(|_| AppError::new("UNAVAILABLE"))?;
+        window
+            .set_focus()
+            .map_err(|_| AppError::new("UNAVAILABLE"))?;
         let path = app
             .dialog()
             .file()
+            .set_parent(&window)
             .add_filter("PNG / JPEG / WebP", &["png", "jpg", "jpeg", "webp"])
             .blocking_pick_file();
         match path {

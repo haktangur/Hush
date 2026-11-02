@@ -1,15 +1,15 @@
 # Hush ilerleme
 
 ## Şu an
-- Kullanıcının son yönlendirmesi: faz sonunda belgeleyip yeni sohbete geç; bu oturum yeni kapsam açmadan devir için kapatılıyor.
-- P0 tamamlandı. Sonraki sohbetin hedefi yalnız P1'in native kapak/restart kabulünü kapatmak.
+- Kullanıcının son yönlendirmesi: yalnız P1 kabulünü tamamla, belge/yerel commit sonrası dur; P2 yeni sohbette.
+- P0 ve P1 tamamlandı. Sonraki sohbetin hedefi yalnız P2 oda/gezinme kabulü.
 - P2–P6 kod hazırlıkları korunuyor; kabul kapıları tamamlanmış sayılmıyor.
 - Ayrıntılı devir: [HANDOFF.md](HANDOFF.md). Test kanıtları: [TEST-REPORT.md](TEST-REPORT.md).
 - Dal: `feat/local-library`; güncel checkpoint için `git log -1`.
 
 ## Aşamalar
 - [x] P0 — masaüstü iskeleti (GitHub bağlantı engeli belgeli)
-- [ ] P1 — kalıcı veri
+- [x] P1 — kalıcı veri
 - [ ] P2 — oda
 - [ ] P3 — koleksiyonlar
 - [ ] P4 — günlük/takvim/arama
@@ -26,7 +26,7 @@
 - GitHub CLI kurulu değil; bağlı GitHub aracı/remote yok. 2026-11-02 resmî CLI sürüm bilgisini indirme izni kullanıcı tarafından reddedildi. GitHub işi açık; yerel fazları engellemiyor.
 
 ## Karar değişiklikleri
-- Henüz yok.
+- D15: faz sonunda durma, GitHub CLI indirmesini yinelememe ve Finder/System Events otomasyon iznini yeniden istememe; kullanıcı talimatları için docs/08 karar kaydına bak.
 
 ### P0 doğrulama notları
 - `npm run check`: TypeScript, ESLint, 1 UI testi, Vite production build geçti.
@@ -63,3 +63,13 @@
 - ZIP 9.2.1 crates.io üzerinden doğrulandı; yalnız deflate desteği açıldı. rustix 1.1.6 boş disk kontrolü için mevcut kilitli sürümden kullanıldı.
 - Native test sandbox dışında geçti: iki bağımsız süreçte 2 + 2 test; kitap kalıcılığı ve günlük autosave kurtarma. İlk sandbox WebDriver timeout'u tekrar koşusunda giderildi. Kapsam TEST-REPORT.md içinde.
 - Yeni sohbetin kesin başlangıç noktası HANDOFF.md içinde: P1 native kapak + orijinal dosyayı taşıma + yeniden açılış.
+
+### 2026-11-02 — P1 kabulü kapatıldı
+- Başlangıç ağacı temizdi (`fb29a9a`); mevcut P2–P6 hazırlıkları korundu. P2 çalışmasına geçilmedi.
+- Native görsel seçici ana Hush penceresine bağlandı ve pencere seçim öncesinde görünür/odaklı hale getirildi. Kullanıcının ilk denemede göremediği seçici düzeltmeden sonra kullanıldı.
+- Test-only asset scope yalnız aktif generation/assets dizinine açıldı; production kapsamı ve migration değişmedi.
+- 04:44–04:45 TRT: kullanıcı gerçek native seçiciden sentetik PNG seçti; WDIO gerçek IPC ile kitabı kaydetti, orijinali taşıdı ve iki bağımsız süreçte 2 + 2 test geçti. Yeniden açılışta kapak decode/görünürlük, kitap/not/37/200, kimlikler ve image/thumb SHA-256 eşitliği doğrulandı. IPC mock yok.
+- `npm run check` (4 UI), `cargo test --locked` (19 Rust), clippy, fmt ve diff kontrolü geçti. P1 sayfa/hata metni/migration/kind ölçütleri bu testlerle doğrulandı.
+- Tekrar: `npm run test:native:p1` (native seçici adımı kullanıcı tarafından, diğer adımlar otomatik). `npm run test:native` etkileşimsiz temel smoke olarak korundu.
+- Kanıt: `artifacts/native-p1-reopened.png`; ayrıntılı geçici veri yolu ve hashler TEST-REPORT içinde. Uygulama çıktısı test-only `src-tauri/target/native/debug/hush`; final release değildir.
+- GitHub/CLI indirme denenmedi. Finder/System Events izni reddedilince AppleScript otomasyonu kaldırıldı; yeniden izin istenmedi.

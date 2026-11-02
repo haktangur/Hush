@@ -63,3 +63,7 @@ MusicBrainz ana API sayfasının doğrudan getirilmesi bazı denemelerde 429 dö
 ## Bilinen teslim sınırları
 
 Bu paket uygulama kodunu, gerçek macOS binary'sini, GitHub deposunu, canlı IGDB oturumunu veya nihai oda illüstrasyonunu içermez. Bunların hepsi geliştirici için tanımlı teslim işleridir. Başlangıç SQL'i ve makinece okunabilir sözleşmeler kontrol edilmiştir; gerçek uygulama için istenen kabul testleri henüz çalıştırılmış değildir. Sonuç ayrımı [PAKET-DOGRULAMA.md](../PAKET-DOGRULAMA.md) içinde yer alır.
+
+## D15 — Faz sınırı ve yerel test izni (2026-11-02)
+
+Kullanıcının son talimatı bu sohbeti yalnız P1 kabulü, belgeler ve yerel commit ile sınırlar; P2 yeni sohbette başlayacak. Bu, başlangıçtaki tüm fazlar bitene kadar devam et ve GitHub bağlantısını tamamla talimatının bu oturumdaki önüne geçer. Önceden reddedilen GitHub CLI indirmesi yeniden denenmez. Finder/System Events otomasyon izni de reddedildiği için picker otomasyonu kaldırıldı; gerçek native seçim kullanıcı tarafından, taşıma/restart/kalıcılık doğrulaması WDIO ile yapıldı. Üretim yetkileri genişletilmedi; test geçici görsel kapsamı yalnız e2e derlemesindedir.

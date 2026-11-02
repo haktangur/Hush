@@ -1,4 +1,4 @@
-# Hush test raporu — faz devri
+# Hush test raporu — P1 kabulü ve faz devri
 
 2026-11-02 · macOS 26.6.2 · Apple Silicon arm64 · Node 24.18.0 · Rust 1.97.1.
 Ürün geliştirme aşamasında; tam kabul veya final teslim raporu değildir.
@@ -43,8 +43,37 @@ Sandbox içindeki ilk deneme WebDriver port 4445 hazır olma timeout'u verdi. Sa
 
 ## Açık kabul koşulları
 
-Öncelik P1: native kapak picker → orijinal dosyayı taşı → yeniden aç → kapağı görüntüle birleşik testi.
+P1 kapısı tamamlandı. Sıradaki kabul P2 oda/gezinme; aşağıdaki genel matris açık kalır.
 
 A01–A22 tam matris henüz tamam değil. Özellikle tüm türlerin native CRUD'ı, katalog canlı/hata/refresh akışları, tam backup restore/kesinti, VoiceOver/klavye, 5.000 eser/10.000 seans performansı, DMG'den açılış ve production binary'de test bileşeni yokluğu doğrulanmadı.
 
 GitHub remote/CI sonucu/draft release yok. GitHub CLI indirme izni kullanıcı tarafından reddedildi. Final `.dmg` yok; notarization yapılmadı. npm geliştirme bağımlılıklarına ait önceki audit bulgularının çözüm incelemesi açık; bu oturumda temiz audit iddiası yok.
+
+## P1 birleşik native kabul — 2026-11-02 04:44–04:45 TRT
+
+**Geçti.** Gerçek Tauri debug uygulaması ve WebKit kullanıldı; IPC, picker veya depolama mock edilmedi. Dosya seçimi kullanıcı tarafından yapıldığı için bu koşu **kullanıcı destekli native testtir**, tamamen otomatik olarak raporlanmaz.
+
+- UI’dan “Native sentetik kitap”, 37/200 ve “Yeniden açılışta korunmalı.” notu girildi.
+- Kullanıcı gerçek macOS seçicisinden sentetik `source.png` dosyasını seçti (projedeki özgün Hush ikonu kopyası; kişisel görsel değil).
+- Rust kapak importu ve UI kaydı tamamlandı; WebView’de img görünürlüğü, complete ve naturalWidth/naturalHeight > 0 doğrulandı.
+- Orijinal PNG `source.png.moved` olarak taşındı; eski yolun yokluğu assert edildi.
+- Birinci uygulama süreci kapandı; aynı izole dizinle ikinci süreç açıldı. Kitap UI’dan tekrar açıldı, kapak yeniden decode edildi ve görüntülendi.
+- Kitap ID, kapak ID, not, sayfa ilerlemesi ve image/thumb SHA-256 değerleri eşleşti. İki süreçte 2 + 2 test geçti; mevcut günlük taslağı kurtarma regresyonu da geçti.
+- Yeniden açılış screenshot’ı görsel olarak incelendi: kapak, kitap başlığı, not ve 37/200 görünür. Bu P2 görsel/erişilebilirlik kabulü değildir.
+
+Yerel/Git dışı kanıt:
+- `artifacts/native-p1-reopened.png`
+- Veri: `/var/folders/zy/nlg3tsjx7b9dnf72st1bbyf00000gn/T/hush-native-n7hNZt`
+- Aynı dizinde `cover-evidence.json`, taşınmış kaynak ve `storage/<generation>/assets/` dosyaları. Gerçek Application Support verisi kullanılmadı.
+- Ana görsel SHA-256: `20398e4ffc1c42511d653207d4a79c300a1a8e46f9edc0f542a7a4447b1bfdb5`
+- Önizleme SHA-256: `e80bef8db52a5e5ecb1a0b6e79a4e64507d8ca2a0003b7114fae6df5130aa291`
+
+Düzeltmeler: native chooser ana pencereye bağlandı; seçim öncesi show/focus uygulandı. Geçici test görsellerinin asset protocol üzerinden gösterilmesi için yalnız `e2e` feature’da aktif assets dizinine scope eklendi. Production kapsamı ve migration değişmedi.
+
+İlk otomasyon denemesi System Events -1743 izin reddiyle başarısız oldu. Kullanıcının reddi korundu, AppleScript kaldırıldı. Sonraki penceresiz seçim beklemesi iptal edildi; parent/focus düzeltmesinden sonraki koşu kullanıcı seçimiyle geçti. Bunlar gizlenmiş başarılı test sayılmadı.
+
+Koşu sırasında komut `npm run test:native` idi; aynı kapak dalı sonrasında isteğe bağlı `npm run test:native:p1` komutuna ayrıldı. Bu komut seçici için beş dakika bekler; yolu konsola ve `artifacts/native-cover-source.txt` dosyasına yazar. `npm run test:native` temel etkileşimsiz smoke olarak korunur.
+
+Bu oturumda `npm run check` (4 React testi), 19 Rust testi, clippy ve fmt geçti; native picker düzeltmesinden sonra Rust kontrolleri yeniden geçti. Yeni final `.app/.dmg` üretilmedi; test binary’si `src-tauri/target/native/debug/hush`. Notarization/GitHub/CI/draft release sınırları değişmedi.
+
+Test ayrımından sonra `npm run test:native` 04:45 TRT’de yeniden çalıştırıldı: kullanıcı etkileşimi olmadan iki bağımsız süreçte 2 + 2 test geçti.

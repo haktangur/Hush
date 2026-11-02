@@ -1,9 +1,9 @@
 /Users/haktan/Desktop/Hush projesinde kaldığımız yerden devam et.
 
-Önce AGENTS.md, CODEX_BASLANGIC.md, README.md, docs/01–08, docs/PROGRESS.md, docs/HANDOFF.md ve docs/TEST-REPORT.md dosyalarını oku. Git durumunu ve son commit'leri incele; mevcut kodu ve kullanıcı değişikliklerini koru.
+AGENTS.md, CODEX_BASLANGIC.md, README.md, docs/01–08, docs/PROGRESS.md, docs/HANDOFF.md ve docs/TEST-REPORT.md dosyalarını oku. Git durumunu incele; mevcut kodu ve kullanıcı değişikliklerini koru.
 
-Faz bazında çalışıyoruz. P0 tamamlandı; bu sohbetin hedefi yalnız P1'in kalan kabul koşullarını tamamlamak. P2–P6 için yazılmış hazırlık kodlarını silme ve bu fazları tamamlanmış kabul etme. Öncelikle gerçek macOS uygulamasında sentetik kitap + native kapak seçimi → orijinal dosyayı taşıma → uygulamayı kapatıp açma → kitap ve kapağın korunması akışını tamamla. IPC mock kullanma, test verisini gerçek kullanıcı verisinden ayrı tut ve test yetkilerini production'a taşıma. Bulduğun hataları düzelt, değişiklikle ilgili kontrolleri çalıştır.
+P0 ve P1 tamamlandı. Bu sohbetin hedefi yalnız P2: oda ve gezinme kabulünü tamamlamak. Mevcut oda kodunu temel al; sekiz hotspot ve menü/klavye eşdeğerlerini, odak/Escape davranışını, hareket azaltmayı, boş/dolu oda görünümünü 1440×900 ve 1100×720’de gerçek macOS uygulamasında doğrula. Işık, poster ve plak atamalarının yeniden açılışta korunmasını test et. P2 görsel ölçütlerini docs/03 ve docs/06 üzerinden kapat; hataları düzelt. Mock IPC kullanma, test verisini kullanıcı verisinden ayır, test yetkilerini production’a taşıma.
 
-GitHub CLI indirme iznini önceki sohbette reddettim. Bu indirmeyi tekrar deneme veya başka yoldan dolaşma; yerel P1 çalışmasına devam et. GitHub işini açık engel olarak koru.
+GitHub CLI indirmesini ve Finder/System Events otomasyon iznini reddettim; yeniden isteme veya başka yoldan dolaşma. Native dosya seçimi gerekirse kullanıcı destekli mevcut test akışını kullan. Yerel çalışmaya devam et. P3–P6 hazırlıklarını koru; tamamlanmış kabul etme.
 
-P1 kabulü tamamlanınca docs/PROGRESS.md, docs/TEST-REPORT.md ve docs/HANDOFF.md dosyalarını güncelle, anlamlı bir yerel commit oluştur. P2 için sonraki sohbetin ilk promptunu docs/NEXT_CHAT_PROMPT.md içine ve son mesajına yaz. Sonra dur; bu sohbette kendiliğinden P2'ye geçme. Çalıştırmadığın testi geçti diye yazma, eski P0 .app dosyasını güncel final teslim gibi sunma.
+P2 tamamlanınca ilerleme, test ve devir belgelerini güncelle; yerel commit oluştur. P3 için başlangıç promptunu docs/NEXT_CHAT_PROMPT.md dosyasına ve son mesajına yaz, sonra dur. P3’e geçme. Çalıştırmadığın testleri geçti diye yazma; eski P0 .app veya test binary’sini güncel final teslim gibi sunma.

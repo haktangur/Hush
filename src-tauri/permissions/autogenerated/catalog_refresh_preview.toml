@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-catalog-refresh-preview"
+description = "Enables the catalog_refresh_preview command without any pre-configured scope."
+commands.allow = ["catalog_refresh_preview"]
+
+[[permission]]
+identifier = "deny-catalog-refresh-preview"
+description = "Denies the catalog_refresh_preview command without any pre-configured scope."
+commands.deny = ["catalog_refresh_preview"]

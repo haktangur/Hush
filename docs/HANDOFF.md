@@ -4,7 +4,7 @@ Tarih: 2026-11-03. Çalışma dizini: `/Users/haktan/Desktop/Hush`.
 
 ## Kullanıcının son kararı
 
-Geliştirme faz bazında sürdürülecek. Bu oturum yalnız P4 günlük/takvim/yerel arama kabulünü tamamladı. **P0–P4 tamamlandı; sonraki sohbet yalnız P5’i ele almalı.** P5–P7 hazırlıklarını silme veya tamamlandı varsayma. Faz bitiminde belgeleri ve sonraki sohbet promptunu güncelleyip yerel commit oluştur, sonra dur.
+Geliştirme faz bazında sürdürülecek. Bu oturum yalnız P5 otomatik katalog kabulünü tamamladı. **P0–P5 tamamlandı; sonraki sohbet yalnız P6’yı ele almalı.** P6–P7 hazırlıklarını silme veya tamamlandı varsayma. Faz bitiminde belgeleri ve sonraki sohbet promptunu güncelleyip yerel commit oluştur, sonra dur.
 
 Finder/System Events otomasyon izni kullanıcı tarafından reddedildi. AppleScript denemesi kaldırıldı; izin tekrar istenmedi. Native kapak seçimini kullanıcı yaptı; kalan kabul adımları gerçek IPC ile otomatik tamamlandı. Aynı otomasyon iznini veya GitHub CLI indirmesini yeniden isteme.
 
@@ -17,7 +17,7 @@ Planın kaynağı `docs/06-UYGULAMA-PLANI.md` (P0–P7).
 - **P2 tamamlandı:** 2026-11-02 04:57 TRT gerçek Tauri/WebKit ile sekiz hotspot iki boyutta, menü/kısayol, focus/Escape, azaltılmış hareket, minimize, boş/dolu oda ve ışık/poster/plak restart kabulü geçti. VoiceOver ve OS hareket tercihini değiştirme testi yapılmadı; P7 kapsamı açık.
 - **P3 tamamlandı:** 2026-11-02 14:19 TRT, gerçek Tauri/WebKit ile ikişer oyun/albüm/kitap UI CRUD/trash/restore; alt kayıtlar, tür/revision kontrolleri, koleksiyon silme, filtre/sıralama/sayfalama, duplicate ve üç türde purge/cascade doğrulandı. İlk süreç 5, bağımsız restart 1 test geçti. Görsel fixture ve picker kapsamı TEST-REPORT’ta açıkça ayrıldı.
 - **P4 tamamlandı:** 2026-11-03 gerçek Tauri/WebKit/SQLite ile aynı güne çoklu günlük CRUD/trash/restore, altı mood/boş, ilişkiler, conflict metin koruma, autosave/restart/kurtarma; üç timezone gün/ay/DST toplamları; Cmd+K, Türkçe/literal arama ve sıfır HTTP kabulü. İlk süreç 4, restart 1 test geçti (1 + 4 skipped).
-- **P5 hazırlığı var:** OL/MB/IGDB Rust adaptörleri, önizleme, ilk parçalarla atomik albüm kaydı, Keychain ayarı. Canlı/provider hata testleri ve metadata refresh diff tamam değil.
+- **P5 tamamlandı:** limit/retry/Retry-After/timeout/cache; OL/MB baskı önizleme, duplicate yönlendirme, gerçek kayıt/offline restart; seçili metadata diff ve kişisel alan koruması. Canlı Open Library doğrulandı. MusicBrainz/CAA sentetik cache ile doğrulandı; adres yokken canlı bağlantı denenmedi. Keychain sentetik round-trip geçti; gerçek IGDB OAuth denenmedi.
 - **P6 hazırlığı var:** `.hushbackup` export/inspect/restore, snapshot, boyut/hash/şema/görsel kontrolleri, storage gate, süreli token, pointer değişimi, ayar ekranı. Üç temel Rust testi var. Tam round-trip, arşiv saldırı matrisi ve commit kesinti testleri eksik. Üretim güvenilirliği onaylanmış sayılmamalı.
 - **P7 açık:** final production `.app/.dmg`, kurulum, tam kabul, performans, GitHub push/CI/draft release.
 
@@ -25,13 +25,18 @@ Planın kaynağı `docs/06-UYGULAMA-PLANI.md` (P0–P7).
 
 AGENTS.md, CODEX_BASLANGIC.md, README.md, docs/01–08, docs/PROGRESS.md, docs/TEST-REPORT.md ve bu dosya. Ardından `git status --short`, `git log -3 --oneline` ve mevcut kodu incele. Migration 0001 sözleşmeyle aynı; değiştirme.
 
-## Sonraki sohbetin somut işi — yalnız P5
+## Sonraki sohbetin somut işi — yalnız P6
 
-1. `docs/05` ve `docs/06` P5 kabulünü mevcut provider/command/UI koduyla karşılaştır; P0–P4'ü yeniden başlatma.
-2. Open Library kitap/baskı/kapak ve MusicBrainz release-group/release/track/CAA akışları: gerçek macOS önizleme → kayıt → offline restart. Gerçek IPC kullan; canlı ağ ile provider fixture sonuçlarını ayır.
-3. Rate limit/Retry-After, timeout, cache ve kapak yokluğu/bozuk yanıt testlerini tamamla. Metadata refresh fark önizlemesini ve kişisel alanların korunmasını tamamla.
-4. IGDB credentials yokken elle oyun; Keychain, token single-flight ve yapılandırma/hata davranışları. Sır isteme veya yazdırma; gerçek IGDB bağlantısı yapılmadıysa belirt. İletişim adresi eksikse uydurma.
-5. P5 sonunda belgeler, yerel commit ve P6 promptuyla dur; P6'ya geçme. Tam kullanıcı promptu `NEXT_CHAT_PROMPT.md` içinde.
+Tam prompt `NEXT_CHAT_PROMPT.md` içinde. Mevcut backup export/inspect/restore ve generation pointer protokolünü tamamla; tüm veri türleriyle round-trip, arşiv saldırı/bozulma/sınır matrisi ve pointer commit öncesi/sonrası kesinti kabulünü gerçek macOS uygulamasında yap. P5'i baştan yazma; canlı MusicBrainz/IGDB sınırlarını geçmiş sayma.
+
+P5 tekrar: `npm run test:native -- --catalog` (veya `npm run test:native:p5`). Sentetik cache, gerçek Rust/SQLite/IPC; native 4 + 1 passed, 2 + 5 skipped. Son veri `hush-native-I2JwFM`, `catalog-evidence.json`. Canlı OL için isteğe bağlı `--catalog-live`; son canlı kanıt `hush-native-4nR1RX`, `live-open-library.json` ve `live-open-library-flow.json`. İki koşuyu karıştırma.
+
+P5 uygulama notları:
+- Metadata `services/metadata.rs`: allowlist, on dakikalık token, revision ve storage epoch kontrolü. Yalnız seçilen katalog alanları değişir; parçalar/seanslar/alıntılar/screenshot ilişkileri değişmez. Yeni parça metadata refresh'i sunulmaz; baskı parçaları ilk kayıtta alınır.
+- Provider `body` tek HTTP send noktasıdır. Timeout (header/body), 429, 503 en fazla iki retry; diğer HTTP hataları retry yapmaz. 401 IGDB'de tek token yenilemesine ayrılır. HTTP-date/saniye Retry-After ortak kuyruğu erteler; >15 saniye bekleme saniye bilgisiyle erken döner.
+- Arama 24 saat, detay/pozitif kapak 7 gün; negatif kapak 1 saat, disk cache 100 MiB LRU. Refresh TTL=0 ile taze metadata ister. Cache dosya adları hash'tir. E2E cache root test veri dizinidir.
+- Keychain configure önce token doğrular; başarısız OAuth mevcut kayıtları değiştirmez. Secret giriş alanı sonuçta temizlenir; id yazma hatasında önceki secret geri konur. Test servis adı ayrı namespace'tir; gerçek Keychain testi rastgele kayıt oluşturup siler. Gerçek IGDB/izin reddi testi yapılmadı.
+- `tests/fixtures/CATALOG-FIXTURES.md` yöntemi açıklar. Offline marker yalnız e2e build'de HTTP çıkışını reddeder. Release binary denetimi P7'dedir.
 
 P4 tekrar: `npm run test:native -- --journal` / `npm run test:native:p4`. İlk süreç 4 passed + 1 skipped, bağımsız restart 1 passed + 4 skipped. Güncel kanıt yolu TEST-REPORT'ta. Fixture eser/seansları gerçek IPC ile oluşturulur; günlük CRUD ve taslak UI'dır. Gerçek Application Support verisi kullanılmaz.
 
@@ -60,10 +65,10 @@ Tekrarlanabilir P1 testi: `npm run test:native:p1`; runner’ın yazdırdığı 
 - `scripts/test-native.mjs` geçici veri dizini açıp iki bağımsız uygulama süreciyle test çalıştırır. `--cover` P1 native kapak kabulünü de açar; mevcut günlük taslağı regresyonu korunur. Backup UI testi değildir. E2E asset scope yalnız aktif generation/assets dizinine eklenir; production scope genişletilmedi.
 - ScreenCaptureKit -3811 nedeniyle CUA ekran incelemesi çalışmadı. WDIO WebView screenshot çalışıyor; artifacts/ altı Git dışı.
 - UI metinleri src/i18n/tr.ts içinde. Test/plugin import production frontend'de mode=e2e koşuluyla elenir; final release binary denetimi henüz yapılmadı.
-- `services/settings.rs` ve catalog annotate içinde kalan SQL, repository katmanına taşınmalı; bunu P1 testini gereksiz büyütmeden sonraki fazlarda ele al.
-- Katalog Retry-After/timeout/negatif kapak cache ve metadata refresh eksikleri var. Keychain durumundaki “kayıtlı” ifadesi canlı token doğrulaması demek değil. Kullanıcıdan sohbet içinde anahtar isteme.
+- Katalog duplicate sorgusu repository katmanına taşındı; settings.rs içinde kalan SQL ayrı teknik borçtur.
+- Keychain durumundaki “kayıtlı” ifadesi o anda canlı token doğrulaması demek değildir. Kullanıcıdan sohbet içinde anahtar isteme. MusicBrainz iletişim adresi uydurma.
 - Backup doğrulaması genişletilmeli: tüm veri türleri ve asset eşdeğerliği, kötü arşiv fixture'ları, pointer commit öncesi/sonrası fault injection, kurtarma ekranı. Mevcut üç test tam P6 kabulü değildir.
-- Dirty native pencere kapatma/Cmd+Q, normal native menüler, onboarding ve performans kabul işleri açık. Grid/list, manual duplicate UX, albüm linkleri ve screenshot büyütme P3’te tamamlandı; canlı katalog duplicate/refresh kabulü P5’te kalır.
+- Dirty native pencere kapatma/Cmd+Q, normal native menüler, onboarding ve performans kabul işleri açık. Grid/list, manual duplicate UX, albüm linkleri ve screenshot büyütme P3’te tamamlandı; katalog duplicate/refresh kabulü P5’te tamamlandı.
 
 ## GitHub ve çıktılar
 

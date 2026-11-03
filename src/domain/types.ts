@@ -10,9 +10,10 @@ export type Mood = 'calm' | 'happy' | 'focused' | 'tired' | 'melancholic' | 'exc
 
 export type ErrorCode =
   | 'VALIDATION' | 'NOT_FOUND' | 'CONFLICT' | 'DB_BUSY' | 'DISK_FULL' | 'IO'
-  | 'PROVIDER_NOT_CONFIGURED' | 'OFFLINE' | 'RATE_LIMITED' | 'PROVIDER_UNAVAILABLE'
+  | 'TIMEOUT' | 'PROVIDER_UNAUTHORIZED' | 'PROVIDER_FORBIDDEN' | 'PROVIDER_NOT_FOUND' | 'PROVIDER_NOT_CONFIGURED' | 'OFFLINE' | 'RATE_LIMITED' | 'PROVIDER_UNAVAILABLE'
   | 'INVALID_BACKUP' | 'UNSUPPORTED_SCHEMA' | 'UNAVAILABLE' | 'INTERNAL';
 export interface AppError {
+ retryAfterSeconds?:number;
   code: ErrorCode;
   message: string;
   fieldErrors?: Record<string, string>;
@@ -132,6 +133,7 @@ export interface CatalogCandidate {
 }
 export interface CatalogPage { items: CatalogCandidate[]; page: number; hasMore: boolean; fromCache: boolean }
 export interface CatalogDraft {
+ existingItemId:string|null;existingState:string|null;
   item: ItemDraft; tracks: AlbumTrack[]; coverLeaseId: string | null; warnings: string[];
 }
 export interface BackupManifest {
@@ -143,3 +145,5 @@ export interface RestorePreview {
   counts: { items: number; journals: number; assets: number }; replacesCurrentData: true;
 }
 export interface RestoreResult { storageEpoch: string; restoredAt: ISOInstant }
+
+export interface MetadataDiff {token:string;fields:{field:string;before:unknown;after:unknown}[];warnings:string[]}

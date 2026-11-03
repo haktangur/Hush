@@ -380,3 +380,5 @@ pub mod catalog;
 pub mod journal;
 
 pub mod external;
+
+pub mod metadata;

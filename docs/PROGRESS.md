@@ -1,9 +1,10 @@
 # Hush ilerleme
 
 ## Şu an
-- Kullanıcının son yönlendirmesi: yalnız P4 kabulünü tamamla, belge/yerel commit ve P5 başlangıç promptu sonrası dur.
-- P0–P4 tamamlandı. Sonraki sohbetin hedefi yalnız P5 otomatik katalog kabulü.
-- P5–P6 kod hazırlıkları korunuyor; bu fazların kabul kapıları tamamlanmış sayılmıyor.
+- Son kullanıcı talimatı: yalnız P5 kabulü, belgeler, yerel commit ve P6 başlangıç promptu; ardından dur.
+- P0–P5 tamamlandı. Sonraki sohbet yalnız P6 yedek/kurtarma kabulünü ele almalı.
+- P5 canlı Open Library doğrulandı; MusicBrainz/CAA sentetik cache ile doğrulandı. İletişim adresi verilmediği için canlı MB/CAA, kimlik bilgileri olmadığı için gerçek IGDB bağlantısı denenmedi.
+- P6 hazırlıkları korunuyor; P6/P7 kabulü açık.
 - Ayrıntılı devir: [HANDOFF.md](HANDOFF.md). Test kanıtları: [TEST-REPORT.md](TEST-REPORT.md).
 - Dal: `feat/local-library`; güncel checkpoint için `git log -1`.
 
@@ -13,7 +14,7 @@
 - [x] P2 — oda
 - [x] P3 — koleksiyonlar
 - [x] P4 — günlük/takvim/arama
-- [ ] P5 — kataloglar
+- [x] P5 — kataloglar (canlı sağlayıcı sınırları raporda)
 - [ ] P6 — yedek/kurtarma
 - [ ] P7 — test/GitHub/teslim
 
@@ -108,3 +109,14 @@
 - GitHub CLI/Finder/System Events izni yeniden istenmedi. Yeni final `.app/.dmg` veya GitHub/CI sonucu yok; test binary `src-tauri/target/native/debug/hush`. P5 promptu NEXT_CHAT_PROMPT.md'de.
 
 - P4 sonrası temel native regresyonu 2026-11-03 01:25 TRT’de 2 + 2 geçti; ayrı `hush-native-2L3LZH` dizini. P4 son kabul verisi `hush-native-O7nPqz` (01:23–01:24 TRT).
+
+### 2026-11-03 — P5 katalog kabulü
+- Ortak provider kuyruğu, 429/503/header ve body timeout için en fazla iki retry, jitter, HTTP-date/saniye Retry-After ve sonraki istekleri de kapsayan cooldown tamamlandı. Uzun cooldown arayüzü bekletmeden saniye bilgisiyle döner. 400/401/403/404/500 tekrar edilmez; IGDB 401 token yenilemesi ayrı ve bir defalıktır.
+- OL/MB/IGDB arama ve detay cache'i; kapak cache'i ve 1 saatlik negatif kapak cache'i; 100 MiB LRU ve dosya sayısı sınırı. Test cache ve Keychain namespace'i üretimden ayrıldı. Bağımlılık/lockfile/migration değişmedi.
+- Taze metadata farkı, eski/yeni alan ve kapak önizlemesi, seçili alanları revision/epoch token'ıyla atomik uygulama. Puan/not/durum/ilerleme/tarih/etiket/favori ve alt kayıtlar korunur. Aynı baskı mevcut kayda yönlendirilir; SQL uniqueness son savunma olarak kalır.
+- Native sentetik P5: 4 + 1 passed; ilk süreçte canlı/restart 2 skipped, ikinci süreçte 5 skipped. Son veri `hush-native-I2JwFM`. Albüm kapağı gerçek decode/import ve offline görünürlükten geçti. IPC mock yok.
+- Ayrı canlı OL koşusu: `hush-native-4nR1RX`, 4 + 1 passed (1 + 4 skipped); cache kullanmadan 20 sonuç, baskı/kapak/önizleme/kayıt, UI seçili başlık refresh ve offline restart. Bu canlı kanıt son duplicate UI ekinden önce alındı; duplicate son fixture koşusunda ayrıca geçti.
+- Gerçek macOS Keychain'e benzersiz sentetik değer yaz/oku/sil geçti. Gerçek IGDB bağlantısı ve Keychain OS izin reddi senaryosu denenmedi; düz metin fallback yok. Canlı MB/CAA için adres verilmedi, uydurulmadı.
+- P6 promptu NEXT_CHAT_PROMPT.md'de; P6 kodlamasına geçilmedi. Güncel test sonuçları TEST-REPORT'ta.
+
+- P5 son doğrulama: `npm run check` (4 UI), 28 Rust testi, clippy/fmt/diff kontrolü geçti. Final paket/GitHub/CI/notarization hâlâ P7 sınırıdır.

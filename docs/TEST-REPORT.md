@@ -1,4 +1,4 @@
-# Hush test raporu — P4 kabulü ve faz devri
+# Hush test raporu — P5 kabulü ve faz devri
 
 2026-11-03 · macOS 26.6.2 · Apple Silicon arm64 · Node 24.18.0 · Rust 1.97.1.
 Ürün geliştirme aşamasında; tam kabul veya final teslim raporu değildir.
@@ -8,10 +8,11 @@
 | Kontrol | Sonuç ve kapsam |
 |---|---|
 | `npm run check` | Geçti: TypeScript strict, ESLint, 4 React testi, Vite production build |
-| `cargo test --locked --manifest-path src-tauri/Cargo.toml` | 20 test geçti; lib/main/doc test koşuları hatasız |
+| `cargo test --locked --manifest-path src-tauri/Cargo.toml` | 28 test geçti; lib/main/doc test koşuları hatasız |
 | `cargo clippy --locked --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings` | Geçti |
 | `cargo fmt --manifest-path src-tauri/Cargo.toml --check` | Geçti |
 | `git diff --check` | Geçti |
+| `npm run test:native -- --catalog` | 2026-11-03: 4 + 1 geçti (2 + 5 skipped); canlı OL ayrı koşuda doğrulandı |
 | `npm run test:native` (sandbox dışında) | 2026-11-03 01:25 TRT: iki bağımsız süreçte 2 + 2 temel regresyon geçti |
 | `npm run test:native -- --journal` | 2026-11-03 01:23–01:24 TRT: 4 + 1 geçti (1 + 4 skipped) |
 | `npm run test:native -- --collections` | 14:19 TRT: P3 ilk süreç 5, restart 1 geçti (4 skipped) |
@@ -207,3 +208,47 @@ Yerel/Git dışı screenshot'lar:
 - P5–P7 ve tam A01–A22 matrisi açık. Bu P4 sonucu canlı katalog, backup kesintisi, final release, performans veya VoiceOver kabulünü kapatmaz.
 
 P4 sonrası temel native regresyonu: `npm run test:native`, **2 + 2 passed**, 2026-11-03 01:25 TRT. Ayrı veri dizini `/var/folders/zy/nlg3tsjx7b9dnf72st1bbyf00000gn/T/hush-native-2L3LZH`. Kitap/not/37 sayfa kalıcılığı ve mevcut taslak kurtarma korundu; kapak seçici tekrar çalıştırılmadı.
+
+## P5 otomatik katalog kabulü — 2026-11-03
+
+**P5 kabulü tamamlandı; canlı sağlayıcı sınırları aşağıdadır.** P6 uygulanmadı. Başlangıç ağacı e27b042 üzerinde temizdi. Migration ve bağımlılık sürümleri/lockfile'lar değiştirilmedi.
+
+### Gerçek macOS, sentetik provider cache
+
+`npm run test:native -- --catalog`: WebKit 605.1.15, gerçek Tauri debug uygulaması, Rust adaptörleri ve SQLite. Son koşu **4 passed + 2 skipped**, bağımsız ikinci süreç **1 passed + 5 skipped**. Canlı test varsayılan koşuda kapalı; diğer skipped testler karşı sürece özgü. Veri: `/var/folders/zy/nlg3tsjx7b9dnf72st1bbyf00000gn/T/hush-native-I2JwFM`.
+
+- Kitap/albüm UI araması → Önbellekten etiketi → baskı seçimi → düzenlenebilir önizleme. Önizlemeden önce DB tür sayısı sıfır; Kaydet sonrası gerçek kayıt var. Puan 8 ve kişisel not, kitapta 37/240 sayfa saklandı.
+- Albüm seçili baskısının parçası atomik kayıtta oluştu; 123456 ms → 123 sn. Artist-credit joinphrase korundu. Sentetik kapak cache'den gerçek image decode/import ile yerel AssetStore'a geçti.
+- Aynı provider ID başka UUID ile save edilince CONFLICT; aynı kitap baskısını UI'da tekrar seçme mevcut kaydı açar, ikinci form/kayıt oluşturmaz.
+- CAA negatif kapak cache'i ve bozuk görsel ayrı `catalog_prepare` çağrılarında warning + kapaksız draft döndürdü; kayıt sayısı değişmedi. Bunlar canlı CAA 404/bozuk yanıt iddiası değildir.
+- E2E izole Keychain namespace'inde IGDB `not_configured`; boş credentials VALIDATION. UI'da elle oyun kaydı çalıştı. Gerçek kullanıcı Keychain girdileri okunmadı/değiştirilmedi.
+- İkinci bağımsız süreçte kitap/albüm DTO ve extras snapshot'ları birebir aynı. Kapak `<img>` complete/naturalWidth kontrolü geçti. HTTP çıkışı e2e-only marker ile kapalı; sayaç yeniden açılışta artmadı. İşletim sistemi Wi-Fi'sini kapatma testi değildir.
+
+Fixture kaynakları `tests/native/catalog-fixtures.mjs` ve `tests/fixtures/CATALOG-FIXTURES.md`. Cache JSON'ları sentetik; IPC mock yok, kalıcı kayıtlar UI → gerçek IPC → Rust → SQLite yoluyla oluşturuldu. Select değerleri önceki fazlardaki gibi WebView DOM change olayıyla seçildi; fiziksel OS klavye/VoiceOver iddiası değildir.
+
+### Ayrı canlı Open Library kanıtı
+
+`npm run test:native -- --catalog --catalog-live`, veri: `/var/folders/zy/nlg3tsjx7b9dnf72st1bbyf00000gn/T/hush-native-4nR1RX`. Bu koşu duplicate UI testinin son ekinden öncedir: **4 passed + 1 skipped**, restart **1 passed + 4 skipped**. Ayrı `live-open-library.json`: `ok=true`, `fromCache=false`, `count=20`. `live-open-library-flow.json`: search/edition/preview/save/refresh/cover tümü true.
+
+“The Left Hand of Darkness” için canlı arama, baskı listesi, seçilen baskı/author/kapak; UI önizleme, kişisel test notu ve 7 puanla kaydetme geçti. Sonrasında gerçek IPC ile yalnız yerel başlık değiştirildi; UI “Katalog bilgisini yenile” taze metadata getirdi, başlık farkı seçilip uygulandı. Not, puan, durum ve ilerleme korundu. Ayrı offline süreçte canlı kaydın DTO/extras eşitliği ve yerel kapağın decode edilmesi doğrulandı. Canlı metadata/kapaklar yalnız geçici dizinde; Git'te yok.
+
+MusicBrainz/CAA canlı çağrısı **yapılmadı**: kullanıcıya User-Agent iletişim adresinin amacı açıklandı fakat doğrulanmış adres verilmedi. Adres uydurulmadı. Albüm kabulü açıkça sentetik cache/gerçek native persistence kabulüdür. Gerçek IGDB OAuth/API bağlantısı **denenmedi**, gerçek credentials kullanılmadı.
+
+### Rust ve güvenlik kapsamı
+
+- HTTP fixture testleri gerçek reqwest ile yalnız loopback TCP'ye gider: header timeout ve body timeout üç denemede TIMEOUT; 429/503 iki retry ardından başarı; kalıcı 429 üç denemede RATE_LIMITED. 400/401/403/404/500 bir kez denenir. Body boyut aşımı reddedilir.
+- Saniye ve HTTP-date Retry-After parse; sonraki album isteği 60 saniyelik aynı cooldown'a takılır ve bekleme süresini döndürür; book kuyruğu bağımsız kalır. Üretim limitleri OL/MB 1100 ms, IGDB 500 ms; connect 5 sn, metadata 15 sn, kapak 20 sn.
+- Cache TTL/boyut okuma sınırı, malformed/eksik JSON mapping ve publication date yıl ayrıştırması. 60+60 MiB sparse cache dosyası ve 20 MiB incoming bütçeyle eski dosya LRU'dan çıkarılır, yeni korunur; disk önbelleği 100 MiB sınırında kalır.
+- Üç türde gerçek SQLite metadata save testi kişisel puan/not/status/tarih/tag ve tür alanları ile seansları korur; kitap alıntısı ve albüm favorili/yorumlu parçası tam extras snapshot olarak korunur. Eski revision CONFLICT. Kitap 37 sayfa → toplam 20 reddedilir; toplam 400 seçilirse mevcut 37 korunur. Screenshot silme/yazma refresh yolunda yok; oyun testinde screenshot listesi boştu, dolu screenshot kabulü P3 kanıtında kalır.
+- Gerçek macOS Keychain'e benzersiz test servisinde rastgele sentetik değer yazma/okuma/silme geçti. Değer sohbete/log/DB/Git'e yazılmadı. Bu OAuth doğrulaması, gerçek token yenileme veya OS izin reddi testi değildir. Token single-flight kilidi kaynak incelemesinde korundu; yeni credentials doğrulanmadan eskiler değiştirilmez. Düz metin fallback yok.
+- Metadata token'ı 10 dakika, revision ve generation epoch ile bağlıdır; apply'da sadece alan allowlist'i kabul edilir. Kişisel alan veya alt kayıt istemciden metadata patch'i olarak yazılamaz. SQL transaction ağ isteğinden ayrıdır. Parçaların otomatik refresh'i sunulmaz; ilk import ve manuel parça düzenleme korunur.
+
+### Hatalı ara koşular, görseller ve teslim sınırı
+
+İlk sandbox native denemesi ilerlemedi; sonlandırılıp mevcut izinli sandbox dışı yol kullanıldı. İlk Rust HTTP fixture denemesinde sandbox loopback bind'i reddetti; izinli koşu geçti. Bir canlı UI testinde baskı listesi yüklenmeden disabled önizleme düğmesine basılması 120 sn test timeout'u verdi; test yükleme sonunu bekleyecek biçimde düzeltildi, sonraki canlı koşular geçti. Bu hatalı koşular başarılı sayılmadı.
+
+Git dışı görseller: `artifacts/p5-book-saved.png`, `p5-album-saved.png`, `p5-book-offline.png`, `p5-album-offline.png`, `p5-live-refresh.png`. Canlı kapak ve kişisel test notunun görünür olduğu detay görsel olarak incelendi. Son sentetik koşu aynı book/albüm dosya adlarını yeniler; canlı görsel ayrı isimdedir.
+
+Çıktı `src-tauri/target/native/debug/hush` test binary'sidir. Yeni final `.app/.dmg` üretilmedi; eski P0 paketi güncel final değildir. GitHub remote/URL, CI sonucu, draft release ve notarization yok. Reddedilen GitHub CLI indirmesi/Finder/System Events izinleri yeniden istenmedi. Release'te test bileşeni yokluğunun tam binary/DMG denetimi P7'de kalır; production frontend build'de test import'u elenir. P6/P7 ve tam A01–A22 kabulü açık.
+
+P5 son kontroller: `npm run check` (TypeScript strict, ESLint, 4 React testi, production frontend build), **28 Rust testi**, main/doc testler, clippy `--all-targets -- -D warnings`, fmt ve `git diff --check` geçti. Son Rust çalışması LRU/Retry-After ve metadata epoch korumasından sonradır. Native son koşudan sonra eklenen epoch koşulu kaynak/derleme/Rust regresyonuyla kontrol edildi; live UI tekrarına yeni bir sonuç yazılmadı.

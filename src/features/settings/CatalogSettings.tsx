@@ -15,13 +15,13 @@ export function CatalogSettings({onBusy}:{onBusy:(busy:boolean)=>void}) {
   setBusy(true);onBusy(true);setError('');
   try {await catalog.configure(clientId,secret);setClientId('');setSecret('');await status.refetch()}
   catch(e){setError(errorText(e))}
-  finally{setBusy(false);onBusy(false)}
+  finally{setSecret('');setBusy(false);onBusy(false)}
  }
  async function disconnect() {
   setBusy(true);onBusy(true);setError('');
   try{await catalog.disconnect();setClientId('');setSecret('');await status.refetch()}
   catch(e){setError(errorText(e))}
-  finally{setBusy(false);onBusy(false)}
+  finally{setSecret('');setBusy(false);onBusy(false)}
  }
  return <section className={styles.activity} aria-label={tr.igdb}>
   <h3>{tr.igdb}</h3><p>{tr.keychainHint}</p>

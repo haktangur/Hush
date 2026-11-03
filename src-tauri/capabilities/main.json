@@ -34,7 +34,7 @@
     "allow-journal-restore",
     "allow-calendar-month",
     "allow-search-local",
-    "allow-catalog-search",
+    "allow-catalog-refresh-preview", "allow-catalog-refresh-apply", "allow-catalog-search",
     "allow-catalog-prepare",
     "allow-catalog-editions",
     "allow-provider-status",

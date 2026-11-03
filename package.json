@@ -22,7 +22,8 @@
     "test:native:p4": "node scripts/test-native.mjs --journal",
     "test:native:p3": "node scripts/test-native.mjs --collections",
     "test:native:p2": "node scripts/test-native.mjs --room",
-    "test:native:p1": "node scripts/test-native.mjs --cover"
+    "test:native:p1": "node scripts/test-native.mjs --cover",
+    "test:native:p5": "node scripts/test-native.mjs --catalog"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "1.3.1",

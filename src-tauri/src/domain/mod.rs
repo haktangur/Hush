@@ -109,11 +109,14 @@ pub struct AppError {
     pub code: &'static str,
     pub message: &'static str,
     pub retryable: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub retry_after_seconds: Option<u64>,
 }
 impl AppError {
     pub fn new(code: &'static str) -> Self {
         Self {
             code,
+            retry_after_seconds: None,
             message: code,
             retryable: matches!(code, "DB_BUSY" | "IO"),
         }

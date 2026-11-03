@@ -231,3 +231,12 @@ pub fn trash(c: &Connection, id: &str, revision: i64, restore: bool) -> Result<(
     }
     Ok(())
 }
+
+pub fn catalog_existing(
+    c: &Connection,
+    provider: &str,
+    entity: &str,
+    external_id: &str,
+) -> Result<Option<(String, bool)>> {
+    Ok(c.query_row("SELECT i.id,i.deleted_at IS NOT NULL FROM library_items i JOIN catalog_refs r ON r.item_id=i.id WHERE r.provider=? AND r.entity_type=? AND r.external_id=?",params![provider,entity,external_id],|r|Ok((r.get(0)?,r.get(1)?))).optional()?)
+}

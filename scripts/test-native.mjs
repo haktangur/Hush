@@ -1,3 +1,4 @@
+import {seedCatalog} from '../tests/native/catalog-fixtures.mjs';
 import { spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, copyFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -8,11 +9,14 @@ const env = {
   ...process.env,
   CARGO_TARGET_DIR: join(process.cwd(), 'src-tauri/target/native'),
   HUSH_TEST_DATA_DIR: mkdtempSync(join(tmpdir(), 'hush-native-')),
+  HUSH_CATALOG_LIVE: process.argv.includes('--catalog-live') ? '1' : '',
+  HUSH_NATIVE_CATALOG: process.argv.includes('--catalog') ? '1' : '',
   HUSH_NATIVE_JOURNAL: process.argv.includes('--journal') ? '1' : '',
   HUSH_NATIVE_COLLECTIONS: process.argv.includes('--collections') ? '1' : '',
   HUSH_NATIVE_ROOM: process.argv.includes('--room') ? '1' : '',
   HUSH_NATIVE_COVER: process.argv.includes('--cover') ? '1' : '',
 };
+if (env.HUSH_NATIVE_CATALOG) seedCatalog(env.HUSH_TEST_DATA_DIR);
 if (env.HUSH_NATIVE_COVER) {
   env.HUSH_TEST_COVER_SOURCE = join(env.HUSH_TEST_DATA_DIR, 'source.png');
   copyFileSync('src-tauri/icons/icon.png', env.HUSH_TEST_COVER_SOURCE);

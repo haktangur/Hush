@@ -13,12 +13,17 @@ pub async fn context(
         let catalog = match state.as_ref() {
             Some(c) => c.clone(),
             None => {
-                let c = Arc::new(Catalog::new(
-                    app.path()
-                        .app_cache_dir()
-                        .map_err(|_| AppError::new("IO"))?
-                        .join("catalog"),
-                )?);
+                let cache = app
+                    .path()
+                    .app_cache_dir()
+                    .map_err(|_| AppError::new("IO"))?
+                    .join("catalog");
+                #[cfg(feature = "e2e")]
+                let cache = std::env::var_os("HUSH_TEST_DATA_DIR")
+                    .map(std::path::PathBuf::from)
+                    .map(|p| p.join("catalog"))
+                    .unwrap_or(cache);
+                let c = Arc::new(Catalog::new(cache)?);
                 *state = Some(c.clone());
                 c
             }
@@ -34,5 +39,21 @@ pub async fn context(
     .map_err(|_| AppError::new("INTERNAL"))?
 }
 pub async fn annotate(s: Arc<Storage>, mut page: CatalogPage) -> Result<CatalogPage> {
-    tauri::async_runtime::spawn_blocking(move||{use rusqlite::OptionalExtension;let c=s.connection.lock().map_err(|_|AppError::new("INTERNAL"))?;for item in &mut page.items {let found:Option<(String,Option<String>)>=c.query_row("SELECT i.id,i.deleted_at FROM library_items i JOIN catalog_refs r ON r.item_id=i.id WHERE r.provider=? AND r.entity_type=? AND r.external_id=?",rusqlite::params![item.key.provider,item.key.entity_type,item.key.external_id],|r|Ok((r.get(0)?,r.get(1)?))).optional()?;if let Some((id,deleted))=found{item.existing_item_id=Some(id);item.existing_state=Some(if deleted.is_some(){"trashed"}else{"active"}.into())}}Ok(page)}).await.map_err(|_|AppError::new("INTERNAL"))?
+    tauri::async_runtime::spawn_blocking(move || {
+        let c = s.connection.lock().map_err(|_| AppError::new("INTERNAL"))?;
+        for item in &mut page.items {
+            if let Some((id, trashed)) = crate::repositories::library::catalog_existing(
+                &c,
+                &item.key.provider,
+                &item.key.entity_type,
+                &item.key.external_id,
+            )? {
+                item.existing_item_id = Some(id);
+                item.existing_state = Some(if trashed { "trashed" } else { "active" }.into());
+            }
+        }
+        Ok(page)
+    })
+    .await
+    .map_err(|_| AppError::new("INTERNAL"))?
 }

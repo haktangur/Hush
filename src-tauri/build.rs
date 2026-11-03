@@ -30,6 +30,8 @@ fn main() {
             "calendar_month",
             "search_local",
             "catalog_search",
+            "catalog_refresh_preview",
+            "catalog_refresh_apply",
             "catalog_prepare",
             "catalog_editions",
             "provider_status",

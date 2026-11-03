@@ -13,6 +13,7 @@ pub fn run() {
         .plugin(tauri_plugin_wdio_webdriver::init());
     builder
         .plugin(tauri_plugin_dialog::init())
+        .manage(services::metadata::RefreshState::default())
         .manage(services::catalog::CatalogState(std::sync::Mutex::new(None)))
         .manage(commands::StorageGate::default())
         .manage(commands::BackupState::default())
@@ -53,6 +54,8 @@ pub fn run() {
             commands::calendar_month,
             commands::search_local,
             commands::catalog_search,
+            commands::catalog_refresh_preview,
+            commands::catalog_refresh_apply,
             commands::catalog_prepare,
             commands::catalog_editions,
             commands::provider_status,

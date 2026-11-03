@@ -87,3 +87,13 @@ Son kullanıcı talimatı yalnız P4 günlük/takvim/yerel arama kabulü, belgel
 Takvim seçimi sistem saat dilimiyle başlar; panelde IANA saat dilimi seçilebilir ve sorgu anahtarına katılır. Bu seçim günlüklerin salt tarihini değiştirmez ve işletim sistemi saat dilimini değiştirmez. Yerel arama günlük sonucunda başlık yerine UUID ile daraltılır; journal_list'e opsiyonel, doğrulanan ID filtresi eklendi. Migration veya yeni IPC yetkisi gerekmedi.
 
 Yerel aramanın ağ üretmediğini gözlemek için mevcut tek Rust HTTP send noktasına yalnız `cfg(feature="e2e")` kapsamında içeriksiz sayaç dosyası eklendi. Dosya mevcut izole HUSH_TEST_DATA_DIR altındadır; yalnız `send` işareti taşır. İstek/yanıt değiştirme ve IPC mock yok. Üretimde bu dal derlenmez; tam release binary denetimi P7'nin ayrı kabulüdür.
+
+## D19 — P5 kabul sınırı, cache fixture ve iletişim adresi (2026-11-03)
+
+Son kullanıcı talimatı yalnız P5, belgeler, yerel commit ve P6 promptunu kapsar; P6 uygulanmaz. GitHub CLI indirmesi ve Finder/System Events izni yeniden istenmedi. Mevcut kullanıcı değişiklikleri korunur; başlangıç ağacı e27b042 üzerinde temizdi.
+
+Kullanıcıya MusicBrainz User-Agent iletişim alanının amacı açıklandı; doğrulanmış adres verilmedi. Adres uydurulmadı ve canlı MusicBrainz çağrısı yapılmadı. Cache'deki albüm verisi iletişim adresi olmadan kullanılabilir; yeni MusicBrainz HTTP çağrısı adres yoksa reddedilir. Canlı Open Library ve sentetik MusicBrainz/CAA kabul sonuçları ayrı raporlanır. Open Library kullanım/rate-limit belgesi yeniden okundu; MusicBrainz belge erişimi 429 verdi. IGDB resmi belge okuması gerçek IGDB OAuth testi sayılmaz.
+
+Native fixture'lar provider cache'ine konur; gerçek IPC veya SQLite işlemleri taklit edilmez. Sadece e2e derlemesinde HTTP çıkışını reddeden offline işareti ve izole Keychain servis adı vardır. Release config'ine test komutu/yetkisi eklenmez. HTTP hata fixture'ları Rust testlerinde loopback kullanır. Varsayılan P5 testi canlı servise bağımlı değildir; canlı OL için açık `--catalog-live` seçeneği gerekir.
+
+Metadata yenileme taze ayrıntı ister, on dakikalık opak önizleme token'ıyla yalnız seçilen metadata alanlarını uygular. Token revision ve storage epoch ile bağlıdır. Kişisel alanlar, seanslar, alıntılar, parçalar ve screenshot ilişkileri yeniden yazılmaz. Albüm parça listesini otomatik yenilemez; seçilen baskının parçaları ilk kayıtta atomiktir. Tamamlanmış kitabın sayfa ilerlemesi refresh'te yeniden türetilmez. Yeni toplam mevcut sayfanın altındaysa işlem reddedilir.

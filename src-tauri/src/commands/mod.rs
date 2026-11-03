@@ -573,3 +573,76 @@ pub async fn external_open(request: ExternalRequest) -> ApiResult<()> {
         .unwrap_or_else(|_| Err(AppError::new("INTERNAL")))
         .into()
 }
+
+#[tauri::command]
+pub async fn catalog_refresh_preview(
+    app: tauri::AppHandle,
+    request: IdRequest,
+) -> ApiResult<crate::services::metadata::Diff> {
+    let _gate = app.state::<StorageGate>().0.clone().read_owned().await;
+    let result = async {
+        let a = app.clone();
+        let (s, item) = tauri::async_runtime::spawn_blocking(move || {
+            let s = storage(&a)?;
+            let item = crate::repositories::library::get(
+                &*s.connection.lock().map_err(|_| AppError::new("INTERNAL"))?,
+                &request.id,
+                false,
+            )?;
+            Ok::<_, AppError>((s, item))
+        })
+        .await
+        .map_err(|_| AppError::new("INTERNAL"))??;
+        let p = item
+            .item
+            .provenance
+            .as_ref()
+            .ok_or(AppError::new("VALIDATION"))?;
+        let request = crate::providers::Prepare {
+            candidate_key: crate::providers::CandidateKey {
+                provider: p.provider.clone(),
+                entity_type: p.entity_type.clone(),
+                external_id: p.external_id.clone(),
+            },
+            edition_id: p.edition_id.clone(),
+        };
+        let (c, contact) = crate::services::catalog::context(app.clone(), s.clone(), true).await?;
+        let epoch = s.epoch.clone();
+        let prepared = c
+            .prepare_with_ttl(request, s, contact.as_deref(), 0)
+            .await?;
+        crate::services::metadata::preview(
+            item,
+            prepared,
+            &app.state::<crate::services::metadata::RefreshState>(),
+            epoch,
+        )
+    }
+    .await;
+    result.into()
+}
+#[tauri::command]
+pub async fn catalog_refresh_apply(
+    app: tauri::AppHandle,
+    request: crate::services::metadata::Apply,
+) -> ApiResult<LibraryItem> {
+    work(app.clone(), move |s| {
+        let state = app.state::<crate::services::metadata::RefreshState>();
+        let mut pending = state.0.lock().map_err(|_| AppError::new("INTERNAL"))?;
+        let p = pending
+            .get(&request.token)
+            .filter(|p| p.expires > std::time::Instant::now() && p.epoch == s.epoch)
+            .ok_or(AppError::new("CONFLICT"))?;
+        let mut c = s.connection.lock().map_err(|_| AppError::new("INTERNAL"))?;
+        let current = crate::repositories::library::get(&c, &p.item.item.id, false)?;
+        if current.revision != p.item.revision {
+            return Err(AppError::new("CONFLICT"));
+        }
+        let draft = crate::services::metadata::merge(&current, &p.prepared, &request.fields)?;
+        let result =
+            crate::repositories::library::save(&mut c, &draft, Some(current.revision), None)?;
+        pending.remove(&request.token);
+        Ok(result)
+    })
+    .await
+}

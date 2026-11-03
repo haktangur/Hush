@@ -1,33 +1,36 @@
 # Hush — sohbet devri
 
-Tarih: 2026-11-03. Çalışma dizini: `/Users/haktan/Desktop/Hush`.
+2026-11-03 · `/Users/haktan/Desktop/Hush` · `feat/local-library`
 
-## Kullanıcının son kararı
+## Son talimat ve durum
 
-Geliştirme faz bazında sürdürülecek. Bu oturum yalnız P5 otomatik katalog kabulünü tamamladı. **P0–P5 tamamlandı; sonraki sohbet yalnız P6’yı ele almalı.** P6–P7 hazırlıklarını silme veya tamamlandı varsayma. Faz bitiminde belgeleri ve sonraki sohbet promptunu güncelleyip yerel commit oluştur, sonra dur.
+Bu oturum yalnız P6 kabulünü tamamladı. **P0–P6 tamamlandı; sıradaki sohbet P7.** Kullanıcı faz sonunda belge, yerel commit ve sonraki prompt istedi; P7 başlatılmadı. Başlangıç commit'i `b00355b`; yeni checkpoint için `git log -1`.
 
-Finder/System Events otomasyon izni kullanıcı tarafından reddedildi. AppleScript denemesi kaldırıldı; izin tekrar istenmedi. Native kapak seçimini kullanıcı yaptı; kalan kabul adımları gerçek IPC ile otomatik tamamlandı. Aynı otomasyon iznini veya GitHub CLI indirmesini yeniden isteme.
+Reddedilen GitHub CLI indirmesi, Finder/System Events izinlerini yeniden isteme veya başka araçla dolaşma. GitHub remote yok. Kullanıcının yeni açık yetkisi olmadan bu engeli tekrar deneme. Yerel geliştirme ve paketleme bu engeli beklemez.
 
-## Faz durumu
+Önce AGENTS.md, CODEX_BASLANGIC.md, README.md, docs/01–08, PROGRESS, TEST-REPORT ve bu belgeyi oku; mevcut değişiklikleri koru. Migration 0001 ve lockfile'lar değişmedi. P7 başlangıç metni [NEXT_CHAT_PROMPT.md](NEXT_CHAT_PROMPT.md).
 
-Planın kaynağı `docs/06-UYGULAMA-PLANI.md` (P0–P7).
+## P6 kanıtı ve teknik notlar
 
-- **P0 tamamlandı:** Tauri 2/React/TypeScript/Rust iskeleti, SQLite temeli, gerçek IPC, araç zinciri ve kilit dosyaları, yerel Git, CI başlangıcı. Apple Silicon ad-hoc `.app` üretildi ve açıldı. P0 kabulü remote yerine belgelenmiş bağlantı engeline izin veriyor; GitHub tamamlanmış değildir.
-- **P1 tamamlandı:** temel kitap/veri testlerine ek olarak gerçek native seçici → kapak import → kaynak dosyayı taşı → yeni süreçte aç → kitap/kapak görünürlüğü ve hash eşitliği 2026-11-02 04:44–04:45 TRT’de geçti. Seçim kullanıcı tarafından, kayıt/taşıma/restart/assertion WDIO ile; mock IPC yok.
-- **P2 tamamlandı:** 2026-11-02 04:57 TRT gerçek Tauri/WebKit ile sekiz hotspot iki boyutta, menü/kısayol, focus/Escape, azaltılmış hareket, minimize, boş/dolu oda ve ışık/poster/plak restart kabulü geçti. VoiceOver ve OS hareket tercihini değiştirme testi yapılmadı; P7 kapsamı açık.
-- **P3 tamamlandı:** 2026-11-02 14:19 TRT, gerçek Tauri/WebKit ile ikişer oyun/albüm/kitap UI CRUD/trash/restore; alt kayıtlar, tür/revision kontrolleri, koleksiyon silme, filtre/sıralama/sayfalama, duplicate ve üç türde purge/cascade doğrulandı. İlk süreç 5, bağımsız restart 1 test geçti. Görsel fixture ve picker kapsamı TEST-REPORT’ta açıkça ayrıldı.
-- **P4 tamamlandı:** 2026-11-03 gerçek Tauri/WebKit/SQLite ile aynı güne çoklu günlük CRUD/trash/restore, altı mood/boş, ilişkiler, conflict metin koruma, autosave/restart/kurtarma; üç timezone gün/ay/DST toplamları; Cmd+K, Türkçe/literal arama ve sıfır HTTP kabulü. İlk süreç 4, restart 1 test geçti (1 + 4 skipped).
-- **P5 tamamlandı:** limit/retry/Retry-After/timeout/cache; OL/MB baskı önizleme, duplicate yönlendirme, gerçek kayıt/offline restart; seçili metadata diff ve kişisel alan koruması. Canlı Open Library doğrulandı. MusicBrainz/CAA sentetik cache ile doğrulandı; adres yokken canlı bağlantı denenmedi. Keychain sentetik round-trip geçti; gerçek IGDB OAuth denenmedi.
-- **P6 hazırlığı var:** `.hushbackup` export/inspect/restore, snapshot, boyut/hash/şema/görsel kontrolleri, storage gate, süreli token, pointer değişimi, ayar ekranı. Üç temel Rust testi var. Tam round-trip, arşiv saldırı matrisi ve commit kesinti testleri eksik. Üretim güvenilirliği onaylanmış sayılmamalı.
-- **P7 açık:** final production `.app/.dmg`, kurulum, tam kabul, performans, GitHub push/CI/draft release.
+- Tekrar: `npm run test:native -- --backup` / `npm run test:native:p6`. Gerçek Tauri/WebKit, Rust, SQLite; IPC mock yok.
+- Son veri: `/var/folders/zy/nlg3tsjx7b9dnf72st1bbyf00000gn/T/hush-native-DO5yep`. `expected.json`, `changed.json`, `backup-run.json`, `*-passed`, sentetik `.hushbackup` dosyaları Git dışında.
+- 19 tablonun tüm satırları ve beş asset'in image/thumb SHA-256 değerleri karşılaştırılır. Tüm türler, seanslar, tracks/quotes/screenshots, trash, provenance, etiketler, koleksiyon, günlük/ilişki/taslak, slotlar ve ayarlar doludur.
+- Beş başarılı native süreç: roundtrip, reopen ve üç SIGKILL sonrası verify. Üç crash süreci beklenen WDIO bağlantı hatasıyla biter; runner durable PID/nokta işareti olmadan hatayı kabul etmez. Her verify eski/yeni tam veriyi kontrol eder.
+- 19 bozuk arşiv ve üç StorageFull enjeksiyonu aktif veri/pointer'ı korur. Gerçek disk doldurulmadı; fiziksel elektrik kesintisi testi yok.
+- Dosya seçici sonucu e2e-only fixture dosyasından gelir. Picker UI otomasyonu yapılmadı. Üretim komutu keyfi path almaz. Asset fixture kurulumu dışında veriler gerçek IPC ile yazılır.
+- `backup.rs`: duplicate/header kontrolü, hash/manifest/file allowlist, SQLite integrity/FK/schema, item/journal/draft/settings/slot ve görsel doğrulaması; stage revalidation, directory sync, pointer commit. Eski generation'lar tutulur.
+- Yeni inspect önceki token'ı siler; başarısız/iptal edilmiş seçim eski önizlemeyi kullanamaz. Restore token tek kullanımlık ve 15 dakika geçerli. Restore UI query cache ve günlük/item seçimlerini temizler.
+- Sadece e2e derlemesinde selector, fault marker, StorageFull enjeksiyonu ve yeni generation asset scope'u vardır. Release binary/DMG yokluk denetimi P7'de zorunlu.
+- Keychain testi ayrı rastgele service'e sentetik değer yazdı, yedeği taradı, restore sonrası aynı değeri gördü ve sildi. Gerçek kullanıcı credentials kullanılmadı.
+- 31 Rust testi, 4 React testi, strict TS/lint/production web build geçti; son kontroller ve regresyon ayrıntıları TEST-REPORT'ta.
 
-## Önce okunacaklar
+## P7'de korunacak gerçek sınırlar
 
-AGENTS.md, CODEX_BASLANGIC.md, README.md, docs/01–08, docs/PROGRESS.md, docs/TEST-REPORT.md ve bu dosya. Ardından `git status --short`, `git log -3 --oneline` ve mevcut kodu incele. Migration 0001 sözleşmeyle aynı; değiştirme.
+Final production Apple Silicon `.app/.dmg`, native menü/dirty kapanış, onboarding, VoiceOver, iki boyut QA, 5.000 eser/10.000 seans performansı ve tam A01–A22 değerlendirmesi P7 kapsamındadır. Eski P0 `.app` güncel final değildir. GitHub URL/CI/draft release ve notarization yok. Canlı MB/CAA ve gerçek IGDB OAuth geçmiş sayılmamalı; P5 sınırları aşağıdadır.
 
-## Sonraki sohbetin somut işi — yalnız P6
+Mevcut eksik/bozuk active pointer otomatik boş DB yaratmaz; hata ekranı/retry verir. Sağlam pointer ile üç crash recovery senaryosu P6'da geçti. Pointer'ın haricen silinmesi için otomatik generation seçimi veya özel kurtarma seçicisi yok; dosyalar korunur. Eski generation temizliği yapılmaz (diskte kalır). Bu davranışları veri sıfırlama ile değiştirme.
 
-Tam prompt `NEXT_CHAT_PROMPT.md` içinde. Mevcut backup export/inspect/restore ve generation pointer protokolünü tamamla; tüm veri türleriyle round-trip, arşiv saldırı/bozulma/sınır matrisi ve pointer commit öncesi/sonrası kesinti kabulünü gerçek macOS uygulamasında yap. P5'i baştan yazma; canlı MusicBrainz/IGDB sınırlarını geçmiş sayma.
+## Önceki fazların tekrar notları
 
 P5 tekrar: `npm run test:native -- --catalog` (veya `npm run test:native:p5`). Sentetik cache, gerçek Rust/SQLite/IPC; native 4 + 1 passed, 2 + 5 skipped. Son veri `hush-native-I2JwFM`, `catalog-evidence.json`. Canlı OL için isteğe bağlı `--catalog-live`; son canlı kanıt `hush-native-4nR1RX`, `live-open-library.json` ve `live-open-library-flow.json`. İki koşuyu karıştırma.
 
@@ -55,25 +58,12 @@ WDIO embedded 1.5.1 klavye olaylarını WebView'de sentezler; Space/Enter'ın na
 
 Tekrarlanabilir P1 testi: `npm run test:native:p1`; runner’ın yazdırdığı PNG yolunu native seçicide Cmd+Shift+G ile kullanıcı seçer (5 dakika bekleme). Otomasyon izni/AppleScript kullanılmaz. Varsayılan `npm run test:native` kullanıcı etkileşimi beklemez. İki komut da test-only debug binary kullanır.
 
-## Teknik devir notları
 
-- Tipli tek IPC istemcisi `src/infra/tauri/client.ts`. Komutlar `src-tauri/src/commands/mod.rs`; izin kayıtları build.rs + lib.rs + capabilities/main.json.
-- Depolama root/active.json → storage/UUID/library.sqlite3 ve assets. Pointer kaybolunca DB sıfırlanmıyor.
-- `StorageGate` tüm normal komutlarda read, export/restore'da write alıyor; async katalog işlemleri de gate kapsamına alındı. Yeni mutasyonlar bu kuralı izlemeli.
-- Native test build hedefi ayrı: `src-tauri/target/native`. Unit/release hedefiyle karıştırma; aynı hedefte eşzamanlı build önceki oturumda rustdoc çakışması oluşturmuştu.
-- WDIO 9 + Tauri servis/plugin 1.5.1. WDIO 10 uyumsuzdu; yükseltme.
-- `scripts/test-native.mjs` geçici veri dizini açıp iki bağımsız uygulama süreciyle test çalıştırır. `--cover` P1 native kapak kabulünü de açar; mevcut günlük taslağı regresyonu korunur. Backup UI testi değildir. E2E asset scope yalnız aktif generation/assets dizinine eklenir; production scope genişletilmedi.
-- ScreenCaptureKit -3811 nedeniyle CUA ekran incelemesi çalışmadı. WDIO WebView screenshot çalışıyor; artifacts/ altı Git dışı.
-- UI metinleri src/i18n/tr.ts içinde. Test/plugin import production frontend'de mode=e2e koşuluyla elenir; final release binary denetimi henüz yapılmadı.
-- Katalog duplicate sorgusu repository katmanına taşındı; settings.rs içinde kalan SQL ayrı teknik borçtur.
-- Keychain durumundaki “kayıtlı” ifadesi o anda canlı token doğrulaması demek değildir. Kullanıcıdan sohbet içinde anahtar isteme. MusicBrainz iletişim adresi uydurma.
-- Backup doğrulaması genişletilmeli: tüm veri türleri ve asset eşdeğerliği, kötü arşiv fixture'ları, pointer commit öncesi/sonrası fault injection, kurtarma ekranı. Mevcut üç test tam P6 kabulü değildir.
-- Dirty native pencere kapatma/Cmd+Q, normal native menüler, onboarding ve performans kabul işleri açık. Grid/list, manual duplicate UX, albüm linkleri ve screenshot büyütme P3’te tamamlandı; katalog duplicate/refresh kabulü P5’te tamamlandı.
+## Ortak altyapı ve çıktılar
 
-## GitHub ve çıktılar
-
-Dal: `feat/local-library`. Devir checkpoint'i için güncel `git log`u kontrol et.
-
-Remote yok, `gh` kurulu değil, bağlı GitHub aracı yok. 2026-11-02'de GitHub CLI resmî sürüm bilgisini curl ile indirme izni **kullanıcı tarafından reddedildi**; indirme yapılmadı. Yeni sohbette aynı işlemi otomatik tekrar isteme veya başka araçla dolaşma. Kullanıcı GitHub bağlantısını yeniden yetkilendirirse ilerle. Yerel faz çalışması bunu beklemiyor.
-
-Eski P0 çıktısı: `src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Hush.app`. Bu güncel özellikleri içeren final paket değildir. DMG, GitHub URL, CI sonucu ve draft release henüz yok. Apple notarization yapılmadı.
+- Tek tipli IPC istemcisi `src/infra/tauri/client.ts`; komut izinleri build.rs/lib.rs/capabilities üzerinden sınırlı.
+- StorageGate normal işlerde read, export/restore'da write; ağ işlemlerinde SQLite transaction tutulmaz.
+- Native hedef `src-tauri/target/native/debug/hush`; test-only binary. Unit/release hedefinden ayrı tutulur.
+- WDIO 9 / embedded 1.5.1; lockfile yükseltme. Ekran görüntüleri `artifacts/` altında ve Git dışı.
+- Test verisi geçici `hush-native-*` dizinindedir; Application Support'a dokunulmaz. DB sıfırlama yok.
+- Eski P0 app: `src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Hush.app`. Güncel final değildir; DMG henüz yok.

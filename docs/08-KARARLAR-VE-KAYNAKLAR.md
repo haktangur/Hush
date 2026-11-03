@@ -97,3 +97,13 @@ Kullanıcıya MusicBrainz User-Agent iletişim alanının amacı açıklandı; d
 Native fixture'lar provider cache'ine konur; gerçek IPC veya SQLite işlemleri taklit edilmez. Sadece e2e derlemesinde HTTP çıkışını reddeden offline işareti ve izole Keychain servis adı vardır. Release config'ine test komutu/yetkisi eklenmez. HTTP hata fixture'ları Rust testlerinde loopback kullanır. Varsayılan P5 testi canlı servise bağımlı değildir; canlı OL için açık `--catalog-live` seçeneği gerekir.
 
 Metadata yenileme taze ayrıntı ister, on dakikalık opak önizleme token'ıyla yalnız seçilen metadata alanlarını uygular. Token revision ve storage epoch ile bağlıdır. Kişisel alanlar, seanslar, alıntılar, parçalar ve screenshot ilişkileri yeniden yazılmaz. Albüm parça listesini otomatik yenilemez; seçilen baskının parçaları ilk kayıtta atomiktir. Tamamlanmış kitabın sayfa ilerlemesi refresh'te yeniden türetilmez. Yeni toplam mevcut sayfanın altındaysa işlem reddedilir.
+
+## D20 — P6 kabul sınırı ve gerçek kesinti yöntemi (2026-11-03)
+
+Son kullanıcı talimatı yalnız P6, belgeler, yerel commit ve P7 promptunu kapsar. Başlangıçtaki bütün fazları bitirme/GitHub push talimatının bu oturumda önündedir; P7 çalışması yapılmaz. GitHub CLI indirmesi/Finder/System Events izinleri tekrar istenmez.
+
+Native P6 testi gerçek IPC ve depolama kullanır. Native dosya seçiciyi otomatik yönetmek yerine yalnız e2e feature'da geçici test dizininden tek bileşenli fixture adı seçilir; production path API'si/izni genişletilmez. Bu yeni picker kabulü değildir. Asset fixture satırları ayrı test DB'sine kurulur; diğer veri yazmaları gerçek uygulama komutlarıdır.
+
+Kesinti testinde Rust test dalı belirtilen noktada durable PID/nokta işareti yazar ve park eder; runner yalnız bu PID'ye SIGKILL gönderir. WDIO bağlantı hatası ancak işaret, SIGKILL ve ardından bağımsız süreçte tam eşdeğerlik doğrulanınca beklenen kesinti sayılır. Fiziksel elektrik kesintisi veya disk donanımı garantisi iddia edilmez. Disk dolması, dosya yazma/restore sınırlarında StorageFull hata enjeksiyonudur; gerçek disk doldurulmaz.
+
+ZIP 9.2.1 aynı adlı girdileri index'te tekilleştirdiğinden `has_duplicate_names` ve header tutarlılığı açıkça kontrol edilir. Sürüm yükseltilmedi. Restore öncesi dosya ve dizinler sync edilir; pointer tek commit noktasıdır. Eski generation'lar silinmez. Keychain yalnız ayrı rastgele test service'inde denenir; sır yedek/Git/log içine yazılmaz.

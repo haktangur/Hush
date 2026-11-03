@@ -99,11 +99,11 @@ pub fn get(c: &Connection) -> Result<Snapshot> {
         }
     }
 }
-pub fn save(c: &Connection, r: SaveSettings) -> Result<Snapshot> {
-    if r.settings.schema_version != 1
-        || r.settings.locale != "tr"
-        || !(0..=100).contains(&r.settings.room.neon_intensity)
-        || r.settings
+pub fn validate(settings: &Settings) -> Result<()> {
+    if settings.schema_version != 1
+        || settings.locale != "tr"
+        || !(0..=100).contains(&settings.room.neon_intensity)
+        || settings
             .catalog
             .contact
             .as_ref()
@@ -111,6 +111,10 @@ pub fn save(c: &Connection, r: SaveSettings) -> Result<Snapshot> {
     {
         return Err(AppError::new("VALIDATION"));
     }
+    Ok(())
+}
+pub fn save(c: &Connection, r: SaveSettings) -> Result<Snapshot> {
+    validate(&r.settings)?;
     let json = serde_json::to_string(&r.settings).map_err(|_| AppError::new("INTERNAL"))?;
     if c.execute("UPDATE app_settings SET payload_json=?,revision=revision+1,updated_at=? WHERE id=1 AND revision=?",params![json,now(),r.expected_revision])?!=1{return Err(AppError::new("CONFLICT"));}
     get(c)

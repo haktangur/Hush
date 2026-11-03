@@ -1,12 +1,12 @@
 # Hush ilerleme
 
 ## Şu an
-- Son kullanıcı talimatı: yalnız P5 kabulü, belgeler, yerel commit ve P6 başlangıç promptu; ardından dur.
-- P0–P5 tamamlandı. Sonraki sohbet yalnız P6 yedek/kurtarma kabulünü ele almalı.
-- P5 canlı Open Library doğrulandı; MusicBrainz/CAA sentetik cache ile doğrulandı. İletişim adresi verilmediği için canlı MB/CAA, kimlik bilgileri olmadığı için gerçek IGDB bağlantısı denenmedi.
-- P6 hazırlıkları korunuyor; P6/P7 kabulü açık.
-- Ayrıntılı devir: [HANDOFF.md](HANDOFF.md). Test kanıtları: [TEST-REPORT.md](TEST-REPORT.md).
-- Dal: `feat/local-library`; güncel checkpoint için `git log -1`.
+- Son kullanıcı talimatı: yalnız P6 yedek/kurtarma kabulü, belgeler, yerel commit ve P7 başlangıç promptu; ardından dur.
+- P0–P6 kabul kapıları tamamlandı. P7 bu oturumda başlatılmadı.
+- P6: tüm 19 tablo ve 10 görsel dosyası export→restore eşdeğerliği; 19 bozuk arşiv; üç gerçek SIGKILL/reopen sınırı; kontrollü disk-dolu hataları doğrulandı.
+- P5 canlı sağlayıcı sınırları korunur: canlı OL geçti; MB/CAA sentetik cache, gerçek IGDB OAuth denenmedi.
+- Ayrıntılı devir: [HANDOFF.md](HANDOFF.md). Kanıt/yöntem/sınırlar: [TEST-REPORT.md](TEST-REPORT.md).
+- Dal: `feat/local-library`; başlangıç checkpoint'i `b00355b`, bu faz commit'i için `git log -1`.
 
 ## Aşamalar
 - [x] P0 — masaüstü iskeleti (GitHub bağlantı engeli belgeli)
@@ -15,7 +15,7 @@
 - [x] P3 — koleksiyonlar
 - [x] P4 — günlük/takvim/arama
 - [x] P5 — kataloglar (canlı sağlayıcı sınırları raporda)
-- [ ] P6 — yedek/kurtarma
+- [x] P6 — yedek/kurtarma
 - [ ] P7 — test/GitHub/teslim
 
 ## Doğrulananlar
@@ -120,3 +120,16 @@
 - P6 promptu NEXT_CHAT_PROMPT.md'de; P6 kodlamasına geçilmedi. Güncel test sonuçları TEST-REPORT'ta.
 
 - P5 son doğrulama: `npm run check` (4 UI), 28 Rust testi, clippy/fmt/diff kontrolü geçti. Final paket/GitHub/CI/notarization hâlâ P7 sınırıdır.
+
+### 2026-11-03 — P6 yedek/kurtarma kabulü
+- Başlangıç ağacı `b00355b` üzerinde temizdi. Bağımlılık/lockfile/migration değiştirilmedi; üretim verisine dokunulmadı.
+- Gerçek Tauri/WebKit/Rust/SQLite ile altı eser (her türde aktif ve trash), tüm alt kayıtlar, provenance, etiketler, koleksiyon, iki günlük, taslak, üç slot ve ayarlar karşılaştırıldı. 19 tablonun tüm satırları ve beş asset'in image/thumb hash'leri birebir eşit.
+- UI export, restore özeti, iptal, açık değiştirme onayı, cache temizliği ve oda kapakları geçti. Dosya seçim sonucu yalnız e2e derlemesinde izole fixture adıyla sağlanır; native picker yeniden test edilmedi. IPC mock yok.
+- 19 bozuk arşiv reddi; aktif pointer ve tüm kayıt/görseller değişmedi. Duplicate ZIP adı, eksik manifest dosyasının hata kodu ve ayar/slot doğrulaması düzeltildi.
+- Generation rename öncesi, rename sonrası/pointer öncesi ve pointer sonrası gerçek SIGKILL; üç bağımsız yeniden açılışta doğru tam veri. Eski generation korunur. Disk-dolu üç noktada kontrollü StorageFull enjeksiyonudur; disk fiziksel olarak doldurulmadı.
+- Önizleme yeni seçim/iptal/hata ile iptal edilir; tek kullanımlık/süreli token kontrolü, stage yeniden doğrulaması ve dosya/dizin sync korunur. Restore UI geçmiş günlük seçimini de temizler.
+- Sentetik Keychain sırrı arşivde yok; restore değeri değiştirmedi; test sonunda silindi. Gerçek kullanıcı sırrı okunmadı.
+- `npm run check` (4 React), 31 Rust testi; fmt/clippy/diff ve temel native regresyon sonuçları TEST-REPORT'ta.
+- Yeni final `.app/.dmg` yok. GitHub remote/URL/CI yok; reddedilen GitHub CLI/Finder/System Events izinleri yeniden istenmedi. P7 promptu NEXT_CHAT_PROMPT.md içinde.
+
+- P6 son temel native regresyonu 23:24 TRT: 2 + 2 geçti; ayrı `hush-native-hMaDU7`. Clippy `--all-targets -- -D warnings`, fmt ve diff kontrolü geçti.

@@ -23,6 +23,7 @@
     "test:native:p3": "node scripts/test-native.mjs --collections",
     "test:native:p2": "node scripts/test-native.mjs --room",
     "test:native:p1": "node scripts/test-native.mjs --cover",
+    "test:native:p6": "node scripts/test-native.mjs --backup",
     "test:native:p5": "node scripts/test-native.mjs --catalog"
   },
   "dependencies": {

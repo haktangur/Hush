@@ -13,6 +13,25 @@ use std::{
 use zip::{write::SimpleFileOptions, ZipArchive, ZipWriter};
 const TOTAL_LIMIT: u64 = 2 * 1024 * 1024 * 1024;
 const DB_LIMIT: u64 = 256 * 1024 * 1024;
+fn zip_error(error: zip::result::ZipError) -> AppError {
+    match error {
+        zip::result::ZipError::Io(error) => error.into(),
+        _ => invalid(),
+    }
+}
+// Persist directory entries as well as file contents before committing the pointer.
+fn sync_tree(path: &Path) -> Result<()> {
+    for entry in fs::read_dir(path)? {
+        let entry = entry?;
+        if entry.file_type()?.is_dir() {
+            sync_tree(&entry.path())?;
+        } else {
+            File::open(entry.path())?.sync_all()?;
+        }
+    }
+    File::open(path)?.sync_all()?;
+    Ok(())
+}
 fn invalid() -> AppError {
     AppError::new("INVALID_BACKUP")
 }
@@ -170,8 +189,12 @@ pub fn export(s: &Storage, target: &Path) -> Result<()> {
     zip.start_file("manifest.json", options)
         .map_err(|_| invalid())?;
     zip.write_all(&serde_json::to_vec(&manifest).map_err(|_| invalid())?)?;
-    zip.finish().map_err(|_| invalid())?.sync_all()?;
-    partial.persist(target).map_err(|_| AppError::new("IO"))?;
+    zip.finish().map_err(zip_error)?.sync_all()?;
+    #[cfg(feature = "e2e")]
+    injected_io("export_write")?;
+    partial
+        .persist(target)
+        .map_err(|e| AppError::from(e.error))?;
     File::open(parent)?.sync_all()?;
     Ok(())
 }
@@ -180,9 +203,10 @@ pub fn inspect(root: &Path, source: &Path) -> Result<(Inspection, Preview)> {
     fs::create_dir_all(&stage_root)?;
     let directory = tempfile::tempdir_in(&stage_root)?;
     let mut zip = ZipArchive::new(File::open(source)?).map_err(|_| invalid())?;
-    if zip.len() > 20_000 {
+    if zip.len() > 20_000 || zip.has_duplicate_names() {
         return Err(invalid());
     }
+    zip.validate_header_consistency().map_err(|_| invalid())?;
     let mut names = BTreeSet::new();
     let mut total = 0u64;
     // Validate every central-directory entry before writing any content.
@@ -212,6 +236,8 @@ pub fn inspect(root: &Path, source: &Path) -> Result<(Inspection, Preview)> {
             return Err(invalid());
         }
     }
+    #[cfg(feature = "e2e")]
+    injected_io("inspect_space")?;
     check_space(directory.path(), total)?;
     if !names.contains("manifest.json") || !names.contains("library.sqlite3") {
         return Err(invalid());
@@ -242,7 +268,7 @@ pub fn inspect(root: &Path, source: &Path) -> Result<(Inspection, Preview)> {
     let mut declared = BTreeSet::new();
     declared.insert("manifest.json".into());
     for e in &manifest.files {
-        if !safe_path(&e.path) || !declared.insert(e.path.clone()) {
+        if !safe_path(&e.path) || !names.contains(&e.path) || !declared.insert(e.path.clone()) {
             return Err(invalid());
         }
         let bytes = read_bounded(
@@ -260,7 +286,13 @@ pub fn inspect(root: &Path, source: &Path) -> Result<(Inspection, Preview)> {
     if names != declared {
         return Err(invalid());
     }
-    let counts = validate(directory.path())?;
+    let counts = validate(directory.path()).map_err(|e| {
+        if e.code == "UNSUPPORTED_SCHEMA" {
+            e
+        } else {
+            invalid()
+        }
+    })?;
     fs::remove_file(directory.path().join("manifest.json"))?;
     let token = uuid::Uuid::new_v4().to_string();
     Ok((
@@ -338,10 +370,16 @@ fn validate(path: &Path) -> Result<Counts> {
         crate::repositories::journal::validate(&draft.entry, true)?;
     }
     let settings = crate::services::settings::get(&c)?;
-    if settings.value.schema_version != 1 || settings.value.locale != "tr" {
+    crate::services::settings::validate(&settings.value)?;
+    let slots = crate::services::settings::slots(&c)?;
+    if c.query_row(
+        "SELECT count(*) FROM room_slots WHERE slot_id='record_stand' AND asset_id IS NOT NULL",
+        [],
+        |r| r.get::<_, i64>(0),
+    )? != 0
+    {
         return Err(invalid());
     }
-    let slots = crate::services::settings::slots(&c)?;
     if slots.len() != 3 {
         return Err(invalid());
     }
@@ -417,14 +455,23 @@ pub fn restore(root: &Path, old: &Storage, inspection: Inspection) -> Result<Sto
             .map_err(|_| AppError::new("INTERNAL"))?;
         c.execute_batch("PRAGMA wal_checkpoint(TRUNCATE)")?;
     }
+    #[cfg(feature = "e2e")]
+    injected_io("restore_write")?;
+    sync_tree(inspection.directory.path())?;
     let epoch = uuid::Uuid::new_v4().to_string();
     let destination = root.join("storage").join(&epoch);
+    #[cfg(feature = "e2e")]
+    fault(root, "before_generation");
     fs::rename(inspection.directory.path(), &destination)?;
     File::open(root.join("storage"))?.sync_all()?;
+    #[cfg(feature = "e2e")]
+    fault(root, "before_pointer");
     if let Err(error) = super::write_pointer(root, &epoch) {
         super::write_pointer(root, &old.epoch)?;
         return Err(error);
     }
+    #[cfg(feature = "e2e")]
+    fault(root, "after_pointer");
     match Storage::open(root) {
         Ok(s) => Ok(s),
         Err(e) => {
@@ -433,6 +480,37 @@ pub fn restore(root: &Path, old: &Storage, inspection: Inspection) -> Result<Sto
         }
     }
 }
+#[cfg(feature = "e2e")]
+fn injected_io(point: &str) -> Result<()> {
+    if let Some(root) = std::env::var_os("HUSH_TEST_DATA_DIR") {
+        if std::fs::read_to_string(Path::new(&root).join("backup-io-fault"))
+            .ok()
+            .as_deref()
+            == Some(point)
+        {
+            return Err(std::io::Error::from(std::io::ErrorKind::StorageFull).into());
+        }
+    }
+    Ok(())
+}
+
+#[cfg(feature = "e2e")]
+fn fault(root: &Path, point: &str) {
+    if std::fs::read_to_string(root.join("backup-fault"))
+        .ok()
+        .as_deref()
+        == Some(point)
+    {
+        // Runner waits for this durable marker, then SIGKILLs this exact process.
+        let mut marker = File::create(root.join("backup-fault-reached")).unwrap();
+        write!(marker, "{}:{point}", std::process::id()).unwrap();
+        marker.sync_all().unwrap();
+        loop {
+            std::thread::park();
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -490,6 +568,87 @@ mod tests {
             "Korunmalı"
         );
         assert_eq!(Storage::open(root.path()).unwrap().epoch, new.epoch);
+    }
+    #[test]
+    fn expired_or_changed_stage_never_commits() {
+        let root = tempfile::tempdir().unwrap();
+        let old = Storage::open(root.path()).unwrap();
+        let archive = root.path().join("test.hushbackup");
+        export(&old, &archive).unwrap();
+        let (mut expired, _) = inspect(root.path(), &archive).unwrap();
+        expired.created = Instant::now() - Duration::from_secs(901);
+        assert!(
+            matches!(restore(root.path(), &old, expired), Err(e) if e.code == "EXPIRED_BACKUP")
+        );
+        let (changed, _) = inspect(root.path(), &archive).unwrap();
+        fs::write(changed.directory.path().join("library.sqlite3"), b"broken").unwrap();
+        assert!(restore(root.path(), &old, changed).is_err());
+        assert_eq!(Storage::open(root.path()).unwrap().epoch, old.epoch);
+    }
+    #[test]
+    fn missing_owned_asset_preserves_existing_export_and_orphan_is_excluded() {
+        let root = tempfile::tempdir().unwrap();
+        let old = Storage::open(root.path()).unwrap();
+        let id = uuid::Uuid::new_v4().to_string();
+        let archive = root.path().join("test.hushbackup");
+        {
+            let c = old.connection.lock().unwrap();
+            c.execute(
+                "INSERT INTO assets VALUES (?1,?2,?3,'hash','image/webp',1,1,1,?4)",
+                rusqlite::params![
+                    id,
+                    format!("assets/{id}/image.webp"),
+                    format!("assets/{id}/thumb.webp"),
+                    now()
+                ],
+            )
+            .unwrap();
+        }
+        export(&old, &archive).unwrap(); // Unowned missing import is deliberately omitted.
+        let (stage, preview) = inspect(root.path(), &archive).unwrap();
+        assert_eq!(preview.counts.assets, 0);
+        drop(stage);
+        let original = fs::read(&archive).unwrap();
+        old.connection
+            .lock()
+            .unwrap()
+            .execute(
+                "UPDATE room_slots SET asset_id=? WHERE slot_id='poster_left'",
+                [&id],
+            )
+            .unwrap();
+        assert!(export(&old, &archive).is_err());
+        assert_eq!(fs::read(&archive).unwrap(), original);
+    }
+    #[test]
+    fn native_keychain_is_excluded_and_unchanged_by_restore() {
+        let service = format!("app.hush.desktop.test.{}", uuid::Uuid::new_v4());
+        let credential = keyring::Entry::new(&service, "backup-synthetic").unwrap();
+        let secret = uuid::Uuid::new_v4().to_string();
+        credential.set_password(&secret).unwrap();
+        // Always delete the synthetic credential before assertions, including error paths.
+        let result = (|| -> Result<bool> {
+            let root = tempfile::tempdir()?;
+            let old = Storage::open(root.path())?;
+            let archive = root.path().join("test.hushbackup");
+            export(&old, &archive)?;
+            let mut zip = ZipArchive::new(File::open(&archive)?).map_err(|_| invalid())?;
+            for i in 0..zip.len() {
+                let mut bytes = Vec::new();
+                zip.by_index(i)
+                    .map_err(|_| invalid())?
+                    .read_to_end(&mut bytes)?;
+                if bytes.windows(secret.len()).any(|w| w == secret.as_bytes()) {
+                    return Ok(false);
+                }
+            }
+            let (stage, _) = inspect(root.path(), &archive)?;
+            let _new = restore(root.path(), &old, stage)?;
+            Ok(credential.get_password().is_ok_and(|v| v == secret))
+        })();
+        let deleted = credential.delete_credential();
+        assert!(deleted.is_ok());
+        assert!(matches!(result, Ok(true)));
     }
     #[test]
     fn malformed_archive_leaves_active_data_untouched() {

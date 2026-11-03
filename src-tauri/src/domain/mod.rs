@@ -138,8 +138,12 @@ impl From<rusqlite::Error> for AppError {
     }
 }
 impl From<std::io::Error> for AppError {
-    fn from(_: std::io::Error) -> Self {
-        Self::new("IO")
+    fn from(error: std::io::Error) -> Self {
+        Self::new(if error.kind() == std::io::ErrorKind::StorageFull {
+            "DISK_FULL"
+        } else {
+            "IO"
+        })
     }
 }
 pub type Result<T> = std::result::Result<T, AppError>;

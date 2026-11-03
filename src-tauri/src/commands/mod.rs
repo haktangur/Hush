@@ -439,6 +439,46 @@ pub async fn provider_disconnect(app: tauri::AppHandle, request: EmptyRequest) -
     result.into()
 }
 
+// The test selector only supplies a dialog result; the command and storage path remain real.
+fn backup_path(app: &tauri::AppHandle, save: bool) -> Result<Option<std::path::PathBuf>> {
+    #[cfg(feature = "e2e")]
+    if let Some(root) = std::env::var_os("HUSH_TEST_DATA_DIR") {
+        let selector = std::path::PathBuf::from(root).join(if save {
+            "backup-save-selection"
+        } else {
+            "backup-open-selection"
+        });
+        if selector.exists() {
+            let name = std::fs::read_to_string(&selector)?;
+            if name.is_empty() {
+                return Ok(None);
+            }
+            // Fixture names cannot escape the isolated test directory.
+            if name.contains(['/', '\\']) || name == ".." {
+                return Err(AppError::new("VALIDATION"));
+            }
+            return Ok(Some(selector.parent().unwrap().join(name)));
+        }
+    }
+    use tauri_plugin_dialog::DialogExt;
+    let window = app
+        .get_webview_window("main")
+        .ok_or_else(|| AppError::new("IO"))?;
+    let dialog = app
+        .dialog()
+        .file()
+        .set_parent(&window)
+        .add_filter("Hush", &["hushbackup"]);
+    let selected = if save {
+        dialog.set_file_name("Hush.hushbackup").blocking_save_file()
+    } else {
+        dialog.blocking_pick_file()
+    };
+    selected
+        .map(|p| p.into_path().map_err(|_| AppError::new("IO")))
+        .transpose()
+}
+
 #[tauri::command]
 pub async fn backup_export(
     app: tauri::AppHandle,
@@ -446,17 +486,10 @@ pub async fn backup_export(
 ) -> ApiResult<Option<bool>> {
     let _ = request;
     let result = async {
-        use tauri_plugin_dialog::DialogExt;
         let a = app.clone();
-        let selected = tauri::async_runtime::spawn_blocking(move || {
-            a.dialog()
-                .file()
-                .add_filter("Hush", &["hushbackup"])
-                .set_file_name("Hush.hushbackup")
-                .blocking_save_file()
-        })
-        .await
-        .map_err(|_| AppError::new("INTERNAL"))?;
+        let selected = tauri::async_runtime::spawn_blocking(move || backup_path(&a, true))
+            .await
+            .map_err(|_| AppError::new("INTERNAL"))??;
         let Some(path) = selected else {
             return Ok(None);
         };
@@ -464,10 +497,7 @@ pub async fn backup_export(
         tauri::async_runtime::spawn_blocking(move || {
             let _gate = gate;
             let s = storage(&app)?;
-            crate::storage::backup::export(
-                &s,
-                &path.into_path().map_err(|_| AppError::new("IO"))?,
-            )?;
+            crate::storage::backup::export(&s, &path)?;
             Ok(Some(true))
         })
         .await
@@ -483,13 +513,12 @@ pub async fn backup_inspect(
 ) -> ApiResult<Option<crate::storage::backup::Preview>> {
     let _ = request;
     work(app.clone(), move |s| {
-        use tauri_plugin_dialog::DialogExt;
-        let Some(path) = app
-            .dialog()
-            .file()
-            .add_filter("Hush", &["hushbackup"])
-            .blocking_pick_file()
-        else {
+        // A new selection (including cancellation/failure) revokes the previous preview.
+        *app.state::<BackupState>()
+            .0
+            .lock()
+            .map_err(|_| AppError::new("INTERNAL"))? = None;
+        let Some(path) = backup_path(&app, false)? else {
             return Ok(None);
         };
         let root = s
@@ -497,10 +526,7 @@ pub async fn backup_inspect(
             .parent()
             .and_then(|p| p.parent())
             .ok_or_else(|| AppError::new("IO"))?;
-        let (inspection, preview) = crate::storage::backup::inspect(
-            root,
-            &path.into_path().map_err(|_| AppError::new("IO"))?,
-        )?;
+        let (inspection, preview) = crate::storage::backup::inspect(root, &path)?;
         *app.state::<BackupState>()
             .0
             .lock()
@@ -546,6 +572,10 @@ pub async fn backup_restore(
             .and_then(|p| p.parent())
             .ok_or_else(|| AppError::new("IO"))?;
         let new = crate::storage::backup::restore(root, &old, inspection)?;
+        #[cfg(feature = "e2e")]
+        app.asset_protocol_scope()
+            .allow_directory(new.generation.join("assets"), true)
+            .map_err(|_| AppError::new("IO"))?;
         let result = RestoreResult {
             storage_epoch: new.epoch.clone(),
             restored_at: crate::domain::now(),

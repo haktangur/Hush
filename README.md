@@ -45,3 +45,11 @@ Hush, oyunlarını, albümlerini, kitaplarını ve günlüğünü cozy cyberpunk
 SQL ve veri/oda sözleşmeleri başlangıç uygulamasına taşınabilir. Bunlar hazır çalışan bir Tauri projesi değildir. Paket sürümleri, Rust araç zinciri ve GitHub Actions sürümleri geliştirme başlangıcında uyumluluk kontrolünden sonra sabitlenir. Çalıştırılmamış uygulama testleri geçmiş gibi raporlanmaz.
 
 Görsel üretim hizmeti, ücretli API veya Apple Developer üyeliği ilk yerel sürümün ön koşulu değildir. Uygulama içindeki görseller özgün SVG çizimiyle üretilebilir. Dağıtım için Apple imzası/noter onayı daha sonra ayrı olarak eklenebilir.
+
+## Güncel geliştirme durumu — 3 Kasım 2026
+
+P0–P6 kabul kapıları tamamlandı; P7 kalite ve final macOS paketleme henüz açık. Güncel sonuçlar [test raporunda](docs/TEST-REPORT.md), devir bilgileri [HANDOFF](docs/HANDOFF.md) ve [P7 başlangıç promptunda](docs/NEXT_CHAT_PROMPT.md).
+
+P6'yı ayrı sentetik veriyle tekrar çalıştırmak için `npm run test:native:p6`. Bu komut test derlemesi kullanır; tam yedek eşdeğerliği, bozuk arşivler ve üç gerçek SIGKILL/yeniden açılış noktasını doğrular. Dosya seçimi e2e fixture seçimiyle sağlanır; IPC/depolama gerçektir. Disk-dolu senaryosu kontrollü hata enjeksiyonudur. Test arşivleri/geçici veriler Git dışındadır.
+
+Ayarlar → Yedekleme ve geri yükleme bölümünden `.hushbackup` dışa aktarılabilir. Geri yükleme önce özeti gösterir ve mevcut verinin değiştirilmesi için açık onay ister. Yedek kişisel içerik taşır, şifreli değildir; Keychain bağlantı sırlarını içermez. Eski generation kurtarma için diskte tutulur. Final `.app/.dmg` ve GitHub bağlantısı henüz teslim edilmedi.

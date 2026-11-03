@@ -1,4 +1,4 @@
-# Hush test raporu — P5 kabulü ve faz devri
+# Hush test raporu — P6 kabulü ve faz devri
 
 2026-11-03 · macOS 26.6.2 · Apple Silicon arm64 · Node 24.18.0 · Rust 1.97.1.
 Ürün geliştirme aşamasında; tam kabul veya final teslim raporu değildir.
@@ -8,12 +8,13 @@
 | Kontrol | Sonuç ve kapsam |
 |---|---|
 | `npm run check` | Geçti: TypeScript strict, ESLint, 4 React testi, Vite production build |
-| `cargo test --locked --manifest-path src-tauri/Cargo.toml` | 28 test geçti; lib/main/doc test koşuları hatasız |
+| `cargo test --locked --manifest-path src-tauri/Cargo.toml` | 31 test geçti; lib/main/doc test koşuları hatasız |
 | `cargo clippy --locked --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings` | Geçti |
 | `cargo fmt --manifest-path src-tauri/Cargo.toml --check` | Geçti |
 | `git diff --check` | Geçti |
+| `npm run test:native -- --backup` | 2026-11-03: 5 başarılı süreç, 3 kasıtlı SIGKILL + bağımsız verify; runner exit 0 |
 | `npm run test:native -- --catalog` | 2026-11-03: 4 + 1 geçti (2 + 5 skipped); canlı OL ayrı koşuda doğrulandı |
-| `npm run test:native` (sandbox dışında) | 2026-11-03 01:25 TRT: iki bağımsız süreçte 2 + 2 temel regresyon geçti |
+| `npm run test:native` (sandbox dışında) | 2026-11-03 23:24 TRT: iki bağımsız süreçte 2 + 2 temel regresyon geçti |
 | `npm run test:native -- --journal` | 2026-11-03 01:23–01:24 TRT: 4 + 1 geçti (1 + 4 skipped) |
 | `npm run test:native -- --collections` | 14:19 TRT: P3 ilk süreç 5, restart 1 geçti (4 skipped) |
 | `npm run test:native -- --room` | 14:19 TRT: P2 regresyon 3 + 1 geçti (2 skipped) |
@@ -24,7 +25,7 @@ React: bootstrap hatasının başarı gibi gösterilmemesi, kaydetme hatasında 
 
 Rust: DTO, kitap validasyonu/kind değişmezliği, revision/aynı UUID retry/trash, FK hatasında atomiklik, Türkçe ve literal LIKE araması, migration sözleşmesi/ileri schema/missing pointer, görsel doğrulama ve orijinal dosyadan bağımsız kapak kopyası, alt kayıt revision/kind ve koleksiyon silmenin eseri koruması, günlük/draft/reopen/takvim, provider temel mapping/URL, iletişim URL doğrulaması, backup yol kısıtı/bozuk arşivin aktif veriyi koruması/draft round-trip ve eski generation'ın korunması.
 
-Backup'ın üç testi tüm veri türleriyle eşdeğerlik, disk dolması, ZIP saldırı matrisi veya pointer kesinti testleri yerine geçmez.
+P6 tam eşdeğerlik, bozuk arşiv ve SIGKILL kabulü bu raporun son bölümündedir; önceki üç temel testin kapsamı genişletildi.
 
 ## Native son koşu — 2026-11-02 04:34 TRT
 
@@ -47,9 +48,9 @@ Sandbox içindeki ilk deneme WebDriver port 4445 hazır olma timeout'u verdi. Sa
 
 ## Açık kabul koşulları
 
-P0–P4 kapıları tamamlandı. Sıradaki kabul P5 otomatik katalog; aşağıdaki genel matris açık kalır. P2 oda/klavye/hareket alt kapsamı aşağıda ayrıntılıdır; A19 VoiceOver ve tam A01–A22 matrisini kapatmaz.
+P0–P6 kapıları tamamlandı. Sıradaki kabul P7 kalite/teslim; aşağıdaki genel matris açık kalır. P2 oda/klavye/hareket alt kapsamı aşağıda ayrıntılıdır; A19 VoiceOver ve tam A01–A22 matrisini kapatmaz.
 
-A01–A22 tam matris henüz tamam değil. Özellikle katalog canlı/hata/refresh akışları, tam backup restore/kesinti, VoiceOver/klavye, 5.000 eser/10.000 seans performansı, DMG'den açılış ve production binary'de test bileşeni yokluğu doğrulanmadı.
+A01–A22 tam matris henüz tamam değil. Özellikle canlı MB/IGDB sınırları, VoiceOver/klavye, 5.000 eser/10.000 seans performansı, DMG'den açılış ve production binary'de test bileşeni yokluğu doğrulanmadı.
 
 GitHub remote/CI sonucu/draft release yok. GitHub CLI indirme izni kullanıcı tarafından reddedildi. Final `.dmg` yok; notarization yapılmadı. npm geliştirme bağımlılıklarına ait önceki audit bulgularının çözüm incelemesi açık; bu oturumda temiz audit iddiası yok.
 
@@ -252,3 +253,77 @@ Git dışı görseller: `artifacts/p5-book-saved.png`, `p5-album-saved.png`, `p5
 Çıktı `src-tauri/target/native/debug/hush` test binary'sidir. Yeni final `.app/.dmg` üretilmedi; eski P0 paketi güncel final değildir. GitHub remote/URL, CI sonucu, draft release ve notarization yok. Reddedilen GitHub CLI indirmesi/Finder/System Events izinleri yeniden istenmedi. Release'te test bileşeni yokluğunun tam binary/DMG denetimi P7'de kalır; production frontend build'de test import'u elenir. P6/P7 ve tam A01–A22 kabulü açık.
 
 P5 son kontroller: `npm run check` (TypeScript strict, ESLint, 4 React testi, production frontend build), **28 Rust testi**, main/doc testler, clippy `--all-targets -- -D warnings`, fmt ve `git diff --check` geçti. Son Rust çalışması LRU/Retry-After ve metadata epoch korumasından sonradır. Native son koşudan sonra eklenen epoch koşulu kaynak/derleme/Rust regresyonuyla kontrol edildi; live UI tekrarına yeni bir sonuç yazılmadı.
+
+## P6 yedekleme/kurtarma kabulü — 2026-11-03 23:22–23:24 TRT
+
+**İstenen P6 kabul senaryoları geçti. P7 başlatılmadı.** Gerçek macOS Tauri debug uygulaması, WebKit 605.1.15, gerçek IPC/Rust/SQLite kullanıldı. Başlangıç `b00355b` üzerinde temizdi; kullanıcı verisi, migration, bağımlılık sürümü ve lockfile değiştirilmedi.
+
+### Native tam eşdeğerlik
+
+`npm run test:native -- --backup` (`test:native:p6` aynı runner): **5 başarılı süreç**, ayrıca aşağıdaki **3 kasıtlı SIGKILL süreci**. Her kesintiden sonra yeni uygulama süreci açılır; yalnız WebView reload değildir. Son runner exit code **0**.
+
+Veri dizini: `/var/folders/zy/nlg3tsjx7b9dnf72st1bbyf00000gn/T/hush-native-DO5yep`. `expected.json` tam snapshot, `changed.json` yedekten sonraki farklı veri, `backup-run.json` faz/çıkış/PID/nokta/tarih kanıtıdır. `roundtrip-passed`, `reopen-passed`, üç `verify-*-passed` dosyası assertion tamamlanınca yazılır. Arşivler ve kanıtlar Git dışındadır.
+
+| Veri | Karşılaştırılan içerik |
+|---|---|
+| Eserler | İkişer oyun/albüm/kitap; her türde biri aktif, biri trash. Tüm ortak/türe özgü alanlar, ID/revision/tarihler, puan/not/favori/ilerleme |
+| Alt kayıtlar | Altı seans, iki favorili/yorumlu parça, iki alıntı, iki screenshot bağlantısı |
+| İlişkiler | İki provenance, iki Türkçe etiket/12 ilişki, üç türü içeren koleksiyon/üç üyelik |
+| Günlük | Aktif ve trash iki günlük, altı eser bağlantısı, bir tam günlük taslağı |
+| Oda/ayar | Eser posteri, bağımsız görsel posteri, plak standı; tüm ayar JSON'u/revision/tarih |
+| Dosyalar | Beş asset'in 10 image/thumb dosyası, göreli yollar ve SHA-256 değerleri |
+
+**19 tablonun her biri doludur; tüm satırların tüm sütunları ve 10 dosyanın hash'leri birebir eşittir.** Sadece DTO veya toplam kayıt sayısı kıyası yapılmadı. Snapshot SQLite salt-okunur bağlantıyla alınır; DB dosyasının byte hash'i WAL/snapshot düzeni nedeniyle eşdeğerlik ölçütü değildir.
+
+UI'dan export → dosya başarı bildirimi; restore önizlemesinde 6 eser/2 günlük/5 görsel → Vazgeç (değişiklik yok) → yeniden incele/açık “Bu yedeği geri yükle” onayı → oda açılması geçti. Önizleme aktif veriyi değiştirmez. Restore sonrasında farklı neon/taslak değişikliği geri alınır, storage epoch değişir, eski DB hâlâ vardır; query/asset cache yeniden yüklenir ve üç dinamik oda görseli decode olur. Bağımsız restart aynı satır/hash eşdeğerliğini tekrar doğrular.
+
+### Bozuk arşiv ve hata davranışı
+
+19 fixture ayrı ayrı gerçek `backup_inspect` komutundan reddedildi. Her ret sonrası pointer ve tam snapshot değişmez:
+
+- ZIP olmayan/kesilmiş arşiv;
+- `../`, mutlak yol, backslash ve beklenmeyen dosya;
+- manifest hash/boyut uyuşmazlığı, eksik dosya, yeniden hash'lenmiş bozuk WebP;
+- ileri SQLite schema (`UNSUPPORTED_SCHEMA`);
+- yeniden hash'lenmiş FK ihlali, eksik book details, geçersiz ayar JSON değeri, bozuk draft JSON, ek trigger, yanlış türde plak slotu;
+- duplicate ZIP adı, symlink ve aşırı DB boyutu bildiren header.
+
+Diğer fixture'lar `INVALID_BACKUP` döndürdü. Bozuk arşivin Türkçe hata mesajı UI'dan da doğrulandı. Header boyut fixture'ı header tutarlılığı/boyut reddidir; 256 MiB veya 2 GiB gerçek dosya oluşturulmadı. 20.000 entry/2 GiB limitlerinin tüm sınır değerleri native olarak tarandı iddiası yok.
+
+Export son yazma/persist öncesi, inspect alan kontrolü ve restore rename öncesinde e2e-only `StorageFull` enjeksiyonu **DISK_FULL** döndürdü. Aktif veri/pointer ve önceki başarılı yedeğin byte hash'i korundu. Disk fiziksel olarak doldurulmadı; bu kontrollü hata yolu testidir. Rust testi ayrıca eksik referanslı görselde export'un eski hedefi koruduğunu ve sahiplenilmemiş import'un yedeğe alınmadığını doğrular.
+
+Dosya seçimini iptal etme null döndürür. Yeni seçim/iptal önceki inspection token'ını iptal eder. Başarılı token ikinci kullanımda `EXPIRED_BACKUP` verir; 15 dakikalık süre aşımı ve sonradan bozulan stage Rust testinde pointer'ı korur.
+
+### Gerçek kesinti matrisi
+
+| SIGKILL noktası | Yeni süreçte sonuç |
+|---|---|
+| Staging → generation rename öncesi | Eski pointer; yedekten sonra değiştirilmiş eski verinin tüm satır/hash'leri aynı |
+| Generation rename sonrası, pointer commit öncesi | Eski pointer ve tam eski veri; hazırlanmış yeni dizin aktif olmadı |
+| Pointer commit sonrası, yeni bağlantı açılmadan önce | Yeni pointer ve yedeğin tüm satır/hash'leri aynı; eski generation mevcut |
+
+Rust yalnız e2e derlemesinde durable PID/nokta işareti yazar ve park eder. Node runner o PID'ye **SIGKILL** gönderir. Crash WDIO koşularındaki `fetch failed`/`ECONNREFUSED` ve nonzero exit beklenir; **normal başarılı test olarak sayılmaz**. Runner yalnız işaret + gerçekleşen kill + ardından bağımsız başarılı verify birlikte varsa kabul eder. Fiziksel güç kesintisi/donanım cache testi değildir. Üç verify ardından normal restore da tekrar başarılıdır; karışık DB/görsel generation oluşmadı.
+
+### Sır ve test ayrımı
+
+- Rust testinde ayrı rastgele macOS Keychain service'ine sentetik değer yazıldı; export'un tüm açılmış girdileri bu değer için tarandı, yoktu. Restore sonrasında Keychain değeri aynıydı; test girdisi silindi. Gerçek kullanıcı Keychain girdileri okunmadı/değiştirilmedi; sır log/DB/Git'e yazılmadı.
+- Native arşiv yalnız `manifest.json`, `library.sqlite3`, 10 izinli asset dosyası içerir. Test root'undaki sentetik dışlama işareti arşivde yoktur. Katalog cache/log/Keychain dosyaları export kodunun girdisi değildir.
+- Asset fixture dosyaları ve manifest satırları yalnız yeni test DB'sine kuruldu. Diğer tüm kayıt/ilişki/ayar/draft yazmaları gerçek uygulama IPC'sidir. Salt-okunur snapshot karşılaştırması IPC mock değildir.
+- Native picker otomasyonu yapılmadı. Sadece e2e feature'da seçim sonucu geçici test dizinindeki tek bileşenli fixture adıyla sağlanır; üretim komutu keyfi path almaz. P1'in kullanıcı destekli picker kanıtı korunur; P6'yı yeni picker testi diye sunmuyoruz.
+- Yeni selector/fault/disk hata dalları `cfg(feature="e2e")` altında; frontend'de mock veya test import'u eklenmedi. Tam release binary/DMG testi P7'dedir.
+
+### Düzeltmeler, görseller ve kalan sınırlar
+
+ZIP 9.2.1'in duplicate girdileri tekilleştirmesi nedeniyle eski döngü tek başına yeterli değildi; `has_duplicate_names` ve local/central header tutarlılığı kontrolü eklendi. Eksik manifest dosyası IO yerine INVALID_BACKUP verir. Restore ayar aralıklarını/katalog iletişim biçimini ve plak slotunu doğrular; dosya/dizinler pointer öncesi sync edilir. Filesystem StorageFull doğru hata koduna dönüşür. Yeni inspect önceki token/önizlemeyi temizler; restore günlük seçimini de sıfırlar. E2E asset scope yeni generation'a açılır.
+
+Görseller `artifacts/p6-preview.png`, `p6-rejected.png`, `p6-restored.png`, `p6-reopen.png`, `p6-verify-*.png`; Git dışında. Önizleme özeti/uyarı ve restore sonrası üç kapak görsel olarak incelendi. Ayarlar paneli scroll edilir; onay düğmeleri scroll ile erişilir ve UI testi tarafından tıklanır.
+
+İlk sandbox native çalışması ilerlemedi ve sonlandırıldı; mevcut izinli sandbox dışı native yol kullanıldı. Rust sandbox loopback/Keychain erişimini engelledi; dışarıdaki tam koşu geçti. Ara koşularda testin trash öğeyi yeni koleksiyona ekleme varsayımı düzeltildi; eksik dosya hata kodu ve duplicate açığı ürün kodunda giderildi. Önceki başarısız koşular geçmiş sayılmadı. Son native koşuda bazı WebDriver refresh adımları otomatik retry öncesi 30 sn `execute/sync` timeout uyarısı verdi; tüm ilgili snapshot/görsel assertion'ları ve runner sonuçları geçti. Bu uygulama açılış performans ölçümü değildir.
+
+Active pointer haricen silinir/bozulursa mevcut davranış hata/retry ekranıdır; otomatik boş DB yaratılmaz. Sağlam pointer'lı crash recovery yukarıda kanıtlandı. Haricen pointer kaybında özel generation seçicisi/otomatik kurtarma uygulanmadı; generation dosyaları korunur. Eski generation temizliği yapılmaz. Bu sınırlar güvenli export/restore kabulünü değiştirmez, tam kurtarma yönetimi UI'sı iddiası değildir.
+
+Son kontroller: `npm run check` (strict TypeScript, ESLint, **4 React testi**, production web build) ve **31 Rust testi** (main/doc dahil) geçti. Format/clippy/diff ve temel native regresyonun son sonuçları aşağıdadır.
+
+Çıktı `src-tauri/target/native/debug/hush` test binary'sidir. Yeni final `.app/.dmg` üretilmedi; eski P0 paketi güncel teslim değildir. GitHub URL/remote/CI/draft release yok; notarization yok. Reddedilen GitHub CLI/Finder/System Events izinleri tekrar istenmedi. P7 başlangıç promptu NEXT_CHAT_PROMPT.md'dedir.
+
+P6 son regresyonu: `npm run test:native`, 2026-11-03 **23:24 TRT**, iki bağımsız süreçte **2 + 2 passed**; `/var/folders/zy/nlg3tsjx7b9dnf72st1bbyf00000gn/T/hush-native-hMaDU7`. Kitap/not/ilerleme ve günlük autosave/restart korundu. `cargo clippy --locked --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings`, `cargo fmt --manifest-path src-tauri/Cargo.toml --check`, `git diff --check` geçti. Test verisi, arşiv ve görseller Git'e eklenmedi.

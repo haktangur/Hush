@@ -3,6 +3,19 @@ import { spawnSync, spawn } from 'node:child_process';
 import { mkdtempSync, mkdirSync, copyFileSync, writeFileSync, readFileSync, existsSync, unlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { createServer } from 'node:net';
+
+// The embedded WebDriver listens on 127.0.0.1:4445. If another e2e Hush (e.g. a --manual window) already holds it,
+// WDIO would silently drive that window instead of the freshly built app. Refuse to run in that case.
+const WEBDRIVER_PORT = 4445;
+const portFree = await new Promise(resolve => {
+  const server = createServer().once('error', () => resolve(false)).once('listening', () => server.close(() => resolve(true)));
+  server.listen(WEBDRIVER_PORT, '127.0.0.1');
+});
+if (!portFree) {
+  console.error(`Port ${WEBDRIVER_PORT} is already in use (probably an open manual/e2e Hush window). Close it first; tests would otherwise drive that window.`);
+  process.exit(2);
+}
 
 if(process.argv.includes('--regressions')) {
  for(const flag of ['', '--room', '--collections', '--journal', '--catalog', '--backup', '--quality']) {

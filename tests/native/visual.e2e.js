@@ -28,6 +28,16 @@ describe('Visual QA tour',()=>{
    if(await browser.$('.onboarding').isExisting())await shot(size,'01-room-onboarding');
    if(await browser.$('button=Odaya gir').isExisting()){await browser.$('button=Odaya gir').click();await browser.pause(300)}
    await shot(size,'02-room');
+   // Hovering an object must keep the room art visible (no opaque button fill). The embedded WebKit driver does not
+   // produce a real :hover, so every :hover rule is cloned with an equal-specificity class and applied to each hotspot.
+   const hover=await browser.execute(()=>{const css=[];for(const sheet of document.styleSheets){for(const rule of sheet.cssRules){if(rule.selectorText?.includes(':hover'))css.push(rule.cssText.replaceAll(':hover','.qa-hover'))}}
+    const style=document.createElement('style');style.textContent=css.join('\n');document.head.append(style);
+    const result=[...document.querySelectorAll('[data-hotspot]')].map(el=>{el.classList.add('qa-hover');const c=getComputedStyle(el);const r={id:el.dataset.hotspot,bg:c.backgroundColor,outline:c.outlineStyle,cls:el.className,rules:css.filter(t=>t.includes('hotspot')||t.startsWith('button')).map(t=>t.slice(0,90))};return r});
+    return {rules:css.length,result}});
+   await shot(size,'02b-room-hover');
+   await browser.execute(()=>{document.querySelectorAll('.qa-hover').forEach(el=>el.classList.remove('qa-hover'));document.head.lastElementChild.remove()});
+   report.hotspotHover=hover;writeFileSync(join(out,'layout-report.json'),JSON.stringify(report,null,2));expect(hover.rules).toBeGreaterThan(0);
+   for(const h of hover.result){const alpha=Number((h.bg.match(/rgba?\(([^)]+)\)/)?.[1].split(',')[3]??'1').trim());expect(alpha).toBeLessThan(0.1);expect(h.outline).toBe('solid')}
    await shortcut('4');report.selectStyle=await browser.execute(()=>{const s=document.querySelector('[role=dialog] select');const c=s&&getComputedStyle(s);return c&&{bg:c.backgroundImage,appearance:c.appearance||c.webkitAppearance,pos:c.backgroundPosition,h:c.height}});await closeAll();
    for(const [key,name] of [['2','03-games'],['3','04-albums'],['4','05-books']]){await shortcut(key);await shot(size,name);await closeAll()}
    await shortcut('4');const list=await browser.$('button=Kompakt liste');if(await list.isExisting()){await list.click();await shot(size,'06-books-list');await browser.$('button=Kapaklar').click()}

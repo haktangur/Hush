@@ -22,7 +22,11 @@ Devirde bulunan iki sorun düzeltildi (ayrıntı: docs/08 D22):
 | DMG içeriği | Salt-okunur bağlandı: `Hush.app`, Applications bağlantısı, kurulum yönergesi, lisans envanteri. İçerideki app için `codesign --verify --deep --strict` geçti; çalıştırılabilir SHA-256 build app ile aynı; `LSMinimumSystemVersion` 14.0; identifier `app.hush.desktop`. |
 | `npm run verify:release` | Geçti: arm64, ad-hoc, production dependency graph'ta WDIO yok; `HUSH_TEST_DATA_DIR`, e2e capability/identifier, backup selector/fault, mock ve sır desenleri yok. |
 
-SHA-256 (arayüz düzeninden sonraki son paket): DMG `f91c5e157e2e68e1e4aa7e1970bcdbe414b000cfb290fb196c80267ffbc473b9`, app ZIP `165a25b44e4a3058b28f7d119cf941de7e6948c41d12d18e7be035e135ca41d4`.
+SHA-256 (hover düzeltmesinden sonraki son paket): DMG `3c1f9d609de3d9726b92d34cc9f69f8bab34be04c57978b4cae7e42ac2d5b1ac`, app ZIP `2c67bfc45dea8127daaff40fb81361a95c1e526e7244d7e54f0627d345c0b7e0`.
+
+**Hover hatası (kullanıcı bildirdi):** Ortak `button:hover` dolgusu oda eşyalarının şeffaf hover stilini eziyordu; eşyanın üstüne gelince opak gri kutu çiziliyordu. `.hotspot:hover:not(:disabled)` ile düzeltildi. Görsel tur artık bütün `:hover` kurallarını eşit özgüllükte bir sınıfa kopyalayıp sekiz eşyada arka plan saydamlığını (alfa < 0,1) ve çerçeveyi assert eder; gömülü WebKit sürücüsü gerçek `:hover` üretmediği için imleç hareketi tek başına kanıt sayılmaz.
+
+**Test izolasyonu hatası:** Açık bir `--manual` test penceresi WebDriver portu 4445'i tuttuğunda WDIO yeni derlenen uygulama yerine o pencereyi sürüyordu; bu oturumda üç görsel tur koşusu kullanıcının sentetik test penceresine bağlandı (gerçek veri etkilenmedi). Bu koşular kanıt sayılmadı. `scripts/test-native.mjs` artık port doluysa çalışmayı reddeder. Ardından temiz koşuda görsel tur, `npm run check` (7) ve tam `--regressions` (17 süreç geçti) yeniden çalıştırıldı.
 
 **Arayüz düzeni (D23):** `npm run test:native -- --visual` 19 ekranı 1440×900 ve 1100×720'de çekti, yatay taşma raporu boş; screenshot'lar elle incelendi. Düzen sonrası `npm run check` (7 test), tam `--regressions` (smoke, oda, koleksiyon, günlük, katalog, yedek/SIGKILL, kalite) ve `build:mac` + `verify:release` yeniden geçti.
 

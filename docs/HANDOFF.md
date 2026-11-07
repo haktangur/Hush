@@ -10,7 +10,8 @@ P0–P6 tamam. P7 otomatik kalite, paketleme ve yerel commit 2026-11-07'de tamam
 - Kapanış kuralı (D22): yalnız `useUnsavedWork` kaydına giren kirli form/süren işlem Cmd+Q/Cmd+W'yi durdurur. Yeni bir form eklenirse aynı hook'u kullanmalıdır; aksi hâlde Cmd+Q o formun metnini korumaz. Dock "Çık"/sistem kapatma korunmaz (tao `applicationShouldTerminate:` uygulamıyor).
 - Tekrar komutları: `npm run check`; sandbox dışında `cargo test --locked --manifest-path src-tauri/Cargo.toml`; `npm run test:native -- --quality|--performance|--regressions`; `npm run build:mac`; `npm run verify:release`.
 - Sandbox içinde Rust loopback HTTP testi ve WDIO portu çalışmaz; native/HTTP testlerini sandbox dışında koştur.
-- Manuel oturum: `npm run test:native -- --manual` ayrı sentetik/offline test penceresi açar; kullanıcının gerçek verisine dokunmaz.
+- Manuel oturum: `npm run test:native -- --manual` ayrı sentetik/offline test penceresi açar; kullanıcının gerçek verisine dokunmaz. Bu pencere WebDriver portu 4445'i tutar; açıkken diğer native testler bilerek çalışmayı reddeder (önce pencereyi kapat).
+- Görsel QA: `npm run test:native -- --visual` 20 ekranı iki boyutta `artifacts/ui/` altına çeker; taşma ve oda hover saydamlığını assert eder.
 - Türkçe kurulum: [KURULUM-VE-KULLANIM.md](KURULUM-VE-KULLANIM.md). Sürüm notu: [RELEASE-NOTES.md](RELEASE-NOTES.md). Lisans envanteri: `THIRD-PARTY-NOTICES.md`.
 - `.github/workflows/ci.yml` ve `release.yml` yerel hazırlıktır; hiç koşmadı. Reddedilen GitHub CLI indirmesi/Finder/System Events izinleri yeniden istenmez; GitHub için kullanıcıdan yeni açık yetki gerekir.
 

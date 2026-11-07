@@ -22,7 +22,9 @@ Devirde bulunan iki sorun düzeltildi (ayrıntı: docs/08 D22):
 | DMG içeriği | Salt-okunur bağlandı: `Hush.app`, Applications bağlantısı, kurulum yönergesi, lisans envanteri. İçerideki app için `codesign --verify --deep --strict` geçti; çalıştırılabilir SHA-256 build app ile aynı; `LSMinimumSystemVersion` 14.0; identifier `app.hush.desktop`. |
 | `npm run verify:release` | Geçti: arm64, ad-hoc, production dependency graph'ta WDIO yok; `HUSH_TEST_DATA_DIR`, e2e capability/identifier, backup selector/fault, mock ve sır desenleri yok. |
 
-SHA-256: DMG `209fdacb6dbdce35263185abfc5cef3f18f55a06ea4277f31a4409d02a1b30f4`, app ZIP `9331ae201e1798a2bf003a3f3da9fbc4ed430ccae4f1280143a97954c6674d86`.
+SHA-256 (arayüz düzeninden sonraki son paket): DMG `f91c5e157e2e68e1e4aa7e1970bcdbe414b000cfb290fb196c80267ffbc473b9`, app ZIP `165a25b44e4a3058b28f7d119cf941de7e6948c41d12d18e7be035e135ca41d4`.
+
+**Arayüz düzeni (D23):** `npm run test:native -- --visual` 19 ekranı 1440×900 ve 1100×720'de çekti, yatay taşma raporu boş; screenshot'lar elle incelendi. Düzen sonrası `npm run check` (7 test), tam `--regressions` (smoke, oda, koleksiyon, günlük, katalog, yedek/SIGKILL, kalite) ve `build:mac` + `verify:release` yeniden geçti.
 
 ### A01–A22 değerlendirmesi
 

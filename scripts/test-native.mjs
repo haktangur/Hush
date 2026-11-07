@@ -18,6 +18,7 @@ const env = {
   HUSH_TEST_DATA_DIR: process.argv.includes('--manual-resume') ? JSON.parse(readFileSync('artifacts/manual-session.json','utf8')).root : mkdtempSync(join(tmpdir(), 'hush-native-')),
   HUSH_CATALOG_LIVE: process.argv.includes('--catalog-live') ? '1' : '',
   HUSH_NATIVE_QUALITY: process.argv.includes('--quality') ? '1' : '',
+  HUSH_NATIVE_VISUAL: process.argv.includes('--visual') ? '1' : '',
   HUSH_NATIVE_PERFORMANCE: process.argv.includes('--performance') ? '1' : '',
   HUSH_NATIVE_BACKUP: process.argv.includes('--backup') ? '1' : '',
   HUSH_NATIVE_CATALOG: process.argv.includes('--catalog') ? '1' : '',

@@ -127,3 +127,7 @@ D21'deki "açık her panel Cmd+Q/Cmd+W'yi engeller" kuralı daraltıldı. Salt o
 Bilinen sınır (tao 0.37.2 kaynak incelemesi): tao macOS'ta `applicationShouldTerminate:` uygulamaz. Dock menüsündeki "Çık", oturum kapatma ve sistem kapatma `terminate:` ile doğrudan çıkar; bu yollar kaydedilmemiş form metnini korumaz (günlük taslağı 750 ms autosave ile korunur). Menü/klavye Cmd+Q ve Cmd+W özel menü öğeleriyle korunur.
 
 Devir sırasında bulunan ve düzeltilen gerçek sonuç: önceki devir notu `npm run check`'in geçtiğini bildiriyordu, ancak lifecycle Vitest dosyası modül önbelleği nedeniyle başarısızdı. Test, menünün bir kez kurulup hem menü eylemlerini hem native kapanış olayını sınayacağı biçimde yeniden yazıldı.
+
+## D23 — Ortak arayüz ölçüsü ve CSP uyumlu kontroller (2026-11-07)
+
+Kullanıcı geri bildirimiyle bütün paneller tek kontrol yüksekliği (`--control-h: 40px`), tek boşluk ölçeği ve tek odak halkası kullanır; native select görünümü kaldırıldı. Üretim CSP'si `data:` görsellerine izin vermediği için select oku SVG data URI yerine CSS gradyanıyla çizilir; CSP genişletilmedi. Radix'in odakladığı diyalog kabının kendi çerçevesi gizlenir, kontrollerin `:focus-visible` halkası korunur. Görsel kalite `--visual` native turu ile iki pencere boyutunda kontrol edilir.

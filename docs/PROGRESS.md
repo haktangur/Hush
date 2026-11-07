@@ -152,3 +152,9 @@
 - `cargo test` 31 (sandbox dışında), fmt, clippy, diff kontrolü geçti.
 - `npm run build:mac` + `npm run verify:release` geçti; DMG içindeki app imzası ve SHA eşitliği doğrulandı. Release denetimine e2e capability/identifier işaretleri eklendi; DMG staging kopyası artık silinir.
 - Manuel VoiceOver/klavye/Dock/DMG kabulü kullanıcıdan bekleniyor. GitHub CLI/Finder/System Events izni yeniden istenmedi; remote/CI/draft release yok.
+
+### 2026-11-07 — Arayüz düzeni (kullanıcı geri bildirimi)
+- Kullanıcı arayüzü özensiz buldu (kutu boyutları farklı, boşluklar tutarsız). Ortak tasarım ölçüsü uygulandı: tüm kontroller 40 px (`--control-h`), select/metin/tarih/sayı alanları aynı yükseklik, sayı okları kaldırıldı, select oku CSS ile çizildi, onay kutusu/kaydırıcı tema rengi, tek odak halkası; panel/form/kart boşlukları 4·8·12·16·20·24·28 ölçeğinde.
+- Filtreler eşit sütunlu ızgara; kart ızgarası sabit genişlik; detayda durum rozeti ve etiket çipleri; formlarda kapak önizlemesi ve yapışkan Kaydet alt çubuğu; arama sonuçları satır listesi; poster seçici ızgarası; Ayarlar'da yapışkan Kaydet; alt gezinme düğmeleri eşit genişlik; sahne kenarları yumuşatıldı.
+- Yeni `npm run test:native -- --visual`: sentetik kayıtları gerçek IPC ile oluşturup 19 ekranı 1440×900 ve 1100×720'de `artifacts/ui/` altına çeker, taşma raporu yazar (taşma yok). Screenshot'lar incelendi.
+- `npm run check` (7), `--regressions` (tümü geçti), `build:mac` + `verify:release` geçti.

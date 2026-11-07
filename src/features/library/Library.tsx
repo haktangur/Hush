@@ -1,5 +1,5 @@
 import {MetadataRefresh} from '../catalog/MetadataRefresh';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Dialog from '../../components/Dialog';
 import type { ItemKind, LibraryItem } from '../../domain/types';
@@ -10,9 +10,10 @@ import { Activity } from './Activity';
 import { ItemForm, errorText } from './ItemForm';
 import styles from './Library.module.css';
 function Cover({item}:{item:LibraryItem}){const cover=useQuery({queryKey:['asset',item.coverAssetId],queryFn:()=>assets.resolve(item.coverAssetId!),enabled:!!item.coverAssetId});return cover.data?<img className={styles.cover} src={cover.data.thumbnail} alt={tr.cover}/>:<div className={styles.cover}>{item.title.slice(0,1)}</div>}
-export function Library({kind,trashed=false,onClose,client=library,initialItem}:{initialItem?:LibraryItem;kind?:ItemKind;trashed?:boolean;onClose:()=>void;client?:LibraryClient}){
+export function Library({kind,trashed=false,onClose,client=library,initialItem,initialNew=false}:{initialNew?:boolean;initialItem?:LibraryItem;kind?:ItemKind;trashed?:boolean;onClose:()=>void;client?:LibraryClient}){
  const [view,setView]=useState<'grid'|'list'>('grid');const [status,setStatus]=useState('');const [favorite,setFavorite]=useState(false);const [collectionId,setCollectionId]=useState('');const [tag,setTag]=useState('');const [purge,setPurge]=useState(false);const collectionList=useQuery({queryKey:['collections'],queryFn:collections.list});
- const [query,setQuery]=useState('');const [sort,setSort]=useState('updated_desc');const [offset,setOffset]=useState(0);const [selected,setSelected]=useState<LibraryItem|undefined>(initialItem);const [editing,setEditing]=useState(false);const [error,setError]=useState('');const [busy,setBusy]=useState(false);const cache=useQueryClient();
+ const [query,setQuery]=useState('');const [sort,setSort]=useState('updated_desc');const [offset,setOffset]=useState(0);const [selected,setSelected]=useState<LibraryItem|undefined>(initialNew?undefined:initialItem);const [editing,setEditing]=useState(initialNew);const [error,setError]=useState('');const [busy,setBusy]=useState(false);const cache=useQueryClient();
+ useEffect(()=>{const key=(e:KeyboardEvent)=>{if(e.metaKey&&e.key.toLowerCase()==='n'&&!trashed&&!editing&&document.querySelectorAll('[role="dialog"]').length===1){e.preventDefault();setSelected(undefined);setEditing(true)}};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)},[editing,trashed]);
  const filter={kind,query,sort,offset,limit:60,trashed,status:status?status as import('../../domain/types').Status:undefined,favorite:favorite||undefined,collectionId:collectionId||undefined,tags:tag?tag.split(',').map(value=>value.trim()).filter(Boolean):undefined};
  const result=useQuery({queryKey:['library',filter],queryFn:()=>client.list(filter)});
  const refresh=async()=>{await Promise.all([cache.invalidateQueries({queryKey:['library']}),cache.invalidateQueries({queryKey:['bootstrap']}),cache.invalidateQueries({queryKey:['item']}),cache.invalidateQueries({queryKey:['collections']}),cache.invalidateQueries({queryKey:['calendar']})])};

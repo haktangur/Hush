@@ -4,12 +4,21 @@ import { mkdtempSync, mkdirSync, copyFileSync, writeFileSync, readFileSync, exis
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+if(process.argv.includes('--regressions')) {
+ for(const flag of ['', '--room', '--collections', '--journal', '--catalog', '--backup', '--quality']) {
+  const result=spawnSync('npm',['run','test:native','--',...(flag?[flag]:[])],{stdio:'inherit',env:process.env});
+  if(result.status!==0)process.exit(result.status??1);
+ }
+ process.exit(0);
+}
 mkdirSync('artifacts', { recursive: true });
 const env = {
   ...process.env,
   CARGO_TARGET_DIR: join(process.cwd(), 'src-tauri/target/native'),
-  HUSH_TEST_DATA_DIR: mkdtempSync(join(tmpdir(), 'hush-native-')),
+  HUSH_TEST_DATA_DIR: process.argv.includes('--manual-resume') ? JSON.parse(readFileSync('artifacts/manual-session.json','utf8')).root : mkdtempSync(join(tmpdir(), 'hush-native-')),
   HUSH_CATALOG_LIVE: process.argv.includes('--catalog-live') ? '1' : '',
+  HUSH_NATIVE_QUALITY: process.argv.includes('--quality') ? '1' : '',
+  HUSH_NATIVE_PERFORMANCE: process.argv.includes('--performance') ? '1' : '',
   HUSH_NATIVE_BACKUP: process.argv.includes('--backup') ? '1' : '',
   HUSH_NATIVE_CATALOG: process.argv.includes('--catalog') ? '1' : '',
   HUSH_NATIVE_JOURNAL: process.argv.includes('--journal') ? '1' : '',
@@ -27,9 +36,16 @@ if (env.HUSH_NATIVE_COVER) {
 writeFileSync(join(env.HUSH_TEST_DATA_DIR, 'http-attempts.txt'), '');
 console.log(`Native evidence data: ${env.HUSH_TEST_DATA_DIR}`);
 for (const [command, args] of [
-  ['npm', ['run', 'build:native:test']],
+  ['npm', ['run', env.HUSH_NATIVE_PERFORMANCE ? 'build:native:profile' : 'build:native:test']],
   ['npx', ['wdio', 'run', 'tests/native/wdio.conf.js']],
 ]) {
+  if (command === 'npx' && (process.argv.includes('--manual')||process.argv.includes('--manual-resume'))) {
+    writeFileSync(join(env.HUSH_TEST_DATA_DIR,'offline'),'1');
+    const child=spawn(join(process.cwd(),'src-tauri/target/native/debug/hush'),[],{env,stdio:'ignore',detached:true});child.unref();
+    writeFileSync('artifacts/manual-session.json',JSON.stringify({root:env.HUSH_TEST_DATA_DIR,pid:child.pid,startedAt:new Date().toISOString()}));
+    console.log(`Manual isolated offline Hush session: PID ${child.pid}; ${env.HUSH_TEST_DATA_DIR}`);
+    process.exit(0);
+  }
   const result = spawnSync(command, args, { stdio: 'inherit', env });
   if (result.status !== 0) process.exit(result.status ?? 1);
 }

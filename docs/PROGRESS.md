@@ -1,12 +1,10 @@
 # Hush ilerleme
 
 ## Şu an
-- Son kullanıcı talimatı: yalnız P6 yedek/kurtarma kabulü, belgeler, yerel commit ve P7 başlangıç promptu; ardından dur.
-- P0–P6 kabul kapıları tamamlandı. P7 bu oturumda başlatılmadı.
-- P6: tüm 19 tablo ve 10 görsel dosyası export→restore eşdeğerliği; 19 bozuk arşiv; üç gerçek SIGKILL/reopen sınırı; kontrollü disk-dolu hataları doğrulandı.
-- P5 canlı sağlayıcı sınırları korunur: canlı OL geçti; MB/CAA sentetik cache, gerçek IGDB OAuth denenmedi.
+- Aktif aşama: P7 — otomatik kalite, paketleme ve yerel teslim tamam; fiziksel VoiceOver/klavye/DMG kabulü ve GitHub bağlantısı açık.
+- Son çalışan commit: bu oturumun P7 commit'i (`feat/local-library`); önceki `c83d6b0`.
+- Sonraki somut iş: kullanıcı manuel kabul listesini (TEST-REPORT → Manuel kabul) çalıştırıp sonucu bildirsin; GitHub için kullanıcı yeni açık yetki verirse private depo + push + CI.
 - Ayrıntılı devir: [HANDOFF.md](HANDOFF.md). Kanıt/yöntem/sınırlar: [TEST-REPORT.md](TEST-REPORT.md).
-- Dal: `feat/local-library`; başlangıç checkpoint'i `b00355b`, bu faz commit'i için `git log -1`.
 
 ## Aşamalar
 - [x] P0 — masaüstü iskeleti (GitHub bağlantı engeli belgeli)
@@ -16,7 +14,7 @@
 - [x] P4 — günlük/takvim/arama
 - [x] P5 — kataloglar (canlı sağlayıcı sınırları raporda)
 - [x] P6 — yedek/kurtarma
-- [ ] P7 — test/GitHub/teslim
+- [ ] P7 — test/GitHub/teslim (otomatik kontroller, paket ve yerel commit tamam; manuel VoiceOver/DMG kabulü ve GitHub açık)
 
 ## Doğrulananlar
 - 2026-11-01: AGENTS.md, CODEX_BASLANGIC.md, README, docs/01–08 ve contracts okundu.
@@ -133,3 +131,24 @@
 - Yeni final `.app/.dmg` yok. GitHub remote/URL/CI yok; reddedilen GitHub CLI/Finder/System Events izinleri yeniden istenmedi. P7 promptu NEXT_CHAT_PROMPT.md içinde.
 
 - P6 son temel native regresyonu 23:24 TRT: 2 + 2 geçti; ayrı `hush-native-hMaDU7`. Clippy `--all-targets -- -D warnings`, fmt ve diff kontrolü geçti.
+
+### 2026-11-04 — P7 kalite ve yerel teslim çalışması (devir durumu)
+- P7 için native yaşam döngüsü eklendi: pencere kapatma/Cmd+W pencereyi gizler; Cmd+Q, açık diyalog varsa formu koruyup kullanıcıyı Kaydet/Vazgeç akışına yönlendirir. Uygulama yeniden açıldığında pencereyi öne getirir. `app_finish_close` yalnız ana pencere capability'sindedir.
+- İlk açılışta atlanabilir Türkçe gizlilik açıklaması, Türkçe native Hush/Düzen/Pencere menüsü, Hakkında metni ve Cmd+N bağlam kısayolu eklendi. Cmd+N odada yeni kitap, açık koleksiyon/günlükte bağlama uygun yeni kayıt açar; açık formu terk etmez.
+- `npm run test:native -- --quality`: gerçek Tauri pencere close olayı sırasında kaydedilmemiş kitap başlığının korunduğunu, Cmd+S ile kaydedildiğini ve bağımsız ikinci süreçte kaydın bulunduğunu doğruladı. Native menüdeki hazır macOS Quit öğesinin doğrudan `terminate:` çağrısı yaptığı manuel testte keşfedildi; özel Cmd+Q/Cmd+W eylemleriyle düzeltildi. Bu düzeltmeden sonra otomatik lifecycle birim testleri eklendi; kullanıcı yeniden manuel onay vermedi.
+- `npm run test:native -- --performance`: ayrı geçici generation'da 5.000 eser ve 10.000 seansla gerçek IPC/Rust/SQLite/WebKit koştu. Son ölçüm: yerel arama p95 3 ms, panel ilk çizim p95 33 ms, kare aralığı p95 18 ms; minimize edilince sahne animasyonları durdu. Release-optimizasyonlu e2e binary kullanıldı; production paketin soğuk açılış ölçümü değildir.
+- P3–P6 regresyon paketi `npm run test:native -- --regressions` geçti: temel smoke 2+2, collections 5+1, journal 4+1, catalog 4+1 ve P6 tam restore/SIGKILL matrisi. P6 kasıtlı SIGKILL süreçlerindeki WebDriver bağlantı hataları beklenen sonuçtur; üç bağımsız verify süreçleri geçti.
+- `npm run build:mac` Apple Silicon ad-hoc imzalı `Hush.app`, DMG ve app ZIP üretti. `codesign --verify --deep --strict`, `hdiutil verify`, DMG'yi salt-okunur bağlayıp içerideki app'in imza kontrolü ve binary SHA-256 eşitliği geçti. `npm run verify:release` arm64/ad-hoc, üretim bağımlılık grafiği ve bilinen test işaretleri/sentetik veri/sır taramasını geçti.
+- Yerel CI (`.github/workflows/ci.yml`) ve yalnız manuel tetiklenen draft-release workflow'u hazırlandı; remote yok olduğu için GitHub CI/release hiç çalıştırılmadı. GitHub CLI indirme, Finder/System Events izni yeniden istenmedi.
+- Kullanıcı manuel kontrolde ilk iki adıma kadar ilerledi; Cmd+Q uygulamayı kapattı ve tekrar açamadı. Bu hata yukarıdaki özel native menü eylemleriyle düzeltildi. Düzeltme sonrası aynı sentetik test veri dizininde yeni pencere açıldı, ancak kullanıcıdan tekrar manuel sonuç gelmedi. VoiceOver ayrıntılı kabulü, fiziksel Cmd+W/Cmd+Q/Dock yeniden açma ve menü kontrolü bu nedenle **açık** kalır.
+
+### 2026-11-07 — P7 son doğrulama (Claude devri)
+- Devir belgeleri okundu, P7 değişiklikleri korunarak gözden geçirildi. P0–P6 mimarisinde değişiklik gerekmedi.
+- Bulunan sorun: devir notu `npm run check` geçti diyordu, ama lifecycle Vitest testi başarısızdı. Test yeniden yazıldı (7 Vitest geçti).
+- Bulunan sorun: açık her panel Cmd+Q/Cmd+W'yi engelliyordu. D22 ile koruma yalnız kaydedilmemiş form/işlem kaydına (`src/app/unsavedWork.ts`) bağlandı; altı form kayda girer; yalnız en üst diyalog uyarıyı okur; Rust çıkış onayı tipli `QuitApproved` state'inde.
+- `npm run test:native -- --quality` gerçek native close ile kirli formu korudu, temiz panelde pencereyi gizleyip geri getirdi; 1+1 geçti.
+- Performans: arama p95 3 ms, panel ilk çizim p95 32 ms, kare p95 18 ms, minimize duraklama (e2e release profili).
+- `--regressions` artık oda ve kalite paketlerini de çalıştırır; smoke/oda/koleksiyon/günlük/katalog/yedek-SIGKILL/kalite hepsi geçti.
+- `cargo test` 31 (sandbox dışında), fmt, clippy, diff kontrolü geçti.
+- `npm run build:mac` + `npm run verify:release` geçti; DMG içindeki app imzası ve SHA eşitliği doğrulandı. Release denetimine e2e capability/identifier işaretleri eklendi; DMG staging kopyası artık silinir.
+- Manuel VoiceOver/klavye/Dock/DMG kabulü kullanıcıdan bekleniyor. GitHub CLI/Finder/System Events izni yeniden istenmedi; remote/CI/draft release yok.

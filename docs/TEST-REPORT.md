@@ -1,7 +1,98 @@
-# Hush test raporu — P6 kabulü ve faz devri
+# Hush test raporu — P7 son doğrulama
 
-2026-11-03 · macOS 26.6.2 · Apple Silicon arm64 · Node 24.18.0 · Rust 1.97.1.
-Ürün geliştirme aşamasında; tam kabul veya final teslim raporu değildir.
+2026-11-07 · macOS 26.6.2 · Apple Silicon arm64 · Node 24.18.0 · Rust 1.97.1 · WebKit 605.1.15.
+Otomatik sonuçlar aşağıdadır. Fiziksel VoiceOver/klavye ve DMG'den gerçek açılış kullanıcı destekli manuel kabuldür; sonucu gelmeyen adım geçti sayılmaz.
+
+## P7 son doğrulama — 2026-11-07 (Claude devri)
+
+Devirde bulunan iki sorun düzeltildi (ayrıntı: docs/08 D22):
+
+1. Devir notu `npm run check`'in 6 testle geçtiğini bildiriyordu; gerçekte `lifecycle.test.ts` başarısızdı (modül düzeyindeki menü önbelleği ikinci testte `Menu.new` çağrısını boş bırakıyordu). Test yeniden yazıldı.
+2. Açık her panel Cmd+Q/Cmd+W'yi engelliyordu; salt okunur panel açıkken Cmd+Q hiçbir şey yapmıyordu. Koruma artık yalnız kaydedilmemiş form/işlem kaydına (`src/app/unsavedWork.ts`) bakar.
+
+| Kontrol | Gerçek sonuç (2026-11-07) |
+|---|---|
+| `npm run check` | Geçti: strict TypeScript, ESLint, **7** Vitest testi (lifecycle 3), production Vite build. |
+| `cargo test --locked --manifest-path src-tauri/Cargo.toml` | Sandbox dışında **31** test geçti. Sandbox içinde loopback HTTP fixture'ı `OFFLINE` döndürdüğü için `http_status_retry_and_body_limits` başarısız oluyor; ortam kısıtıdır, kod hatası değildir. |
+| `cargo fmt --check`, `cargo clippy --locked --all-targets -D warnings`, `git diff --check` | Geçti. |
+| `npm run test:native -- --quality` | 1 + 1 geçti (`hush-native-j0uAKw`): gerçek native close olayı kirli kitap formunu korudu, uyarı göründü; Cmd+S kaydetti; temiz panel açıkken aynı close pencereyi gizledi, `show` geri getirdi ve panel duruyordu; ikinci süreç kaydı ve onboarding tamamlandı bilgisini gördü. |
+| `npm run test:native -- --performance` | Geçti (`hush-native-2DACDh/performance.json`): 5.000 eser / 10.000 seans; yerel arama p95 **3 ms**, panel ilk çizim p95 **32 ms**, otomasyon dahil panel p95 34 ms, kare aralığı p95 **18 ms** (≈55 fps; 60 fps hedefinin p95'te biraz altında), küçültülünce sahne animasyonları `paused`; süreç RSS ≈142 MB. Release-optimizasyonlu **e2e** binary'dir; production soğuk açılış ölçümü değildir. |
+| `npm run test:native -- --regressions` | Geçti (exit 0). Smoke 2+2; oda (P2) 3+1 (2 skipped); koleksiyonlar 5+1 (4 skipped); günlük/takvim/arama 4+1 (1+4 skipped); katalog fixture 4+1 (2+5 skipped); P6 round-trip + 19 bozuk arşiv + üç gerçek SIGKILL/verify (`hush-native-DXaYev`); kalite 1+1. Oda ve kalite paketleri bu turda regresyon listesine eklendi. |
+| `npm run build:mac` | Geçti: arm64 `Hush.app`, `Hush-0.1.0-aarch64.dmg`, app ZIP, `SHA256SUMS.txt`; ad-hoc imza; `hdiutil verify` VALID. DMG staging kopyası artık build sonunda siliniyor. |
+| DMG içeriği | Salt-okunur bağlandı: `Hush.app`, Applications bağlantısı, kurulum yönergesi, lisans envanteri. İçerideki app için `codesign --verify --deep --strict` geçti; çalıştırılabilir SHA-256 build app ile aynı; `LSMinimumSystemVersion` 14.0; identifier `app.hush.desktop`. |
+| `npm run verify:release` | Geçti: arm64, ad-hoc, production dependency graph'ta WDIO yok; `HUSH_TEST_DATA_DIR`, e2e capability/identifier, backup selector/fault, mock ve sır desenleri yok. |
+
+SHA-256: DMG `209fdacb6dbdce35263185abfc5cef3f18f55a06ea4277f31a4409d02a1b30f4`, app ZIP `9331ae201e1798a2bf003a3f3da9fbc4ed430ccae4f1280143a97954c6674d86`.
+
+### A01–A22 değerlendirmesi
+
+Kanıt türü: **N** gerçek Tauri/WebKit/Rust/SQLite native otomasyon (sentetik geçici veri, IPC mock yok), **R** Rust testi, **V** Vitest, **K** kullanıcı destekli/manuel.
+
+| ID | Durum | Kanıt |
+|---|---|---|
+| A01 | Kısmi | N: her koşu boş sentetik dizinde, offline işaretiyle açılır; elle kayıt çalışır. Production paketin temiz kurulumu K ile açık. |
+| A02 | Kısmi | N (oda, 2026-11-07): sekiz hotspot, menü/kısayollar, odak dönüşü, Escape. VoiceOver seslendirmesi K ile açık. |
+| A03 | Geçti | N: koleksiyon restart süreci altı tam eser DTO'su ve kapakları birebir buldu. |
+| A04 | Geçti (2026-11-02) | N+K: native seçiciden kapak, orijinal taşındıktan sonra yeniden açılışta aynı SHA. Bu turda tekrarlanmadı. |
+| A05 | Geçti | V + R + N: aşım/negatif sayfa reddi, not korunur. |
+| A06 | Geçti | N (günlük): seans ekle/sil, üç saat dilimi, ay sınırları ve toplamlar. |
+| A07 | Geçti | N (koleksiyon): parça/alıntı/screenshot ilişkisi restart sonrası aynı. |
+| A08 | Geçti | N (smoke): günlük taslağı, süreç sonlandırma, kurtarma. |
+| A09 | Geçti | N (koleksiyon): trash/restore/purge, slot/üyelik FK temizliği, poster fallback. |
+| A10 | Geçti | N (günlük): I/ı/İ/i, `%_` literal; Rust HTTP sayacı ve WebView ağ listesi sıfır. |
+| A11 | Kısmi | Canlı Open Library 2026-11-03 geçti (bu turda tekrarlanmadı). MusicBrainz/CAA yalnız sentetik cache; canlı iletişim adresi olmadığından canlı kabul yok. |
+| A12 | Geçti | N (katalog): IGDB bağlı değilken elle oyun ekleme ve ayar yönlendirmesi. |
+| A13 | Geçti | R: timeout/429/503/4xx/5xx, sınırlı retry, gövde limiti; N: bozuk kapak. Gerçek IGDB anahtar reddi denenmedi. |
+| A14 | Geçti | N (katalog): refresh kişisel not/puan/ilerlemeyi korur. |
+| A15 | Geçti | N (P6): 19 tablo ve asset hash eşdeğerliği; sentetik Keychain sırrı arşivde yok. |
+| A16 | Geçti | N: 19 bozuk arşiv; disk dolması kontrollü StorageFull enjeksiyonu (fiziksel disk doldurulmadı). |
+| A17 | Geçti | N: üç noktada gerçek SIGKILL + bağımsız verify. |
+| A18 | Geçti | R + N: eski revision conflict, form metni korunur. |
+| A19 | Kısmi | N: 1440×900 ve 1100×720 sığma, uygulama içi azaltılmış hareket, minimize/blur duraklama. VoiceOver ve macOS sistem hareket tercihi K ile açık. |
+| A20 | Geçti (hedefe göre) | N: yukarıdaki ölçüm; arama ve panel hedefleri sağlandı, kare p95 18 ms. Production soğuk açılış ölçülmedi. |
+| A21 | Kısmi | DMG doğrulama ve içerideki imza geçti. Kullanıcının gerçek Application Support verisine dokunmamak için production app'i ajan açmadı; DMG'den sürükle-aç K ile açık. |
+| A22 | Geçti | `verify:release` + binary taraması: test eklentisi, e2e capability, mock, sır, kişisel veri yok. |
+
+### Manuel kabul (kullanıcıdan bekleniyor)
+
+Önceki manuel denemede Cmd+Q kirli formda uygulamayı kapatmıştı (başarısız). Özel menü eylemleri ve D22 kuralı sonrasında kullanıcıdan yeni sonuç gelmedi. Açık adımlar: VoiceOver'ın hotspot ve Kitaplar → Ekle alan adlarını okuması; kirli formda Cmd+Q/Cmd+W'nin durması ve uyarının okunması; Escape → Geri; temiz durumda Cmd+W → Dock'tan yeniden aç → Cmd+Q; Türkçe Hush/Düzen/Pencere menüleri; DMG'den kurulum ve açılış.
+
+### Bilinen sınırlar
+
+Dock menüsündeki "Çık" ve sistem kapatma `terminate:` ile çıkar; kaydedilmemiş form metnini korumaz (D22). Paket ad-hoc imzalıdır, notarize değildir. GitHub remote/URL, CI koşusu ve draft release yoktur; workflow dosyaları yalnız yerel hazırlıktır. Canlı MusicBrainz/CAA ve gerçek IGDB OAuth kabulü yapılmadı. npm geliştirme bağımlılığı audit bulgularının incelemesi açık.
+
+## P7 güncellemesi — 2026-11-04 (Codex; geçmiş kayıt)
+
+> Not (2026-11-07): Bu bölümdeki `npm run check` "6 test geçti" satırı doğrulanamadı; devir anında lifecycle testi başarısızdı. Güncel sonuçlar yukarıdadır.
+
+| Kontrol | Gerçek sonuç |
+|---|---|
+| `npm run check` | Geçti: strict TypeScript, ESLint, **6** Vitest testi, production Vite build. P7 lifecycle/Cmd+N değişikliklerinden sonra çalıştırıldı. |
+| `cargo test --locked --manifest-path src-tauri/Cargo.toml` | P7 başlangıcında sandbox dışında **31** Rust testi geçti. P7 Rust lifecycle değişikliği sonrasında yeniden çalıştırılacak. |
+| `npm run test:native -- --quality` | Geçti: gerçek native close request açık formdaki metni korudu; Cmd+S kaydetti; ikinci Tauri süreci kaydı gördü. |
+| `npm run test:native -- --performance` | Geçti: release-optimizasyonlu e2e binary, ayrı sentetik generation, 5.000 eser / 10.000 seans. Arama p95 **3 ms**, panel ilk çizim p95 **33 ms**, frame p95 **18 ms**; minimize animasyonları durdurdu. Production cold-start ölçümü değildir. |
+| `npm run test:native -- --regressions` | Geçti: smoke 2+2; collections 5+1; journal 4+1; catalog 4+1; P6 round-trip, 19 bozuk arşiv ve üç SIGKILL/verify sınırı. |
+| `npm run build:mac` | Geçti: arm64 `Hush.app`, DMG, app ZIP ve SHA256SUMS üretildi; ad-hoc imza. |
+| DMG doğrulaması | `hdiutil verify` geçti. Salt-okunur bağlanmış DMG'deki app için `codesign --verify --deep --strict` geçti; binary SHA-256 build app ile eşitti. Finder'dan görsel yükleme/sürükle-bırak iddiası değildir. |
+| `npm run verify:release` | Geçti: arm64/ad-hoc, production dependency graphında WDIO yok; bilinen e2e marker, test fixture verisi ve sır deseni bulunmadı. |
+
+### P7 manuel kabul durumu
+
+Kullanıcı ayrı sentetik/offline Hush penceresinde ilk iki VoiceOver/klavye adımını denediğini bildirdi; VoiceOver'ın kontrol ve alan adlarını okumasına ilişkin ayrıntılı sonuç paylaşılmadı. Üçüncü adımda, kaydedilmemiş form açıkken Cmd+Q uygulamayı doğrudan kapattı ve kullanıcı yeniden açamadı. Bu **başarısız sonuç** olarak kaydedildi.
+
+Neden, macOS predefined Quit menü öğesinin sistem `terminate:` yolunu çağırmasıydı. Native menu, açık diyalogda `hush-close-blocked` bildiren ve boş ekranda yalnız `app_finish_close` komutunu çağıran özel Cmd+Q/Cmd+W eylemleriyle değiştirildi. Vitest lifecycle testleri açık diyaloğun korunmasını ve native kapanışın ancak diyalog kapanınca çağrılmasını doğrular. Aynı test root'u korunarak yeni pencere açıldı; kullanıcıdan düzeltme sonrası yeni manuel sonuç gelmedi.
+
+Bu nedenle aşağıdakiler **açık kabul** olarak kalır: fiziksel Cmd+Q/Cmd+W, Dock'tan yeniden açma, Escape → Geri, Türkçe Hush/Düzen/Pencere menu kontrolleri ve VoiceOver'ın hotspot/form alan adlarını seslendirmesi. Otomatik WDIO klavye olayları bunların yerine geçmez.
+
+### P7 paket ve üretim sınırı
+
+Paketler Git dışı hedef dizinindedir:
+
+- `src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Hush.app`
+- `src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/Hush-0.1.0-aarch64.dmg`
+- `src-tauri/target/aarch64-apple-darwin/release/bundle/Hush-0.1.0-aarch64.app.zip`
+
+Paket ad-hoc imzalıdır; Apple notarization yapılmadı. GitHub remote/URL, CI run sonucu ve draft release yoktur. Yerel CI/release workflow dosyaları yalnız hazırlıktır. Canlı MusicBrainz/CAA ve gerçek IGDB OAuth kabulü yapılmadı. Son P7 kaynak değişikliklerinden sonra final build ve denetim tekrar çalıştırılmalıdır.
 
 ## Son geçen kontroller
 
@@ -48,11 +139,9 @@ Sandbox içindeki ilk deneme WebDriver port 4445 hazır olma timeout'u verdi. Sa
 
 ## Açık kabul koşulları
 
-P0–P6 kapıları tamamlandı. Sıradaki kabul P7 kalite/teslim; aşağıdaki genel matris açık kalır. P2 oda/klavye/hareket alt kapsamı aşağıda ayrıntılıdır; A19 VoiceOver ve tam A01–A22 matrisini kapatmaz.
+P0–P6 kapıları tamamlandı. P7'de iki pencere boyutu, oda/hotspot/focus/reduced-motion regresyonu önceki P2 native koşusunda; 5.000 eser/10.000 seans ve production binary test bileşeni denetimi yukarıdaki P7 koşularında doğrulandı. A01–A22'nin otomatik kanıtı tamamlayıcıdır; fiziksel VoiceOver/klavye ve düzeltme sonrası Cmd+Q/Cmd+W/Dock kabulü açık kaldığından tam matris kapatılmamıştır.
 
-A01–A22 tam matris henüz tamam değil. Özellikle canlı MB/IGDB sınırları, VoiceOver/klavye, 5.000 eser/10.000 seans performansı, DMG'den açılış ve production binary'de test bileşeni yokluğu doğrulanmadı.
-
-GitHub remote/CI sonucu/draft release yok. GitHub CLI indirme izni kullanıcı tarafından reddedildi. Final `.dmg` yok; notarization yapılmadı. npm geliştirme bağımlılıklarına ait önceki audit bulgularının çözüm incelemesi açık; bu oturumda temiz audit iddiası yok.
+Final `.dmg` üretildi ve içeriğindeki uygulamanın imzası doğrulandı; notarization yapılmadı. GitHub remote/CI sonucu/draft release yoktur. GitHub CLI indirme izni kullanıcı tarafından reddedildi. Canlı MB/CAA ile gerçek IGDB OAuth test edilmedi. npm geliştirme bağımlılıklarına ait önceki audit bulgularının çözüm incelemesi açık; temiz audit iddiası yoktur.
 
 ## P1 birleşik native kabul — 2026-11-02 04:44–04:45 TRT
 

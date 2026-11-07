@@ -1,14 +1,20 @@
 # Hush — sohbet devri
 
-2026-11-03 · `/Users/haktan/Desktop/Hush` · `feat/local-library`
+2026-11-07 · `/Users/haktan/Desktop/Hush` · `feat/local-library` ·## Son talimat ve durum
 
-## Son talimat ve durum
+P0–P6 tamam. P7 otomatik kalite, paketleme ve yerel commit 2026-11-07'de tamamlandı (Claude). Açık kalanlar: kullanıcı destekli VoiceOver/klavye/Dock/DMG kabulü ve GitHub (remote/push/CI/draft release). Güncel sonuçlar ve A01–A22 tablosu: [TEST-REPORT.md](TEST-REPORT.md).
 
-Bu oturum yalnız P6 kabulünü tamamladı. **P0–P6 tamamlandı; sıradaki sohbet P7.** Kullanıcı faz sonunda belge, yerel commit ve sonraki prompt istedi; P7 başlatılmadı. Başlangıç commit'i `b00355b`; yeni checkpoint için `git log -1`.
+## P7 güncel kanıt
 
-Reddedilen GitHub CLI indirmesi, Finder/System Events izinlerini yeniden isteme veya başka araçla dolaşma. GitHub remote yok. Kullanıcının yeni açık yetkisi olmadan bu engeli tekrar deneme. Yerel geliştirme ve paketleme bu engeli beklemez.
+- Paketler (Git dışı): `src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Hush.app`, `.../dmg/Hush-0.1.0-aarch64.dmg`, `.../Hush-0.1.0-aarch64.app.zip`, `.../SHA256SUMS.txt`. Ad-hoc imza; notarize değil.
+- Kapanış kuralı (D22): yalnız `useUnsavedWork` kaydına giren kirli form/süren işlem Cmd+Q/Cmd+W'yi durdurur. Yeni bir form eklenirse aynı hook'u kullanmalıdır; aksi hâlde Cmd+Q o formun metnini korumaz. Dock "Çık"/sistem kapatma korunmaz (tao `applicationShouldTerminate:` uygulamıyor).
+- Tekrar komutları: `npm run check`; sandbox dışında `cargo test --locked --manifest-path src-tauri/Cargo.toml`; `npm run test:native -- --quality|--performance|--regressions`; `npm run build:mac`; `npm run verify:release`.
+- Sandbox içinde Rust loopback HTTP testi ve WDIO portu çalışmaz; native/HTTP testlerini sandbox dışında koştur.
+- Manuel oturum: `npm run test:native -- --manual` ayrı sentetik/offline test penceresi açar; kullanıcının gerçek verisine dokunmaz.
+- Türkçe kurulum: [KURULUM-VE-KULLANIM.md](KURULUM-VE-KULLANIM.md). Sürüm notu: [RELEASE-NOTES.md](RELEASE-NOTES.md). Lisans envanteri: `THIRD-PARTY-NOTICES.md`.
+- `.github/workflows/ci.yml` ve `release.yml` yerel hazırlıktır; hiç koşmadı. Reddedilen GitHub CLI indirmesi/Finder/System Events izinleri yeniden istenmez; GitHub için kullanıcıdan yeni açık yetki gerekir.
 
-Önce AGENTS.md, CODEX_BASLANGIC.md, README.md, docs/01–08, PROGRESS, TEST-REPORT ve bu belgeyi oku; mevcut değişiklikleri koru. Migration 0001 ve lockfile'lar değişmedi. P7 başlangıç metni [NEXT_CHAT_PROMPT.md](NEXT_CHAT_PROMPT.md).
+NEXT_CHAT_PROMPT.md).
 
 ## P6 kanıtı ve teknik notlar
 

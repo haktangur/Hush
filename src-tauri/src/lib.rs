@@ -4,7 +4,7 @@ mod providers;
 mod repositories;
 mod services;
 mod storage;
-use tauri::Manager;
+use tauri::{Emitter, Manager};
 pub fn run() {
     let builder = tauri::Builder::default();
     #[cfg(feature = "e2e")]
@@ -12,6 +12,13 @@ pub fn run() {
         .plugin(tauri_plugin_wdio::init())
         .plugin(tauri_plugin_wdio_webdriver::init());
     builder
+        .manage(commands::QuitApproved::default())
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                api.prevent_close();
+                let _ = window.emit("hush-close-request", false);
+            }
+        })
         .plugin(tauri_plugin_dialog::init())
         .manage(services::metadata::RefreshState::default())
         .manage(services::catalog::CatalogState(std::sync::Mutex::new(None)))
@@ -25,6 +32,7 @@ pub fn run() {
             }
         }))
         .invoke_handler(tauri::generate_handler![
+            commands::app_finish_close,
             commands::external_open,
             commands::app_bootstrap,
             commands::library_save,
@@ -65,6 +73,25 @@ pub fn run() {
             commands::backup_inspect,
             commands::backup_restore
         ])
-        .run(tauri::generate_context!())
-        .expect("Hush could not start");
+        .build(tauri::generate_context!())
+        .expect("Hush could not start")
+        .run(|app, event| match event {
+            tauri::RunEvent::ExitRequested { api, .. } => {
+                if !app
+                    .state::<commands::QuitApproved>()
+                    .0
+                    .load(std::sync::atomic::Ordering::SeqCst)
+                {
+                    api.prevent_exit();
+                    let _ = app.emit("hush-close-request", true);
+                }
+            }
+            tauri::RunEvent::Reopen { .. } => {
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+                }
+            }
+            _ => {}
+        });
 }

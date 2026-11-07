@@ -107,3 +107,23 @@ Native P6 testi gerçek IPC ve depolama kullanır. Native dosya seçiciyi otomat
 Kesinti testinde Rust test dalı belirtilen noktada durable PID/nokta işareti yazar ve park eder; runner yalnız bu PID'ye SIGKILL gönderir. WDIO bağlantı hatası ancak işaret, SIGKILL ve ardından bağımsız süreçte tam eşdeğerlik doğrulanınca beklenen kesinti sayılır. Fiziksel elektrik kesintisi veya disk donanımı garantisi iddia edilmez. Disk dolması, dosya yazma/restore sınırlarında StorageFull hata enjeksiyonudur; gerçek disk doldurulmaz.
 
 ZIP 9.2.1 aynı adlı girdileri index'te tekilleştirdiğinden `has_duplicate_names` ve header tutarlılığı açıkça kontrol edilir. Sürüm yükseltilmedi. Restore öncesi dosya ve dizinler sync edilir; pointer tek commit noktasıdır. Eski generation'lar silinmez. Keychain yalnız ayrı rastgele test service'inde denenir; sır yedek/Git/log içine yazılmaz.
+
+## D21 — P7 yerel teslim ve yetki sınırı (2026-11-04)
+
+Son kullanıcı talimatı yalnız P7 kalite/paketleme/teslimi, belge güncellemesi ve yerel commit'i yetkilendirir. Başlangıçtaki GitHub oluşturma/push talimatı bu oturumda uygulanmaz: remote/URL/CI/draft release yok, yeniden uzak erişim veya CLI indirmesi yapılmadı. Önceden doğrulanmış Action SHA'ları korundu; uzak SHA/runner erişimi bu oturumda yeniden doğrulanmadı. Workflow dosyaları yalnız yerel hazırlıktır.
+
+DMG, Tauri'nin Finder görünüm düzenleyen otomasyonu yerine bağımsız `hdiutil` ile oluşturulur. Finder/System Events/AppleScript izni istenmez veya kullanılmaz. Bu, disk görüntüsü üretimidir; reddedilmiş UI otomasyonuna alternatif erişim değildir. Standart Applications bağlantısı ve Türkçe yönerge içerir.
+
+Native Cmd+W/kırmızı kapatma pencereyi gizler; Dock tekrar gösterir. Cmd+Q çıkış isteği UI tarafından çözümlenir. Açık panel/form varsa işlem kesilmez; kullanıcı mevcut Kaydet/Vazgeç akışını tamamlayıp paneli kapatarak kapanışı yeniden ister. Rust storage gate devam eden işlemi bekler. Bu muhafazakâr koruma yalnız dirty alanlar yerine bütün açık panellere uygulanır. Yeni kapatma komutu dar ana pencere capability'sindedir; test komutu değildir.
+
+İlk açılış açıklaması atlanabilir ve gerçek settings işleminden sonra tamamlandı sayılır. Cmd+N odada kitap, açık koleksiyon/günlükte bağlama uygun kayıt açar; mevcut formu terk ettirmez. Türkçe native menü/About metinleri `tr.ts` kaynaklıdır.
+
+Performans fixture'ı yalnız yeni sentetik generation'a 5.000 eser/10.000 seans ekler; hiçbir mevcut veritabanı sıfırlanmaz. Sorgular gerçek IPC/Rust/SQLite, UI gerçek macOS WebKit'tir. Release optimizasyonlu e2e ölçümü production paket ölçümünden ayrılır. Fiziksel VoiceOver/klavye kanıtı kullanıcı destekli olup otomatik WDIO sonuçlarıyla karıştırılmaz.
+
+## D22 — Kapanış koruması yalnız kaydedilmemiş işe uygulanır (2026-11-07, Claude devri)
+
+D21'deki "açık her panel Cmd+Q/Cmd+W'yi engeller" kuralı daraltıldı. Salt okunur bir panel (ör. Kitaplar listesi) açıkken Cmd+Q hiçbir şey yapmıyordu; bu, 02-MIMARI §4'teki "Cmd+Q çıkar; kirli form ve devam eden restore varsa uygun durum yönetimi" ölçütüyle uyumsuzdu. Yeni kural: formlar kaydedilmemiş metin, değişmiş kapak, kaydedilmemiş katalog önizlemesi veya süren kaydet/içe aktar/geri yükleme işlemi taşıdıkları sürece `src/app/unsavedWork.ts` kaydına girer (ItemForm, günlük editörü, seans/alıntı/parça/screenshot editörü, koleksiyon editörü, Ayarlar). Kayıt boşsa Cmd+W/kırmızı düğme pencereyi gizler, Cmd+Q çıkar; doluysa ikisi de durur ve yalnız en üstteki diyalog uyarıyı bir kez okur. Rust `app_finish_close` storage gate'i bekler. Çıkış onayı tipli `QuitApproved` state'iyle tutulur.
+
+Bilinen sınır (tao 0.37.2 kaynak incelemesi): tao macOS'ta `applicationShouldTerminate:` uygulamaz. Dock menüsündeki "Çık", oturum kapatma ve sistem kapatma `terminate:` ile doğrudan çıkar; bu yollar kaydedilmemiş form metnini korumaz (günlük taslağı 750 ms autosave ile korunur). Menü/klavye Cmd+Q ve Cmd+W özel menü öğeleriyle korunur.
+
+Devir sırasında bulunan ve düzeltilen gerçek sonuç: önceki devir notu `npm run check`'in geçtiğini bildiriyordu, ancak lifecycle Vitest dosyası modül önbelleği nedeniyle başarısızdı. Test, menünün bir kez kurulup hem menü eylemlerini hem native kapanış olayını sınayacağı biçimde yeniden yazıldı.

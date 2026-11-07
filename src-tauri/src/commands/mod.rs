@@ -676,3 +676,27 @@ pub async fn catalog_refresh_apply(
     })
     .await
 }
+
+/// Set once the UI has approved quitting, so `RunEvent::ExitRequested` lets the exit through.
+#[derive(Default)]
+pub struct QuitApproved(pub std::sync::atomic::AtomicBool);
+
+// Called only after the UI has no unsaved form work. Waits for any running storage
+// operation (save, import, restore) to release the gate before quitting or hiding.
+#[tauri::command]
+pub async fn app_finish_close(
+    app: tauri::AppHandle,
+    quit: bool,
+    gate: tauri::State<'_, StorageGate>,
+) -> std::result::Result<(), String> {
+    let _guard = gate.0.write().await;
+    if quit {
+        app.state::<QuitApproved>()
+            .0
+            .store(true, std::sync::atomic::Ordering::SeqCst);
+        app.exit(0);
+    } else if let Some(window) = app.get_webview_window("main") {
+        window.hide().map_err(|_| "UNAVAILABLE".to_string())?;
+    }
+    Ok(())
+}

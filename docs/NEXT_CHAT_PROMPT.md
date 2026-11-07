@@ -1,13 +1,11 @@
-# Sonraki sohbet — yalnız P7 kalite ve teslim
+# Sonraki oturum — P7 manuel kabul ve GitHub
 
 ```text
-/Users/haktan/Desktop/Hush projesinde devam et. AGENTS.md, CODEX_BASLANGIC.md, README.md, docs/01–08, PROGRESS, HANDOFF ve TEST-REPORT dosyalarını oku; git status ve son commit'leri kontrol et, mevcut değişiklikleri koru.
+/Users/haktan/Desktop/Hush projesinde devam et. Önce AGENTS.md, docs/PROGRESS.md, docs/HANDOFF.md, docs/TEST-REPORT.md ve docs/08 D21–D22'yi oku; git status ve son commit'i kontrol et, mevcut değişiklikleri koru.
 
-P0–P6 kabul kapıları tamamlandı. Yalnız P7 kalite/paketleme/teslim işlerini tamamla; önceki fazları yeniden tasarlama. Tam A01–A22 matrisini gerçek sonuçlarla değerlendir. Gerçek macOS uygulamasında iki pencere boyutu, erişilebilirlik/VoiceOver, klavye ve dirty kapanış, çevrimdışı davranış, 5.000 eser/10.000 seans performansı ve regresyonları doğrula. Test verisini ayrı sentetik dizinde tut; IPC mock kullanma, veritabanını sıfırlama.
+P0–P6 ve P7'nin otomatik/paketleme kısmı tamam. Açık olanlar:
+1. Kullanıcı destekli manuel kabul (TEST-REPORT → "Manuel kabul"): VoiceOver hotspot/form adları, kirli formda Cmd+Q/Cmd+W'nin durması, Escape → Geri, temiz durumda Cmd+W → Dock → Cmd+Q, Türkçe menüler, DMG'den kurulum/açılış. Kullanıcının bildirdiği sonucu aynen yaz; gelmeyen adımı geçti sayma. Hata çıkarsa düzelt, `npm run check`, ilgili native test, `npm run build:mac`, `npm run verify:release` tekrarla.
+2. GitHub: remote yok. Kullanıcı yeni ve açık yetki verirse (ör. `gh auth login`'i kendisi yaptıktan sonra) kişisel hesapta private `hush` (doluysa `hush-desktop`) deposu, push, CI sonucu ve draft release. Yetki yoksa yeniden isteme; CLI indirme/Finder/System Events izinlerini dolaşma.
 
-Production Apple Silicon Hush.app ve .dmg üret, ad-hoc imzayı ve DMG'den açılışı doğrula. Release'te WDIO/test komutları, HUSH_TEST_DATA_DIR, backup selector/fault/StorageFull dalları, mock adaptörü ve sır bulunmasın. Türkçe kurulum/kullanım yönergesini ve teslim raporunu güncelle. P6 tekrar komutu npm run test:native -- --backup; yöntem ve gerçek sınırlar HANDOFF/TEST-REPORT'tadır.
-
-Reddedilmiş GitHub CLI indirmesi/Finder/System Events izinlerini yeniden isteme veya başka araçla dolaşma. GitHub remote/URL/CI/draft release henüz yok; bu engeli açıkça koru. Mevcut yetkiyle yapılabilen yerel CI/workflow/kaynak hazırlığını tamamla; uzak erişim için yeni açık kullanıcı yetkisi olmadan işlem yapma. Sırlar yedeğe, frontend'e veya Git'e girmesin. Canlı MB/CAA iletişim adresi ve IGDB kimliği yokluğunu başarılı canlı test diye sunma.
-
-npm run check, Rust testleri, fmt/clippy, native regresyonlar ve release kontrolleri geçsin. Düzeltilebilir hataları çöz. Belgeleri güncelle, yerel commit oluştur. Son mesajda .app/.dmg yolları, commit, geçen test/ölçümler ve GitHub/notarization gibi kalan gerçek sınırları belirt; ardından dur.
+Native/HTTP testleri sandbox dışında koşmalı. Test verisi yalnız yeni hush-native-* geçici dizinlerinde. Kullanıcının Application Support verisine dokunma, veritabanını sıfırlama, IPC mock kullanma. Notarization, canlı MB/CAA ve gerçek IGDB OAuth yokluğunu başarı gibi raporlama.
 ```

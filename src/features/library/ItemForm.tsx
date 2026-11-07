@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useUnsavedWork } from '../../app/unsavedWork';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import * as Dialog from '../../components/Dialog';
@@ -17,7 +18,8 @@ export function ItemForm({kind,item,draft,initialTracks,warnings,client,onSaved,
  const [cover,setCover]=useState(item?.coverAssetId??draft?.coverAssetId??null);const [importing,setImporting]=useState(false);
  const [id]=useState(()=>item?.id??draft?.id??crypto.randomUUID());const [error,setError]=useState('');const [confirm,setConfirm]=useState(false);
  const {register,handleSubmit,formState:{isDirty,isSubmitting}}=useForm<Fields>({defaultValues:initial(item??draft)});
- const close=()=>{if(isSubmitting||importing)return;if(isDirty||cover!==(item?.coverAssetId??draft?.coverAssetId??null))setConfirm(true);else onClose()};
+ const coverChanged=cover!==(item?.coverAssetId??draft?.coverAssetId??null);useUnsavedWork(isDirty||coverChanged||(!!draft&&!item)||isSubmitting||importing);
+ const close=()=>{if(isSubmitting||importing)return;if(isDirty||coverChanged)setConfirm(true);else onClose()};
  const submit=handleSubmit(async values=>{setError('');if(duplicate)return;try{commonSchema.parse(values);const base={id,title:values.title,creator:values.creator,releaseYear:nullableNumber(values.year),rating:nullableNumber(values.rating),favorite:values.favorite,notes:values.notes,tagNames:values.tags.split(',').map(x=>x.trim()).filter(Boolean),startedOn:values.started||null,completedOn:values.completed||null,coverAssetId:cover,provenance:item?.provenance??draft?.provenance??null};let itemDraft:ItemDraft;
  if(kind==='book'){const total=nullableNumber(values.totalPages),current=Number(values.currentPage);if(current<0||!Number.isInteger(current)||(total!==null&&(!Number.isInteger(total)||total<1||current>total)))throw new Error('validation');itemDraft={...base,kind,status:values.status,details:{totalPages:total,currentPage:current,isbn:values.isbn||null,publisher:values.publisher,language:values.language}}}
  else if(kind==='game')itemDraft={...base,kind,status:values.status,details:{platform:values.platform,developer:values.developer,progressPercent:nullableNumber(values.progress),returnNote:values.returnNote}};

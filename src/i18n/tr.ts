@@ -1,4 +1,7 @@
 export const tr = {
+ enterRoom:'Odaya gir',skipIntro:'Atla',introPrivacy:'Kayıtların bu Mac’te tutulur. Katalog araması isteğe bağlıdır; notların ve günlüklerin gönderilmez.',
+ closePanelFirst:'Kapatmadan önce açık paneldeki işlemi tamamla. Değişikliklerini kaydet veya vazgeç; sonra yeniden kapat.',
+ nativeMenu:{about:'Hush Hakkında',edit:'Düzen',undo:'Geri al',redo:'Yinele',cut:'Kes',copy:'Kopyala',paste:'Yapıştır',selectAll:'Tümünü seç',hide:'Hush’u gizle',quit:'Hush’tan çık',window:'Pencere',minimize:'Simge durumuna küçült',close:'Pencereyi kapat',credits:'Özgün oda: Hush. Kataloglar: Open Library, MusicBrainz, Cover Art Archive, IGDB. Açık kaynak lisansları kaynak teslimindeki THIRD-PARTY-NOTICES.md dosyasındadır.'},
  view:'Görünüm',gridView:'Kapaklar',listView:'Kompakt liste',
  duplicateTitle:'Bu başlıkta bir eser zaten var. Ayrı bir baskı olarak kaydedebilirsin.',openExisting:'Kaydı aç',keepSeparate:'Ayrı kayıt olarak devam et',enlargeScreenshot:'Ekran görüntüsünü büyüt',openSpotify:'Spotify’da aç',openAppleMusic:'Apple Music’te aç',
  openAssigned:'Atanan eseri aç',

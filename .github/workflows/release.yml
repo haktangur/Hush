@@ -1,0 +1,39 @@
+name: Hush draft release
+# Source preparation only; no remote run has been authorized or performed locally.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  package:
+    runs-on: macos-15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: rustup show
+      - run: rustup target add aarch64-apple-darwin
+      - run: npm ci
+      - run: npm run check
+      - run: cargo fmt --manifest-path src-tauri/Cargo.toml --check
+      - run: cargo clippy --locked --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings
+      - run: cargo test --locked --manifest-path src-tauri/Cargo.toml
+      - run: npm run test:native -- --regressions
+      - run: npm run build:mac
+      - run: npm run verify:release
+      - name: Prepare draft only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          version=$(node -p "require('./package.json').version")
+          base=src-tauri/target/aarch64-apple-darwin/release/bundle
+          git rev-parse HEAD > "$base/BUILD-COMMIT.txt"
+          gh release create "v$version" --draft --target "$GITHUB_SHA" --title "Hush $version" --notes-file docs/RELEASE-NOTES.md "$base/dmg/Hush-$version-aarch64.dmg" "$base/Hush-$version-aarch64.app.zip" "$base/SHA256SUMS.txt" "$base/BUILD-COMMIT.txt"

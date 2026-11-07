@@ -6,6 +6,7 @@
   ],
   "permissions": [
     "core:default",
+    "allow-app-finish-close",
     "allow-external-open",
     "allow-app-bootstrap",
     "allow-library-save",

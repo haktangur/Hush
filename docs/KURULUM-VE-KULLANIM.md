@@ -19,4 +19,4 @@ Ayarlar → Yedekleme ve geri yükleme → Yedek dışa aktar ile `.hushbackup` 
 
 Open Library kitapları, MusicBrainz/CAA albüm bilgisi ve kapaklarını sağlar. Katalog araması için internet gerekir; kaydedilmiş kayıt/kapaklar çevrimdışı açılır. MusicBrainz kullanmadan önce Ayarlar’a sana ait geçerli HTTPS iletişim profilini girip Kaydet. IGDB isteğe bağlıdır: Twitch uygulama kimliği ve secret yalnız uygulama ayarında girilir, Keychain’e yazılır; sohbete veya `.env` dosyasına koyma. Bağlantı olmadan elle oyun eklenebilir. Spotify/Apple Music düğmeleri dış tarayıcıda açılır; Hush müzik çalmaz.
 
-Sürümün gerçek testleri ve sınırları `TEST-REPORT.md`, lisans/kaynak bilgileri `THIRD-PARTY-NOTICES.md` içindedir. GitHub uzak deposu/CI sonucu/draft release henüz yoktur.
+Sürümün gerçek testleri ve sınırları `TEST-REPORT.md`, lisans/kaynak bilgileri `THIRD-PARTY-NOTICES.md` içindedir. Kaynak kod: https://github.com/haktangur/Hush (public). Draft release henüz oluşturulmadı.

@@ -22,7 +22,7 @@
 - Tauri CLI kararlı sürümü npm üzerinden 2.12.4 olarak doğrulandı.
 
 ## Engeller
-- GitHub CLI kurulu değil; bağlı GitHub aracı/remote yok. 2026-11-02 resmî CLI sürüm bilgisini indirme izni kullanıcı tarafından reddedildi. GitHub işi açık; yerel fazları engellemiyor.
+- (Çözüldü 2026-11-08) GitHub: kullanıcı public `https://github.com/haktangur/Hush` deposunu verdi; `main` ve `feat/local-library` push edildi. Commit e-postaları kullanıcının isteğiyle GitHub noreply adresine çevrildi (D24).
 
 ## Karar değişiklikleri
 - D15: faz sonunda durma, GitHub CLI indirmesini yinelememe ve Finder/System Events otomasyon iznini yeniden istememe; kullanıcı talimatları için docs/08 karar kaydına bak.

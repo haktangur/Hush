@@ -1,7 +1,7 @@
 # Sonraki oturum — P7 manuel kabul ve GitHub
 
 ```text
-/Users/haktan/Desktop/Hush projesinde devam et. Önce AGENTS.md, docs/PROGRESS.md, docs/HANDOFF.md, docs/TEST-REPORT.md ve docs/08 D21–D22'yi oku; git status ve son commit'i kontrol et, mevcut değişiklikleri koru.
+<proje kökü> projesinde devam et. Önce AGENTS.md, docs/PROGRESS.md, docs/HANDOFF.md, docs/TEST-REPORT.md ve docs/08 D21–D22'yi oku; git status ve son commit'i kontrol et, mevcut değişiklikleri koru.
 
 P0–P6 ve P7'nin otomatik/paketleme kısmı tamam. Açık olanlar:
 1. Kullanıcı destekli manuel kabul (TEST-REPORT → "Manuel kabul"): VoiceOver hotspot/form adları, kirli formda Cmd+Q/Cmd+W'nin durması, Escape → Geri, temiz durumda Cmd+W → Dock → Cmd+Q, Türkçe menüler, DMG'den kurulum/açılış. Kullanıcının bildirdiği sonucu aynen yaz; gelmeyen adımı geçti sayma. Hata çıkarsa düzelt, `npm run check`, ilgili native test, `npm run build:mac`, `npm run verify:release` tekrarla.

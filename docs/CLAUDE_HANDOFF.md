@@ -4,7 +4,7 @@
 
 ## Görev
 
-`/Users/haktan/Desktop/Hush` içinde yalnız P7 kalite, paketleme ve teslimi tamamla. P0–P6 kabul kapıları tamamlandı; önceki fazları yeniden tasarlama. Bu dosya, `docs/NEXT_CHAT_PROMPT.md` ile birlikte doğrudan çalışma bağlamıdır.
+`<proje kökü>` içinde yalnız P7 kalite, paketleme ve teslimi tamamla. P0–P6 kabul kapıları tamamlandı; önceki fazları yeniden tasarlama. Bu dosya, `docs/NEXT_CHAT_PROMPT.md` ile birlikte doğrudan çalışma bağlamıdır.
 
 ## Başlangıç durumu
 

@@ -1,6 +1,6 @@
 # Hush — sohbet devri
 
-2026-11-07 · `/Users/haktan/Desktop/Hush` · `feat/local-library` ·## Son talimat ve durum
+2026-11-07 · `<proje kökü>` · `feat/local-library` ·## Son talimat ve durum
 
 P0–P6 tamam. P7 otomatik kalite, paketleme ve yerel commit 2026-11-07'de tamamlandı (Claude). Açık kalanlar: kullanıcı destekli VoiceOver/klavye/Dock/DMG kabulü ve GitHub (remote/push/CI/draft release). Güncel sonuçlar ve A01–A22 tablosu: [TEST-REPORT.md](TEST-REPORT.md).
 

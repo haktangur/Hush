@@ -131,3 +131,7 @@ Devir sırasında bulunan ve düzeltilen gerçek sonuç: önceki devir notu `npm
 ## D23 — Ortak arayüz ölçüsü ve CSP uyumlu kontroller (2026-11-07)
 
 Kullanıcı geri bildirimiyle bütün paneller tek kontrol yüksekliği (`--control-h: 40px`), tek boşluk ölçeği ve tek odak halkası kullanır; native select görünümü kaldırıldı. Üretim CSP'si `data:` görsellerine izin vermediği için select oku SVG data URI yerine CSS gradyanıyla çizilir; CSP genişletilmedi. Radix'in odakladığı diyalog kabının kendi çerçevesi gizlenir, kontrollerin `:focus-visible` halkası korunur. Görsel kalite `--visual` native turu ile iki pencere boyutunda kontrol edilir.
+
+## D24 — Public GitHub deposu (2026-11-08)
+
+Kullanıcı mevcut **public** `https://github.com/haktangur/Hush` deposunu verdi ve push istedi. Bu, CODEX_BASLANGIC/07'deki "varsayılan private" kuralının önündedir. Push öncesi tüm git geçmişi sır desenleri (özel anahtar, GitHub/AWS/Google/Slack/OpenAI token'ları, client_secret, Bearer, parola), riskli uzantılar (.env, .p12, .pem, .key, SQLite, .hushbackup) ve kişisel veri açısından tarandı; bulgu yok. Belgelerdeki yerel kullanıcı yolu temizlendi. `.gitignore` macOS metadata, imza materyali ve editör dosyalarıyla genişletildi. Ekran görüntüleri yalnız sentetik test verisidir. Lisans dosyası kullanıcı kararı olarak bekletildi.

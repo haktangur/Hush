@@ -1,55 +1,97 @@
-# Hush — Codex geliştirme paketi
+# Hush
 
-**Sürüm:** Mimari 1.0 · **Tarih:** 1 Kasım 2026 · **Durum:** Uygulamaya hazır tasarım; henüz uygulama kodu değildir.
+Oyunlarını, albümlerini, kitaplarını ve günlüğünü yağmurlu bir gecede, cozy cyberpunk bir dijital odada sakladığın kişisel macOS uygulaması. Arayüz Türkçedir; veriler yalnız senin Mac'inde durur.
 
-Hush, oyunlarını, albümlerini, kitaplarını ve günlüğünü cozy cyberpunk bir dijital odada sakladığın, Türkçe bir macOS uygulamasıdır. Bu paket ürün kararlarını, mimariyi, tasarımı, veri sözleşmelerini ve teslim ölçütlerini tanımlar.
+![Hush odası](docs/screenshots/02-room.jpg)
 
-## Nasıl kullanılır?
+| Kitaplık | Eser detayı | Elle ekleme |
+|---|---|---|
+| ![Kitaplar paneli](docs/screenshots/05-books.jpg) | ![Kitap detayı](docs/screenshots/07-book-detail.jpg) | ![Kitap formu](docs/screenshots/08-book-form.jpg) |
 
-1. ZIP dosyasını aç. `Hush-Codex-Paketi` klasörünün içeriğini yeni Hush proje klasörüne yerleştir. `AGENTS.md`, proje kökünde kalsın.
-2. Bu proje klasörünü Codex'te aç.
-3. `CODEX_BASLANGIC.md` dosyasındaki başlangıç talimatını Codex'e ver veya dosyayı okumasını iste.
-4. Codex, `docs/06-UYGULAMA-PLANI.md` sırasını izleyerek uygulamayı geliştirir. Bu paketin teslim edilmiş olması, uygulamanın yazıldığı veya test edildiği anlamına gelmez.
+<sub>Ekran görüntüleri sentetik test verisiyle alınmıştır.</sub>
 
-## Kesinleşen ürün kararları
+## Özellikler
 
-- Ad: **Hush**. Arayüz: **Türkçe**. Kullanım: tek kişinin kendi Mac'i.
-- Ana ekran: çizim tarzında, katmanlı **2D cozy cyberpunk oda**; gerçek zamanlı 3D yok.
-- Oyun terminali, plak istasyonu, kitaplık, günlük defteri, etkinlik takvimi, iki dijital poster ve masa lambası işlevsel.
-- Otomatik arama **ve** elle ekleme var. Kitap: Open Library. Albüm: MusicBrainz + Cover Art Archive. Oyun: IGDB; kullanıcı bağlantıyı sonradan kurabilir.
-- Kişisel kayıtlar, puanlar, notlar ve kapakların yerel kopyaları Mac'te saklanır. Sunucu, hesap sistemi, abonelik ve bulut eşitleme yok.
-- Spotify/Apple Music bağlantıları dışarıda açılır. Uygulama müzik akışı veya Spotify oynatıcısı değildir.
-- Kaynak kodu için GitHub entegrasyonu yapılır. Yeni depo varsayılan olarak **private** olur. Kişisel koleksiyon ve API sırları GitHub'a yüklenmez.
-- Hedef: Apple Silicon macOS uygulaması, `.app` + `.dmg`. Hazırlık sırasında bu Mac `arm64`, macOS `26.6.2` olarak görüldü; geliştirici kendi çalışma ortamını yeniden doğrular.
-- Mimari: **Tauri 2 + React + TypeScript + Rust + SQLite**.
+- **Oda:** Çizim tarzında 2D oda. Kitaplık, oyun terminali, plak istasyonu, günlük defteri, takvim, iki poster ve masa lambası gerçek ekranları açar. Üç ışık düzeni (Cozy Night, Violet Rain, Quiet Dawn), neon parlaklığı, yağmur ve hareket ayarları vardır.
+- **Koleksiyonlar:** Oyun, albüm ve kitap ekleme, düzenleme, çöp kutusu ve geri alma. Puan, not, etiket, favori ve karışık koleksiyonlar. Kitapta sayfa ilerlemesi ve alıntılar, oyunda seans ve ekran görüntüsü, albümde parça listesi.
+- **Günlük ve takvim:** Ruh hâlli günlük kayıtları, otomatik taslak kurtarma, saat dilimine duyarlı ay görünümü ve özetler.
+- **Arama:** Cmd+K ile yalnız yerel kayıtlarda Türkçe duyarlı arama.
+- **Katalog (isteğe bağlı):** Open Library (kitap), MusicBrainz + Cover Art Archive (albüm), IGDB (oyun). Önce düzenlenebilir önizleme gelir, kapaklar yerel olarak saklanır ve çevrimdışı görünür.
+- **Yedekleme:** Doğrulamalı `.hushbackup` dışa aktarma; özetli ve onaylı geri yükleme. Bozuk yedek mevcut veriyi değiştirmez.
+- **Erişilebilirlik:** Bütün eşyalar gerçek düğmedir. Menü ve klavye eşdeğerleri (Cmd+1–9, Cmd+N, Cmd+S, Cmd+K, Cmd+,) vardır. Odak yönetimi ve hareket azaltma desteklenir.
 
-## Okuma sırası
+## Gizlilik ve güvenlik
 
-| Dosya | Amaç |
+- Kişisel veriler `~/Library/Application Support/app.hush.desktop/` içinde SQLite ve yerel görseller olarak tutulur. Sunucu, hesap ya da bulut eşitleme yoktur.
+- IGDB/Twitch kimlik bilgileri yalnız **macOS Keychain**'e yazılır; arayüze, veritabanına, yedeğe, loglara ya da bu depoya girmez. Depoda API anahtarı veya sır **yoktur**.
+- Ağ isteklerini yalnız Rust katmanı, yalnız katalog araması için yapar. Notların ve günlüklerin hiçbir servise gönderilmez; arama kutusundaki terim dışında bilgi gitmez.
+- Dış bağlantılar yalnız HTTPS olarak doğrulanıp sistem tarayıcısında açılır. Uygulama sıkı bir CSP ve dar Tauri izinleriyle çalışır.
+- `.hushbackup` dosyaları **şifreli değildir**; kişisel içerik taşır, güvenli bir yerde sakla.
+
+## Kurulum
+
+Gereksinim: Apple Silicon Mac, macOS 14 veya sonrası.
+
+1. `Hush-<sürüm>-aarch64.dmg` dosyasını aç, Hush'u Uygulamalar'a sürükle.
+2. Paket ad-hoc imzalıdır ve **Apple notarization yapılmamıştır**. macOS açmayı engellerse, güvendiğin bu dosya için Sistem Ayarları → Gizlilik ve Güvenlik bölümündeki onayı kullan. Sistem korumalarını kapatma.
+
+Ayrıntılı Türkçe kullanım: [docs/KURULUM-VE-KULLANIM.md](docs/KURULUM-VE-KULLANIM.md).
+
+## Geliştirme
+
+Araç zinciri ([docs/TOOLCHAIN.md](docs/TOOLCHAIN.md)): Node 24.18.0 (`.nvmrc`), Rust 1.97.1 (`rust-toolchain.toml`), Xcode Command Line Tools.
+Yığın: Tauri 2, React, TypeScript (strict), Vite, Rust, SQLite.
+
+```bash
+npm ci
+npm run dev
+```
+
+| Komut | İş |
 |---|---|
-| [CODEX_BASLANGIC.md](CODEX_BASLANGIC.md) | Codex'e verilecek doğrudan uygulama talimatı |
-| [AGENTS.md](AGENTS.md) | Proje boyunca geçerli kısa geliştirme kuralları |
-| [01-URUN-VE-KAPSAM.md](docs/01-URUN-VE-KAPSAM.md) | Kullanıcı akışları, ekranlar ve sürüm sınırları |
-| [02-MIMARI.md](docs/02-MIMARI.md) | Teknoloji seçimi, modüller, depolama ve güvenlik |
-| [03-ODA-VE-TASARIM.md](docs/03-ODA-VE-TASARIM.md) | Odanın yerleşimi, nesneler, animasyonlar ve görsel ölçütler |
-| [04-VERI-VE-KOMUTLAR.md](docs/04-VERI-VE-KOMUTLAR.md) | Veri modeli, işlemler ve yedekleme |
-| [05-KATALOG-ENTEGRASYONLARI.md](docs/05-KATALOG-ENTEGRASYONLARI.md) | API'ler, anahtar yönetimi, önbellek ve hata davranışları |
-| [06-UYGULAMA-PLANI.md](docs/06-UYGULAMA-PLANI.md) | Bağımlılık sırasına göre görevler ve kabul kapıları |
-| [07-GITHUB-TEST-VE-TESLIM.md](docs/07-GITHUB-TEST-VE-TESLIM.md) | GitHub, testler, macOS paketleme ve teslim |
-| [08-KARARLAR-VE-KAYNAKLAR.md](docs/08-KARARLAR-VE-KAYNAKLAR.md) | Karar kayıtları, varsayımlar ve resmi kaynaklar |
-| [contracts/](contracts/) | Başlangıç SQL şeması, TypeScript veri tipleri, oda yerleşimi ve tasarım değişkenleri |
-| [PAKET-DOGRULAMA.md](PAKET-DOGRULAMA.md) | Bu mimari paketinde kontrol edilenler ve uygulama aşamasında kalanlar |
+| `npm run dev` | Tauri geliştirme penceresi |
+| `npm run check` | TypeScript, ESLint, Vitest, production web build |
+| `cargo test --locked --manifest-path src-tauri/Cargo.toml` | Rust testleri (loopback HTTP fixture'ları sandbox dışında çalışır) |
+| `npm run test:native -- --regressions` | Gerçek Tauri/WebKit/SQLite native kabul paketleri (IPC mock yok) |
+| `npm run test:native -- --visual` | Tüm ekranların 1440×900 ve 1100×720 görsel turu (`artifacts/ui/`) |
+| `npm run test:native -- --performance` | 5.000 eser / 10.000 seans ölçümü |
+| `npm run build:mac` | Apple Silicon `.app`, `.dmg`, ZIP ve SHA256 |
+| `npm run verify:release` | Release paketinde test eklentisi, mock ve sır olmadığını denetler |
 
-## Paket kapsamı hakkında
+Native testler sentetik veriyle her seferinde yeni bir geçici dizinde çalışır ve gerçek kullanıcı verisine dokunmaz. Test sürücüsü `127.0.0.1:4445` portunu kullanır; `--manual` ile açılmış bir test penceresi varken diğer native testler bilerek çalışmaz.
 
-SQL ve veri/oda sözleşmeleri başlangıç uygulamasına taşınabilir. Bunlar hazır çalışan bir Tauri projesi değildir. Paket sürümleri, Rust araç zinciri ve GitHub Actions sürümleri geliştirme başlangıcında uyumluluk kontrolünden sonra sabitlenir. Çalıştırılmamış uygulama testleri geçmiş gibi raporlanmaz.
+```text
+src/                 React arayüzü (app, features, components, infra/tauri istemcisi, i18n/tr.ts)
+src-tauri/           Rust: commands, services, repositories, providers, storage, migrations
+contracts/           SQL şeması, veri tipleri, oda yerleşimi ve tasarım değişkenleri
+tests/native/        WebdriverIO native testleri; tests/fixtures yalnız sentetik veri
+scripts/             native test, macOS paketleme ve release denetimi
+docs/                ürün, mimari, plan, karar kaydı, test raporu
+```
 
-Görsel üretim hizmeti, ücretli API veya Apple Developer üyeliği ilk yerel sürümün ön koşulu değildir. Uygulama içindeki görseller özgün SVG çizimiyle üretilebilir. Dağıtım için Apple imzası/noter onayı daha sonra ayrı olarak eklenebilir.
+Mimari kurallar: UI → tipli istemci → Tauri komutları → Rust servisleri → SQLite/dosya sistemi. Bileşenlerde SQL veya doğrudan ağ isteği yoktur. Migration'lar yalnız eklemelidir.
 
-## Güncel geliştirme durumu — 7 Kasım 2026
+## Belgeler
 
-P0–P6 kabul kapıları tamamlandı. P7 otomatik kalite testleri ve Apple Silicon `.app`/`.dmg` paketleme tamam; kullanıcı destekli VoiceOver/DMG kabulü ve GitHub bağlantısı açık. Güncel sonuçlar [test raporunda](docs/TEST-REPORT.md), devir bilgileri [HANDOFF](docs/HANDOFF.md) ve [P7 başlangıç promptunda](docs/NEXT_CHAT_PROMPT.md).
+| Belge | İçerik |
+|---|---|
+| [01 Ürün ve kapsam](docs/01-URUN-VE-KAPSAM.md) | Kullanıcı akışları ve sürüm sınırları |
+| [02 Mimari](docs/02-MIMARI.md) | Teknoloji, katmanlar, depolama, güvenlik |
+| [03 Oda ve tasarım](docs/03-ODA-VE-TASARIM.md) | Sahne, hareket, erişilebilirlik ölçütleri |
+| [04 Veri ve komutlar](docs/04-VERI-VE-KOMUTLAR.md) | Veri modeli ve yedekleme |
+| [05 Katalog entegrasyonları](docs/05-KATALOG-ENTEGRASYONLARI.md) | API'ler, anahtar yönetimi, önbellek |
+| [06 Uygulama planı](docs/06-UYGULAMA-PLANI.md) | Aşamalar ve kabul kapıları |
+| [07 Test ve teslim](docs/07-GITHUB-TEST-VE-TESLIM.md) | Test katmanları, A01–A22 matrisi, paketleme |
+| [08 Kararlar](docs/08-KARARLAR-VE-KAYNAKLAR.md) | Karar kaydı ve kaynaklar |
+| [Test raporu](docs/TEST-REPORT.md) · [İlerleme](docs/PROGRESS.md) | Gerçek sonuçlar ve açık sınırlar |
+| [Mimari paketi](docs/00-MIMARI-PAKETI.md) | Projenin başlangıçtaki tasarım paketi tanıtımı |
 
-P6'yı ayrı sentetik veriyle tekrar çalıştırmak için `npm run test:native:p6`. Bu komut test derlemesi kullanır; tam yedek eşdeğerliği, bozuk arşivler ve üç gerçek SIGKILL/yeniden açılış noktasını doğrular. Dosya seçimi e2e fixture seçimiyle sağlanır; IPC/depolama gerçektir. Disk-dolu senaryosu kontrollü hata enjeksiyonudur. Test arşivleri/geçici veriler Git dışındadır.
+## Durum ve bilinen sınırlar
 
-Ayarlar → Yedekleme ve geri yükleme bölümünden `.hushbackup` dışa aktarılabilir. Geri yükleme önce özeti gösterir ve mevcut verinin değiştirilmesi için açık onay ister. Yedek kişisel içerik taşır, şifreli değildir; Keychain bağlantı sırlarını içermez. Eski generation kurtarma için diskte tutulur. Final `.app/.dmg` yerel olarak üretildi (ad-hoc, notarize değil); kurulum: [docs/KURULUM-VE-KULLANIM.md](docs/KURULUM-VE-KULLANIM.md). GitHub bağlantısı henüz yok.
+Sürüm 0.1.0. Otomatik birim, native kabul, performans ve görsel testler geçiyor. Fiziksel VoiceOver/klavye kabulü kullanıcı tarafından yapılmaktadır.
+
+- Apple notarization yok; paket ad-hoc imzalı.
+- MusicBrainz istekleri için kullanıcının kendi HTTPS iletişim adresini Ayarlar'a girmesi gerekir. IGDB isteğe bağlıdır; bağlantı yokken oyunlar elle eklenir.
+- Dock menüsündeki "Çık" ve sistem kapanışı, açık formdaki kaydedilmemiş metni korumaz (Cmd+Q korur).
+
+Üçüncü taraf lisansları: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).

@@ -1,18 +1,52 @@
+# Dependencies and build output
 node_modules/
 dist/
+dist-e2e/
 src-tauri/target/
-.DS_Store
+src-tauri/gen/
+coverage/
+*.tsbuildinfo
+.vite/
+
+# Packaged apps and personal data (never commit)
 *.app
 *.dmg
+*.app.zip
 *.hushbackup
 *.sqlite3*
 *.db*
 *.log
+artifacts/
+.tools/
+
+# Secrets and signing material
 .env*
+!.env.example
 *.p12
 *.p8
 *.key
-artifacts/
-.tools/
-src-tauri/gen/
-dist-e2e/
+*.pem
+*.cer
+*.mobileprovision
+*.keychain*
+
+# macOS metadata
+.DS_Store
+**/.DS_Store
+._*
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+.fseventsd
+.TemporaryItems
+.DocumentRevisions-V100
+
+# Editors and local tooling
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*~
+Thumbs.db
+.claude/settings.local.json

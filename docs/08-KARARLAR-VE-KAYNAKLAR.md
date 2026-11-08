@@ -90,7 +90,7 @@ Yerel aramanın ağ üretmediğini gözlemek için mevcut tek Rust HTTP send nok
 
 ## D19 — P5 kabul sınırı, cache fixture ve iletişim adresi (2026-11-03)
 
-Son kullanıcı talimatı yalnız P5, belgeler, yerel commit ve P6 promptunu kapsar; P6 uygulanmaz. GitHub CLI indirmesi ve Finder/System Events izni yeniden istenmedi. Mevcut kullanıcı değişiklikleri korunur; başlangıç ağacı e27b042 üzerinde temizdi.
+Son kullanıcı talimatı yalnız P5, belgeler, yerel commit ve P6 promptunu kapsar; P6 uygulanmaz. GitHub CLI indirmesi ve Finder/System Events izni yeniden istenmedi. Mevcut kullanıcı değişiklikleri korunur; başlangıç ağacı 17a2e62 üzerinde temizdi.
 
 Kullanıcıya MusicBrainz User-Agent iletişim alanının amacı açıklandı; doğrulanmış adres verilmedi. Adres uydurulmadı ve canlı MusicBrainz çağrısı yapılmadı. Cache'deki albüm verisi iletişim adresi olmadan kullanılabilir; yeni MusicBrainz HTTP çağrısı adres yoksa reddedilir. Canlı Open Library ve sentetik MusicBrainz/CAA kabul sonuçları ayrı raporlanır. Open Library kullanım/rate-limit belgesi yeniden okundu; MusicBrainz belge erişimi 429 verdi. IGDB resmi belge okuması gerçek IGDB OAuth testi sayılmaz.
 

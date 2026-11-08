@@ -2,7 +2,7 @@
 
 ## Şu an
 - Aktif aşama: P7 — otomatik kalite, paketleme ve yerel teslim tamam; fiziksel VoiceOver/klavye/DMG kabulü ve GitHub bağlantısı açık.
-- Son çalışan commit: bu oturumun P7 commit'i (`feat/local-library`); önceki `c83d6b0`.
+- Son çalışan commit: bu oturumun P7 commit'i (`feat/local-library`); önceki `ecead2a`.
 - Sonraki somut iş: kullanıcı manuel kabul listesini (TEST-REPORT → Manuel kabul) çalıştırıp sonucu bildirsin; GitHub için kullanıcı yeni açık yetki verirse private depo + push + CI.
 - Ayrıntılı devir: [HANDOFF.md](HANDOFF.md). Kanıt/yöntem/sınırlar: [TEST-REPORT.md](TEST-REPORT.md).
 
@@ -35,7 +35,7 @@
 - P1 domain/storage/repository dosyaları hazırlanıyor; henüz runtime'a bağlanmadı, test edilmiş sayılmaz.
 
 ### P1 — 2026-11-01
-- Son temel commit: `3d121fb`; aktif dal `feat/local-library`.
+- Son temel commit: `b0629ff`; aktif dal `feat/local-library`.
 - Application Support/generation pointer, SQLite migration, tipli DTO ve servis/repository katmanları eklendi.
 - Üç eser türü için temel form/liste/detay, revision, trash/restore, Türkçe arama ve native kapak importu bağlandı.
 - 10 Rust testi, 4 UI testi, TypeScript, lint, frontend build ve clippy geçti.
@@ -64,7 +64,7 @@
 - Yeni sohbetin kesin başlangıç noktası HANDOFF.md içinde: P1 native kapak + orijinal dosyayı taşıma + yeniden açılış.
 
 ### 2026-11-02 — P1 kabulü kapatıldı
-- Başlangıç ağacı temizdi (`fb29a9a`); mevcut P2–P6 hazırlıkları korundu. P2 çalışmasına geçilmedi.
+- Başlangıç ağacı temizdi (`d616b6a`); mevcut P2–P6 hazırlıkları korundu. P2 çalışmasına geçilmedi.
 - Native görsel seçici ana Hush penceresine bağlandı ve pencere seçim öncesinde görünür/odaklı hale getirildi. Kullanıcının ilk denemede göremediği seçici düzeltmeden sonra kullanıldı.
 - Test-only asset scope yalnız aktif generation/assets dizinine açıldı; production kapsamı ve migration değişmedi.
 - 04:44–04:45 TRT: kullanıcı gerçek native seçiciden sentetik PNG seçti; WDIO gerçek IPC ile kitabı kaydetti, orijinali taşıdı ve iki bağımsız süreçte 2 + 2 test geçti. Yeniden açılışta kapak decode/görünürlük, kitap/not/37/200, kimlikler ve image/thumb SHA-256 eşitliği doğrulandı. IPC mock yok.
@@ -74,7 +74,7 @@
 - GitHub/CLI indirme denenmedi. Finder/System Events izni reddedilince AppleScript otomasyonu kaldırıldı; yeniden izin istenmedi.
 
 ### 2026-11-02 — P2 kabulü kapatıldı
-- Başlangıç ağacı temizdi (`84e989c`). Mevcut P3–P6 hazırlıkları ve migration'lar korundu; yeni faz geliştirmesine geçilmedi.
+- Başlangıç ağacı temizdi (`2bd3b41`). Mevcut P3–P6 hazırlıkları ve migration'lar korundu; yeni faz geliştirmesine geçilmedi.
 - Posterler ayarlar menüsüne eklendi; atanmış eser panelden açılabiliyor. Cmd+7/8 posterler, Cmd+9 plak ataması, Cmd+L lamba; mevcut Cmd+2–6 panel yollarıyla aynı state kullanılıyor.
 - Ortak Dialog bileşeni tetikleyen düğmeye odağı geri veriyor; panelden başka panele geçişte oda düğmesi yedek hedef olarak korunuyor.
 - Dekoratif plak dönüşü, panel/minimize/blur durumunda duraklama ve azaltılmış harekette sabit görünüm tamamlandı. Ölçekli hotspot etiketleri minimum 12 CSS px.
@@ -86,7 +86,7 @@
 - VoiceOver, işletim sistemi hareket tercihini değiştirerek manuel kontrol ve final paket/CI kapsamı P7'de açık; bu P2 sonucu onları geçmiş saymaz. GitHub CLI/Finder/System Events izni yeniden istenmedi.
 
 ### 2026-11-02 — P3 kabulü kapatıldı
-- Başlangıç ağacı temizdi (`5af7e13`); kullanıcı değişikliği yoktu. Mevcut P4–P6 hazırlıkları, bağımlılıklar ve migration'lar korundu. P4'e geçilmedi.
+- Başlangıç ağacı temizdi (`8b86373`); kullanıcı değişikliği yoktu. Mevcut P4–P6 hazırlıkları, bağımlılıklar ve migration'lar korundu. P4'e geçilmedi.
 - Elle aynı başlık uyarısı, mevcut kaydı aç / ayrı kayda devam et; kompakt liste; albüm HTTPS bağlantı düğmeleri ve Rust sistem açıcı; screenshot uygulama içi büyütme tamamlandı.
 - Eser mutation'larında item/room/list/collection/calendar cache yenileniyor. Silinmiş eser sorgusu eski kapak verisini taşımıyor; restore kapağı geri getiriyor. Sıralama ilk sayfaya dönüyor, virgülle çoklu etiket filtresi çalışıyor.
 - 14:19 TRT: `npm run test:native -- --collections` gerçek macOS Tauri/WebKit/SQLite ile ilk süreçte 5 test; ikinci bağımsız süreçte 1 restart testi geçti (4 ilk-süreç testi skipped).
@@ -97,7 +97,7 @@
 - GitHub CLI/Finder/System Events izni yeniden istenmedi. Yeni final `.app/.dmg`, GitHub URL/CI/draft release yok. P4 başlangıç metni `docs/NEXT_CHAT_PROMPT.md` içinde.
 
 ### 2026-11-03 — P4 kabulü kapatıldı
-- Başlangıç ağacı temizdi (`f1d2b73`). P0–P3 ve mevcut P5–P6 hazırlıkları korundu; P5 çalışmasına geçilmedi.
+- Başlangıç ağacı temizdi (`925eb4b`). P0–P3 ve mevcut P5–P6 hazırlıkları korundu; P5 çalışmasına geçilmedi.
 - Takvim saat dilimi seçimi ve timezone içeren query key; günlük/arama/gün boş durumları ve filtre temizleme tamamlandı. Genel arama günlük sonucunu UUID filtresiyle açar; aynı başlıkta yanlış kayıt göstermez. Günlük paneli kapanınca arama seçimi temizlenir.
 - Gerçek macOS Tauri/WebKit/SQLite: ilk süreç 4 test, ayrı restart süreci 1 test geçti. Sürece özgü 1 + 4 test bilinçli skipped. İki günlük UI oluştur/düzenle/trash/restore; altı mood ve boş değer; eser bağları; gerçek conflict'te metin koruma; autosave/restart/kurtarma doğrulandı.
 - İstanbul/Los Angeles/UTC için Ekim–Kasım–Aralık 2026 gün/ay sınırları, DST tekrar saati, günlük gününün sabitliği, üç türün süreleri, eklenen eser ve günlüklü gün sayıları; seans silme ve trash ebeveyninin toplamdan çıkması geçti.
@@ -120,7 +120,7 @@
 - P5 son doğrulama: `npm run check` (4 UI), 28 Rust testi, clippy/fmt/diff kontrolü geçti. Final paket/GitHub/CI/notarization hâlâ P7 sınırıdır.
 
 ### 2026-11-03 — P6 yedek/kurtarma kabulü
-- Başlangıç ağacı `b00355b` üzerinde temizdi. Bağımlılık/lockfile/migration değiştirilmedi; üretim verisine dokunulmadı.
+- Başlangıç ağacı `b853be4` üzerinde temizdi. Bağımlılık/lockfile/migration değiştirilmedi; üretim verisine dokunulmadı.
 - Gerçek Tauri/WebKit/Rust/SQLite ile altı eser (her türde aktif ve trash), tüm alt kayıtlar, provenance, etiketler, koleksiyon, iki günlük, taslak, üç slot ve ayarlar karşılaştırıldı. 19 tablonun tüm satırları ve beş asset'in image/thumb hash'leri birebir eşit.
 - UI export, restore özeti, iptal, açık değiştirme onayı, cache temizliği ve oda kapakları geçti. Dosya seçim sonucu yalnız e2e derlemesinde izole fixture adıyla sağlanır; native picker yeniden test edilmedi. IPC mock yok.
 - 19 bozuk arşiv reddi; aktif pointer ve tüm kayıt/görseller değişmedi. Duplicate ZIP adı, eksik manifest dosyasının hata kodu ve ayar/slot doğrulaması düzeltildi.

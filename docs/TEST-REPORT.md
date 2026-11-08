@@ -311,7 +311,7 @@ P4 sonrası temel native regresyonu: `npm run test:native`, **2 + 2 passed**, 20
 
 ## P5 otomatik katalog kabulü — 2026-11-03
 
-**P5 kabulü tamamlandı; canlı sağlayıcı sınırları aşağıdadır.** P6 uygulanmadı. Başlangıç ağacı e27b042 üzerinde temizdi. Migration ve bağımlılık sürümleri/lockfile'lar değiştirilmedi.
+**P5 kabulü tamamlandı; canlı sağlayıcı sınırları aşağıdadır.** P6 uygulanmadı. Başlangıç ağacı 17a2e62 üzerinde temizdi. Migration ve bağımlılık sürümleri/lockfile'lar değiştirilmedi.
 
 ### Gerçek macOS, sentetik provider cache
 
@@ -355,7 +355,7 @@ P5 son kontroller: `npm run check` (TypeScript strict, ESLint, 4 React testi, pr
 
 ## P6 yedekleme/kurtarma kabulü — 2026-11-03 23:22–23:24 TRT
 
-**İstenen P6 kabul senaryoları geçti. P7 başlatılmadı.** Gerçek macOS Tauri debug uygulaması, WebKit 605.1.15, gerçek IPC/Rust/SQLite kullanıldı. Başlangıç `b00355b` üzerinde temizdi; kullanıcı verisi, migration, bağımlılık sürümü ve lockfile değiştirilmedi.
+**İstenen P6 kabul senaryoları geçti. P7 başlatılmadı.** Gerçek macOS Tauri debug uygulaması, WebKit 605.1.15, gerçek IPC/Rust/SQLite kullanıldı. Başlangıç `b853be4` üzerinde temizdi; kullanıcı verisi, migration, bağımlılık sürümü ve lockfile değiştirilmedi.
 
 ### Native tam eşdeğerlik
 

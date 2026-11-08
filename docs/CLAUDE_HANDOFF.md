@@ -8,7 +8,7 @@
 
 ## Başlangıç durumu
 
-- Dal: `feat/local-library`; son commit: `c83d6b0 feat: verify P6 native backup restore and crash recovery`.
+- Dal: `feat/local-library`; son commit: `ecead2a feat: verify P6 native backup restore and crash recovery`.
 - P7 değişiklikleri **commit edilmemiştir**. `git status` çıktısını koru; reset, checkout veya kullanıcı değişikliklerini silme yapma.
 - Okunacaklar: `AGENTS.md`, `CODEX_BASLANGIC.md`, `README.md`, `docs/01`–`08`, `docs/PROGRESS.md`, `docs/HANDOFF.md`, `docs/TEST-REPORT.md`.
 - GitHub remote/URL yok. GitHub CLI indirme ve Finder/System Events otomasyon izni önce reddedildi; bunları yeniden isteme veya başka araçla dolaşma. Uzak GitHub işlemi yapma.

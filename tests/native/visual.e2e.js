@@ -18,11 +18,22 @@ describe('Visual QA tour',()=>{
   if(process.env.HUSH_REOPEN)return this.skip();
   mkdirSync(out,{recursive:true});
   await expect(browser.$('[role=status]')).toHaveText('Yerel masaüstü bağlantısı hazır.');
+  // Empty library: the three collection objects carry their empty-state hints (docs/01 first run, step 4).
+  await browser.setWindowSize(1440,900);await browser.waitUntil(async()=>(await browser.$$('[data-hotspot] em')).length===3,{timeoutMsg:'three empty hints expected'});
+  expect(await browser.execute(()=>[...document.querySelectorAll('[data-hotspot] em')].map(e=>e.closest('button').dataset.hotspot+':'+e.textContent).sort())).toEqual(['bookshelf:Kitap ekle','game_terminal:İlk oyununu ekle','record_station:Bir albüm bul']);
+  await shot('1440','00-room-empty-hints');
   const saved=[];for(const kind of ['book','game','album'])for(let i=0;i<3;i++)saved.push(await ipc('library_save',{expectedRevision:null,item:item(kind,i)}));
   for(const it of saved.slice(0,4))await ipc('session_save',{expectedRevision:null,draft:{id:randomUUID(),itemId:it.id,occurredAt:'2026-11-03T19:30:00Z',durationMinutes:45,notes:'Akşam seansı'}});
   await ipc('journal_save',{expectedRevision:null,entry:{id:randomUUID(),title:'Yağmurlu salı',entryDate:'2026-11-03',mood:'calm',body:'Pencere kenarında kitap okudum, sonra eski bir albümü dinledim.',itemIds:[saved[0].id]}});
   await ipc('collection_save',{expectedRevision:null,draft:{id:randomUUID(),name:'Yağmurlu geceler',description:'Gece için seçtiklerim'},itemIds:[saved[0].id,saved[3].id]});
   await browser.execute(()=>location.reload());await expect(browser.$('[role=status]')).toHaveText('Yerel masaüstü bağlantısı hazır.');
+  await browser.waitUntil(async()=>(await browser.$$('[data-hotspot] em')).length===0,{timeoutMsg:'hints must disappear once records exist'});
+  // Panels enter with the 200 ms motion; Cmd+S saves a form that has no handler of its own (collection editor).
+  await shortcut('4');expect(await browser.execute(()=>document.querySelector('[role=dialog]').dataset.entry)).toMatch(/^(animated|instant)$/);expect(await browser.execute(()=>getComputedStyle(document.querySelector('[role=dialog]')).opacity)).toBe('1');await closeAll();
+  await browser.$('header').$('button=Koleksiyonlar').click();await browser.$('[role=dialog]').$('button=Ekle').click();
+  await browser.$$('[role=dialog]')[1].$('input').setValue('Cmd+S koleksiyonu');await shortcut('s');
+  await browser.waitUntil(async()=>(await browser.$$('[role=dialog]')).length===1,{timeoutMsg:'Cmd+S must save and close the collection editor'});
+  expect((await ipc('collection_list')).map(c=>c.name)).toContain('Cmd+S koleksiyonu');await closeAll();
   for(const [w,h] of [[1440,900],[1100,720]]){
    const size=`${w}`;await browser.setWindowSize(w,h);await browser.pause(400);await closeAll();
    if(await browser.$('.onboarding').isExisting())await shot(size,'01-room-onboarding');
@@ -42,9 +53,9 @@ describe('Visual QA tour',()=>{
    for(const [key,name] of [['2','03-games'],['3','04-albums'],['4','05-books']]){await shortcut(key);await shot(size,name);await closeAll()}
    await shortcut('4');const list=await browser.$('button=Kompakt liste');if(await list.isExisting()){await list.click();await shot(size,'06-books-list');await browser.$('button=Kapaklar').click()}
    const card=await browser.$('[role=dialog] [data-library-view] button');if(await card.isExisting()){await card.click();await shot(size,'07-book-detail')}
-   await closeAll();await shortcut('4');await shortcut('n');await shot(size,'08-book-form');await browser.execute(()=>{const d=[...document.querySelectorAll('[role=dialog]')].at(-1);d.scrollTop=d.scrollHeight});await shot(size,'09-book-form-bottom');await closeAll();
+   await closeAll();await shortcut('4');await shortcut('n');await shot(size,'08-book-form');expect(await browser.execute(()=>[...document.querySelectorAll('[role=dialog] input[type=date]')].map(e=>e.hasAttribute('data-empty')))).toEqual([true,true]);await browser.execute(()=>{const d=[...document.querySelectorAll('[role=dialog]')].at(-1);d.scrollTop=d.scrollHeight});await shot(size,'09-book-form-bottom');await closeAll();
    await shortcut('2');await shortcut('n');await shot(size,'10-game-form');await closeAll();
-   await shortcut('5');await shot(size,'11-journal');await shortcut('n');await shot(size,'12-journal-editor');await closeAll();
+   await shortcut('5');await shot(size,'11-journal');await shortcut('n');await shot(size,'12-journal-editor');expect(await browser.execute(()=>document.querySelector('[role=dialog] input[type=date]').hasAttribute('data-empty'))).toBe(false);await closeAll();
    await shortcut('6');await shot(size,'13-calendar');await closeAll();
    await shortcut('k');const q=await browser.$('[role=dialog] input');await q.setValue('ş');await browser.pause(400);await shot(size,'14-search');await closeAll();
    await browser.$('header').$('button=Koleksiyonlar').click();await shot(size,'15-collections');await closeAll();

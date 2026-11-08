@@ -22,7 +22,11 @@ Devirde bulunan iki sorun düzeltildi (ayrıntı: docs/08 D22):
 | DMG içeriği | Salt-okunur bağlandı: `Hush.app`, Applications bağlantısı, kurulum yönergesi, lisans envanteri. İçerideki app için `codesign --verify --deep --strict` geçti; çalıştırılabilir SHA-256 build app ile aynı; `LSMinimumSystemVersion` 14.0; identifier `app.hush.desktop`. |
 | `npm run verify:release` | Geçti: arm64, ad-hoc, production dependency graph'ta WDIO yok; `HUSH_TEST_DATA_DIR`, e2e capability/identifier, backup selector/fault, mock ve sır desenleri yok. |
 
-SHA-256 (hover düzeltmesinden sonraki son paket): DMG `3c1f9d609de3d9726b92d34cc9f69f8bab34be04c57978b4cae7e42ac2d5b1ac`, app ZIP `2c67bfc45dea8127daaff40fb81361a95c1e526e7244d7e54f0627d345c0b7e0`.
+SHA-256 (son paket, 2026-11-08): DMG `8ffef62fe078e616ec1afb4d71d8d72e7f7270bd29cbaba378382c3fbf5f3620`, app ZIP `604469a7f1ba49571b5231bdc22fd260af02106f5f8a245f1954b69a21d0bc47`.
+
+**Şartname boşlukları (2026-11-08):** docs/01 ilk açılış boş durum ipuçları ("İlk oyununu ekle", "Bir albüm bul", "Kitap ekle") ilgili eşyada; docs/03 panel giriş hareketi (200 ms fade + 8 px kayma, azaltılmış harekette yok); Cmd+S artık alt çubuklu her düzenleme formunu ve Ayarlar'ı kaydeder; boş tarih alanları WebKit'in "bugün" yer tutucusunu göstermez. Görsel tur bunları assert eder (üç ipucu boş kütüphanede var, kayıttan sonra yok; Cmd+S ile koleksiyon kaydı; tarih alanı boşluk işareti). İlk CSS keyframe denemesi, örtülü test penceresinde WebKit zaman çizelgesi durduğu için paneli opaklık 0'da bıraktı ve koleksiyon regresyonu yakaladı; giriş hareketi yalnız sayfa görünürken çalışan Web Animations çağrısına çevrildi. Ardından görsel tur ve tam `--regressions` (17 süreç) geçti.
+
+**npm audit:** `npm audit --omit=dev` 0 bulgu (üretim bağımlılıkları temiz). Geliştirme ağacında 31 bulgu (17 orta, 14 yüksek) WDIO test araçları ve typescript-eslint zincirindedir; release paketinde yoktur (`verify:release`). Çözümleri major sürüm yükseltmesi gerektirdiği için AGENTS.md gereği görev sırasında yükseltilmedi.
 
 **Hover hatası (kullanıcı bildirdi):** Ortak `button:hover` dolgusu oda eşyalarının şeffaf hover stilini eziyordu; eşyanın üstüne gelince opak gri kutu çiziliyordu. `.hotspot:hover:not(:disabled)` ile düzeltildi. Görsel tur artık bütün `:hover` kurallarını eşit özgüllükte bir sınıfa kopyalayıp sekiz eşyada arka plan saydamlığını (alfa < 0,1) ve çerçeveyi assert eder; gömülü WebKit sürücüsü gerçek `:hover` üretmediği için imleç hareketi tek başına kanıt sayılmaz.
 

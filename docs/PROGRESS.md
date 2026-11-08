@@ -158,3 +158,9 @@
 - Filtreler eşit sütunlu ızgara; kart ızgarası sabit genişlik; detayda durum rozeti ve etiket çipleri; formlarda kapak önizlemesi ve yapışkan Kaydet alt çubuğu; arama sonuçları satır listesi; poster seçici ızgarası; Ayarlar'da yapışkan Kaydet; alt gezinme düğmeleri eşit genişlik; sahne kenarları yumuşatıldı.
 - Yeni `npm run test:native -- --visual`: sentetik kayıtları gerçek IPC ile oluşturup 19 ekranı 1440×900 ve 1100×720'de `artifacts/ui/` altına çeker, taşma raporu yazar (taşma yok). Screenshot'lar incelendi.
 - `npm run check` (7), `--regressions` (tümü geçti), `build:mac` + `verify:release` geçti.
+
+### 2026-11-08 — Şartname boşlukları ve arayüz pürüzleri
+- Kullanıcı manuel testlerini sona bıraktı. Şartname taraması: boş durum ipuçları (docs/01), panel giriş hareketi (docs/03), Cmd+S'in tüm formlarda çalışması (docs/03) eksikti; tamamlandı. Boş tarih alanlarının bugünün tarihini göstermesi giderildi.
+- Görsel tura yeni assert'ler eklendi; tam regresyon 17 süreç geçti; `build:mac` + `verify:release` geçti.
+- `npm audit --omit=dev` temiz; geliştirme araçlarındaki bulgular release'e girmez, major yükseltme gerektirir (yükseltilmedi).
+- Kalan: kullanıcı destekli manuel kabul (VoiceOver/klavye/Dock/DMG) ve GitHub (yeni açık yetki gerekli).

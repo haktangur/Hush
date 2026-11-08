@@ -61,3 +61,6 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--color-accent-second
 .onboarding div{display:flex;justify-content:flex-end;gap:8px}
 
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* Empty date field: hide WebKit's "today" placeholder until focused (see app/dateInputs.ts). */
+input[type=date][data-empty]:not(:focus)::-webkit-datetime-edit,input[type=date][data-empty]:not(:focus)::-webkit-datetime-edit-day-field,input[type=date][data-empty]:not(:focus)::-webkit-datetime-edit-month-field,input[type=date][data-empty]:not(:focus)::-webkit-datetime-edit-year-field,input[type=date][data-empty]:not(:focus)::-webkit-datetime-edit-text{color:transparent;-webkit-text-fill-color:transparent}
+input[type=date][data-empty]:not(:focus){color:transparent;-webkit-text-fill-color:transparent}

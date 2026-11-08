@@ -4,3 +4,6 @@
 
 .recordPlane{position:absolute;left:1231px;top:590px;width:106px;height:48px;overflow:hidden;border-radius:50%;pointer-events:none}.record{position:relative;width:106px;height:106px;margin-top:-29px;border-radius:50%;background:repeating-radial-gradient(circle,#151d2a 0 5px,#343647 6px,#151d2a 7px);animation:spin 12s linear infinite}.record:after{content:'';position:absolute;inset:39px;border-radius:50%;background:conic-gradient(#ac8675 0 80%,#dbc0a1 80%);border:2px solid #151d2a}@keyframes spin{to{transform:rotate(360deg)}}
 [data-motion='reduced'] *{transition:none!important}
+
+/* Empty-collection hint above the object; small, amber, never covers the art. */
+.emptyHint{position:absolute;top:-10px;left:50%;transform:translate(-50%,-100%);white-space:nowrap;padding:6px 12px;font-style:normal;font-size:var(--label-size);color:#f6d7ac;background:#2a2030e6;border:1px solid #f2b66d66;border-radius:999px;pointer-events:none}

@@ -164,3 +164,8 @@
 - Görsel tura yeni assert'ler eklendi; tam regresyon 17 süreç geçti; `build:mac` + `verify:release` geçti.
 - `npm audit --omit=dev` temiz; geliştirme araçlarındaki bulgular release'e girmez, major yükseltme gerektirir (yükseltilmedi).
 - Kalan: kullanıcı destekli manuel kabul (VoiceOver/klavye/Dock/DMG) ve GitHub (yeni açık yetki gerekli).
+
+### 2026-11-08 — GitHub
+- Kullanıcının verdiği public depo: https://github.com/haktangur/Hush. Push öncesi tüm geçmiş sır/kişisel veri taramasından geçti (bulgu yok). Kullanıcının isteğiyle bütün commit e-postaları GitHub noreply adresine çevrildi; repo yerel `user.email` da noreply. `main` ve `feat/local-library` push edildi, varsayılan dal `main`.
+- README public proje tanıtımına çevrildi (eski paket tanıtımı `docs/00-MIMARI-PAKETI.md`), sentetik ekran görüntüleri eklendi, `.gitignore` macOS/IDE/imza dosyalarıyla genişletildi.
+- GitHub Actions: iki workflow repoda aktif görünüyor, ancak iki push sonrası ~10 dakika içinde hiç koşu tetiklenmedi (GitHub durumu normal). Repo ayarları oturum gerektirdiği için görülemedi. CI'a `workflow_dispatch` eklendi; kullanıcı Actions sekmesinden "Run workflow" ile başlatabilir. CI sonucu henüz yok.

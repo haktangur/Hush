@@ -69,7 +69,7 @@ Kanıt türü: **N** gerçek Tauri/WebKit/Rust/SQLite native otomasyon (sentetik
 
 ### Bilinen sınırlar
 
-Dock menüsündeki "Çık" ve sistem kapatma `terminate:` ile çıkar; kaydedilmemiş form metnini korumaz (D22). Paket ad-hoc imzalıdır, notarize değildir. GitHub remote/URL, CI koşusu ve draft release yoktur; workflow dosyaları yalnız yerel hazırlıktır. Canlı MusicBrainz/CAA ve gerçek IGDB OAuth kabulü yapılmadı. npm geliştirme bağımlılığı audit bulgularının incelemesi açık.
+Dock menüsündeki "Çık" ve sistem kapatma `terminate:` ile çıkar; kaydedilmemiş form metnini korumaz (D22). Paket ad-hoc imzalıdır, notarize değildir. Kaynak https://github.com/haktangur/Hush adresine push edildi (public, commit e-postaları noreply). GitHub Actions push'ta tetiklenmedi; CI sonucu ve draft release henüz yoktur. Canlı MusicBrainz/CAA ve gerçek IGDB OAuth kabulü yapılmadı. npm geliştirme bağımlılığı audit bulgularının incelemesi açık.
 
 ## P7 güncellemesi — 2026-11-04 (Codex; geçmiş kayıt)
 
